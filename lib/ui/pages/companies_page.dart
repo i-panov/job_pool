@@ -1,0 +1,80 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:drift/drift.dart' hide Column;
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:flutter/material.dart';
+import 'package:job_pool/data/storage/db/db.dart';
+import 'package:job_pool/ui/routing/app_router.gr.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+
+@RoutePage(name: 'CompaniesTab')
+class CompaniesPage extends StatelessWidget {
+  const CompaniesPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final db = context.read<AppDatabase>();
+
+    return Stack(
+      alignment: Alignment.topCenter,
+      children: [
+        StreamBuilder(
+          stream: db.companies.select().watch(),
+          builder: (context, snapshot) {
+            final companies = snapshot.data ?? [];
+    
+            companies.add(
+              Company(
+                id: -1,
+                name: 'Add a company',
+                isIT: true,
+                links: ISet(['https://github.com/']),
+                comment: 'test',
+              ),
+            );
+    
+            if (companies.isEmpty) {
+              return Center(child: Text('Список пуст'));
+            }
+    
+            return ListView(
+              scrollDirection: Axis.vertical,
+              children: [
+                for (final company in companies)
+                  ListTile(
+                    tileColor: company.isIT ? Colors.lightBlueAccent : null,
+                    title: InkWell(
+                      child: Text(company.name),
+                      onTap: () {
+                        print('show');
+                      },
+                    ),
+                    trailing: company.links.isEmpty
+                        ? null
+                        : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.link),
+                                onPressed: () async {
+                                  await launchUrlString(company.links.first);
+                                },
+                              ),
+                            ],
+                          ),
+                  ),
+              ],
+            );
+          },
+        ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: IconButton(
+            icon: Icon(Icons.add_circle, color: Colors.green, size: 50),
+            onPressed: () => context.router.push(CompanyFormRoute()),
+          ),
+        ),
+      ],
+    );
+  }
+}

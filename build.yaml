@@ -1,0 +1,8 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          databases:
+            job_pool: lib/data/storage/db/db.dart
+          store_date_time_values_as_text: true

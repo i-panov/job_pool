@@ -64,7 +64,12 @@ class AppDatabase extends _$AppDatabase {
     return query.getSingleOrNull();
   }
 
-  Future<List<Company>> findCompany(String name) {
+  Future<Company?> findCompanyByName(String name) {
+    final query = select(companies)..where((f) => f.name.equals(name));
+    return query.getSingleOrNull();
+  }
+
+  Future<List<Company>> findCompaniesLikeName(String name) {
     final query = select(companies)..where((f) => f.name.like('%$name%'));
     return query.get();
   }

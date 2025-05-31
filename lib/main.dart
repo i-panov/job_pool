@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:job_pool/data/storage/db/db.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:job_pool/ui/routing/app_router.dart';
-import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MultiProvider(
-    providers: [
-      Provider(create: (_) => AppDatabase()),
-    ],
-    child: const JobPoolApp(),
-  ));
+  runApp(ProviderScope(child: const JobPoolApp()));
 }
 
 class JobPoolApp extends StatelessWidget {

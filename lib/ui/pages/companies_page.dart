@@ -2,18 +2,19 @@ import 'package:auto_route/auto_route.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:job_pool/data/storage/db/db.dart';
+import 'package:job_pool/ui/providers/app_providers.dart';
 import 'package:job_pool/ui/routing/app_router.gr.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 @RoutePage(name: 'CompaniesTab')
-class CompaniesPage extends StatelessWidget {
+class CompaniesPage extends ConsumerWidget {
   const CompaniesPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final db = context.read<AppDatabase>();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final db = ref.read(dbProvider);
 
     return Stack(
       alignment: Alignment.topCenter,
@@ -22,7 +23,7 @@ class CompaniesPage extends StatelessWidget {
           stream: db.companies.select().watch(),
           builder: (context, snapshot) {
             final companies = snapshot.data ?? [];
-    
+
             companies.add(
               Company(
                 id: -1,
@@ -32,11 +33,11 @@ class CompaniesPage extends StatelessWidget {
                 comment: 'test',
               ),
             );
-    
+
             if (companies.isEmpty) {
               return Center(child: Text('Список пуст'));
             }
-    
+
             return ListView(
               scrollDirection: Axis.vertical,
               children: [

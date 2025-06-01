@@ -1,9 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:drift/drift.dart' hide Column;
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:job_pool/data/storage/db/db.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 import 'package:job_pool/ui/routing/app_router.gr.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -24,16 +22,6 @@ class CompaniesPage extends ConsumerWidget {
           builder: (context, snapshot) {
             final companies = snapshot.data ?? [];
 
-            companies.add(
-              Company(
-                id: -1,
-                name: 'Add a company',
-                isIT: true,
-                links: ISet(['https://github.com/']),
-                comment: 'test',
-              ),
-            );
-
             if (companies.isEmpty) {
               return Center(child: Text('Список пуст'));
             }
@@ -46,9 +34,9 @@ class CompaniesPage extends ConsumerWidget {
                     tileColor: company.isIT ? Colors.lightBlueAccent : null,
                     title: InkWell(
                       child: Text(company.name),
-                      onTap: () {
-                        print('show');
-                      },
+                      onTap: () => context.router.push(
+                        CompanyFormRoute(companyId: company.id),
+                      ),
                     ),
                     trailing: company.links.isEmpty
                         ? null

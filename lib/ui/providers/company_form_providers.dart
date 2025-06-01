@@ -11,6 +11,7 @@ class CompanyFormState extends Equatable {
   final AppFormField<String> name;
   final bool isIT;
   final IList<AppFormField<String>> links;
+  final String comment;
   final String error;
   final bool isLoading, isSubmitted;
 
@@ -18,6 +19,7 @@ class CompanyFormState extends Equatable {
     String name = '',
     this.isIT = false,
     Iterable<String> links = const [],
+    this.comment = '',
     this.error = '',
     this.isLoading = false,
   }) : name = AppFormField(value: name),
@@ -28,6 +30,7 @@ class CompanyFormState extends Equatable {
     required this.name,
     this.isIT = false,
     this.links = const IList.empty(),
+    this.comment = '',
     this.error = '',
     this.isLoading = false,
     this.isSubmitted = false,
@@ -37,6 +40,7 @@ class CompanyFormState extends Equatable {
     AppFormField<String>? name,
     bool? isIT,
     IList<AppFormField<String>>? links,
+    String? comment,
     String? error,
     bool? isLoading,
     bool? isSubmitted,
@@ -44,13 +48,22 @@ class CompanyFormState extends Equatable {
     name: name ?? this.name,
     isIT: isIT ?? this.isIT,
     links: links ?? this.links,
+    comment: comment ?? this.comment,
     error: error ?? this.error,
     isLoading: isLoading ?? this.isLoading,
     isSubmitted: isSubmitted ?? this.isSubmitted,
   );
 
   @override
-  List<Object?> get props => [name, isIT, links, error, isLoading, isSubmitted];
+  List<Object?> get props => [
+    name,
+    isIT,
+    links,
+    comment,
+    error,
+    isLoading,
+    isSubmitted,
+  ];
 
   bool get canSubmit =>
       name.canSubmit &&
@@ -99,6 +112,10 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
         error: _nameValidators.validate(value) ?? '',
       ),
     );
+  }
+
+  void changeComment(String value) {
+    state = state.copyWith(comment: value);
   }
 
   void changeIsIT(bool value) {
@@ -220,6 +237,10 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
 
     state = state.copyWith(isLoading: true);
 
+    final commentValue = state.comment.isEmpty
+        ? Value<String>.absent()
+        : Value(state.comment);
+
     if (companyId != null) {
       final stmt = db.update(db.companies)
         ..where((c) => c.id.equals(companyId!));
@@ -229,6 +250,7 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
           name: Value(state.name.value),
           isIT: Value(state.isIT),
           links: Value(state.links.map((l) => l.value).toISet()),
+          comment: commentValue,
         ),
       );
     } else {
@@ -239,6 +261,7 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
               name: state.name.value,
               isIT: state.isIT,
               links: state.links.map((l) => l.value).toISet(),
+              comment: commentValue,
             ),
           );
     }
@@ -250,10 +273,11 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
 }
 
 final companyFormProvider =
-    AutoDisposeStateNotifierProvider.family<CompanyFormNotifier, CompanyFormState, int?>((
-      ref,
-      companyId,
-    ) {
+    AutoDisposeStateNotifierProvider.family<
+      CompanyFormNotifier,
+      CompanyFormState,
+      int?
+    >((ref, companyId) {
       return CompanyFormNotifier(
         db: ref.watch(dbProvider),
         companyId: companyId,

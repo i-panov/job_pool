@@ -68,6 +68,14 @@ class CompanyFormPage extends ConsumerWidget {
                         ),
                       ],
                     ),
+                    TextFormField(
+                      initialValue: state.comment,
+                      maxLines: 5,
+                      decoration: InputDecoration(
+                        labelText: 'Комментарий',
+                      ),
+                      onChanged: form.changeComment,
+                    ),
                     Row(
                       spacing: 30,
                       children: [

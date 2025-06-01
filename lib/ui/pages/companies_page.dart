@@ -35,7 +35,7 @@ class CompaniesPage extends ConsumerWidget {
                     title: InkWell(
                       child: Text(company.name),
                       onTap: () => context.router.push(
-                        CompanyFormRoute(companyId: company.id),
+                        CompanyRoute(companyId: company.id),
                       ),
                     ),
                     trailing: company.links.isEmpty
@@ -44,7 +44,7 @@ class CompaniesPage extends ConsumerWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: Icon(Icons.link),
+                                icon: Icon(Icons.open_in_new),
                                 onPressed: () async {
                                   await launchUrlString(company.links.first);
                                 },

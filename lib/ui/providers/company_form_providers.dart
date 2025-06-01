@@ -1,72 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:job_pool/core/app_form_field.dart';
+import 'package:job_pool/core/validators.dart';
 import 'package:job_pool/data/storage/db/db.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
-import 'package:validators/validators.dart';
-
-enum AppValidator {
-  required('Обязательное поле'),
-  url('Некорректный URL');
-
-  final String error;
-
-  const AppValidator(this.error);
-
-  Predicate<String> get isValid => switch (this) {
-    AppValidator.required => (value) => value.isNotEmpty,
-    AppValidator.url => (value) => isURL(
-      value,
-      protocols: ['http', 'https'],
-      requireTld: true,
-    ),
-  };
-}
-
-extension AppValidatorExtension on Iterable<AppValidator> {
-  String? validate(String value) {
-    for (final validator in this) {
-      if (!validator.isValid(value)) {
-        return validator.error;
-      }
-    }
-
-    return null;
-  }
-}
-
-class AppFormField<T> extends Equatable {
-  final T value;
-  final String error;
-  final bool isValidating;
-  final Key key;
-
-  AppFormField({
-    required this.value,
-    this.error = '',
-    this.isValidating = false,
-    Key? key,
-  }) : key = key ?? UniqueKey();
-
-  AppFormField<T> copyWith({T? value, String? error, bool? isValidating}) =>
-      AppFormField(
-        value: value ?? this.value,
-        error: error ?? this.error,
-        isValidating: isValidating ?? this.isValidating,
-        key: key,
-      );
-
-  String? get errorOrNull => error.isEmpty ? null : error;
-
-  bool get hasError => error.isNotEmpty;
-
-  bool get canSubmit => !isValidating && !hasError;
-
-  @override
-  List<Object?> get props => [value, error, isValidating, key];
-}
 
 class CompanyFormState extends Equatable {
   final AppFormField<String> name;
@@ -81,9 +20,9 @@ class CompanyFormState extends Equatable {
     Iterable<String> links = const [],
     this.error = '',
     this.isLoading = false,
-    this.isSubmitted = false,
   }) : name = AppFormField(value: name),
-       links = links.map((link) => AppFormField(value: link)).toIList();
+       links = links.map((link) => AppFormField(value: link)).toIList(),
+       isSubmitted = false;
 
   const CompanyFormState._({
     required this.name,

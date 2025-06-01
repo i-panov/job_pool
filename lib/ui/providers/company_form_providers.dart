@@ -113,7 +113,12 @@ class CompanyFormState extends Equatable {
   @override
   List<Object?> get props => [name, isIT, links, error, isLoading, isSubmitted];
 
-  bool get canSubmit => name.canSubmit && links.every((l) => l.canSubmit);
+  bool get canSubmit =>
+      name.canSubmit &&
+      links.every((l) => l.canSubmit) &&
+      error.isEmpty &&
+      !isLoading &&
+      !isSubmitted;
 }
 
 class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
@@ -262,6 +267,10 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
   }
 
   Future<void> submit() async {
+    if (!state.canSubmit) {
+      return;
+    }
+
     if (!await _validateName()) {
       return;
     }
@@ -295,17 +304,14 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
           );
     }
 
-    state = state.copyWith(
-      isLoading: false,
-      isSubmitted: true,
-    );
+    state = state.copyWith(isLoading: false, isSubmitted: true);
   }
 
   bool _checkLinksIndex(int index) => index >= 0 && index < state.links.length;
 }
 
 final companyFormProvider =
-    StateNotifierProvider.family<CompanyFormNotifier, CompanyFormState, int?>((
+    AutoDisposeStateNotifierProvider.family<CompanyFormNotifier, CompanyFormState, int?>((
       ref,
       companyId,
     ) {

@@ -59,6 +59,26 @@ class AppDatabase extends _$AppDatabase {
     },
   );
 
+  Future<List<int>> getVacancyDirectionIds(int vacancyId) {
+    final query = select(vacancyDirections)
+      ..where((f) => f.vacancy.equals(vacancyId))
+      ..orderBy([(f) => OrderingTerm.asc(f.order)]);
+
+    return query.map((row) => row.direction).get();
+  }
+
+  Future<List<Contact>> getVacancyContacts(int vacancyId) {
+    final query = select(contacts)
+      ..where((f) => f.vacancy.equals(vacancyId));
+
+    return query.get();
+  }
+
+  Future<Vacancy?> getVacancy(int id) {
+    final query = select(vacancies)..where((f) => f.id.equals(id));
+    return query.getSingleOrNull();
+  }
+
   Future<Company?> getCompany(int id) {
     final query = select(companies)..where((f) => f.id.equals(id));
     return query.getSingleOrNull();

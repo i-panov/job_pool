@@ -1,9 +1,12 @@
 import 'package:validators/validators.dart';
 
+final _phoneRegex = RegExp(r'\+?\d{1,4} ?\(?\d{1,3}\)? ?\d{1,4} ?\d{1,4} ?\d{1,4}');
+
 enum AppValidator {
   required('Обязательное поле'),
   url('Некорректный URL'),
-  email('Некорректный email');
+  email('Некорректный email'),
+  phone('Некорректный телефон');
 
   final String error;
 
@@ -17,6 +20,7 @@ enum AppValidator {
       requireTld: true,
     ),
     AppValidator.email => (value) => isEmail(value),
+    AppValidator.phone => (value) => _phoneRegex.hasMatch(value),
   };
 }
 

@@ -52,6 +52,11 @@ class _CompanyPageState extends ConsumerState<CompanyPage> {
               ),
             ],
           ),
+          floatingActionButton: IconButton(
+            onPressed: () =>
+                context.router.push(VacancyFormRoute(companyId: company.id)),
+            icon: Icon(Icons.add),
+          ),
           body: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Column(
@@ -87,10 +92,16 @@ class _CompanyPageState extends ConsumerState<CompanyPage> {
                     }
 
                     return ListView.builder(
+                      shrinkWrap: true,
                       itemCount: vacancies.length,
                       itemBuilder: (context, index) {
                         final vacancy = vacancies[index];
+
                         return ListTile(
+                          onTap: () => context.router.push(VacancyFormRoute(
+                            companyId: widget.companyId,
+                            vacancyId: vacancy.id,
+                          )),
                           title: Text(vacancy.link),
                           subtitle: Text(vacancy.comment),
                           trailing: IconButton(

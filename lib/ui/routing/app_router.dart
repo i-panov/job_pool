@@ -38,5 +38,9 @@ class AppRouter extends RootStackRouter {
       path: '/company/:id',
       page: CompanyRoute.page,
     ),
+    AutoRoute(
+      path: '/vacancy/:id',
+      page: VacancyFormRoute.page,
+    ),
   ];
 }

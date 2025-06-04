@@ -14,19 +14,19 @@ class VacancyFormPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final provider = vacancyFormProvider(
-      VacancyFormParams(companyId: companyId, vacancyId: vacancyId),
+    final params = VacancyFormParams(
+      companyId: companyId,
+      vacancyId: vacancyId,
     );
 
-    final state = ref.watch(provider);
-    final form = ref.read(provider.notifier);
+    final state = ref.watch(vacancyFormProvider(params));
+    final form = ref.read(vacancyFormProvider(params).notifier);
 
-    ref.listen(provider, (prev, next) {
+    ref.listen(vacancyFormProvider(params), (prev, next) {
       if (next.error.isNotEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.error)));
-
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next.error))
+        );
         context.router.pop();
       } else if (next.isSubmitted) {
         context.router.pop();
@@ -40,37 +40,47 @@ class VacancyFormPage extends ConsumerWidget {
         ),
       ),
       body: state.isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Padding(
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
               padding: const EdgeInsets.all(20),
-              child: SingleChildScrollView(
-                child: Column(
-                  spacing: 20,
-                  children: [
-                    TextFormField(
-                      initialValue: state.link.value,
-                      onChanged: form.changeLink,
-                      decoration: InputDecoration(
-                        labelText: 'Ссылка на вакансию',
-                        errorText: state.link.errorOrNull,
-                      ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    key: const ValueKey('link_field'),
+                    initialValue: state.link.value,
+                    onChanged: form.changeLink,
+                    decoration: InputDecoration(
+                      labelText: 'Ссылка на вакансию',
+                      errorText: state.link.errorOrNull,
                     ),
-                    TextFormField(
-                      initialValue: state.comment,
-                      maxLines: 5,
-                      decoration: InputDecoration(labelText: 'Комментарий'),
-                      onChanged: form.changeComment,
-                    ),
-                    _GradesSelect(
-                      initialValue: state.grades,
-                      toggle: form.toggleGrade,
-                    ),
-                    ElevatedButton(
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    key: const ValueKey('comment_field'),
+                    initialValue: state.comment,
+                    maxLines: 5,
+                    decoration: const InputDecoration(labelText: 'Комментарий'),
+                    onChanged: form.changeComment,
+                  ),
+                  const SizedBox(height: 20),
+                  _GradesSelect(
+                    initialValue: state.grades,
+                    toggle: form.toggleGrade,
+                  ),
+                  const SizedBox(height: 20),
+                  _VacancyDirectionsSelect(
+                    initialValue: state.directionIds,
+                    toggle: form.toggleDirection,
+                  ),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: ElevatedButton(
                       onPressed: state.canSubmit ? form.submit : null,
-                      child: Text('Сохранить'),
+                      child: const Text('Сохранить'),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
     );
@@ -85,22 +95,63 @@ class _GradesSelect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: JobGrades.values.length + 1,
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return Text('Грейды:');
-        }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Грейды:', style: TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: JobGrades.values.map((grade) {
+            return FilterChip(
+              label: Text(grade.name),
+              selected: initialValue.contains(grade),
+              onSelected: (selected) => toggle(grade),
+              showCheckmark: true,
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+}
 
-        final grade = JobGrades.values[index - 1];
+class _VacancyDirectionsSelect extends ConsumerWidget {
+  final IList<int> initialValue;
+  final void Function(int) toggle;
 
-        return CheckboxListTile(
-          value: initialValue.contains(grade),
-          onChanged: (value) => toggle(grade),
-          title: Text(grade.name),
-        );
-      },
+  const _VacancyDirectionsSelect({
+    required this.initialValue,
+    required this.toggle,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(jobDirectionsProvider);
+
+    return state.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Text('Error: $error'),
+      data: (directions) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Направления:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: directions.map((direction) {
+              return FilterChip(
+                label: Text(direction.name),
+                selected: initialValue.contains(direction.id),
+                onSelected: (selected) => toggle(direction.id),
+                showCheckmark: true,
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
 }

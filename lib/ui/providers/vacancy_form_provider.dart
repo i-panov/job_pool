@@ -119,11 +119,15 @@ class VacancyFormNotifier
     db = ref.read(dbProvider);
     vacancyId = params.vacancyId;
     companyId = params.companyId;
-    Future.delayed(Duration.zero, () => init());
+
+    if (vacancyId != null) {
+      Future.microtask(_init);
+    }
+
     return VacancyFormState(isLoading: vacancyId != null);
   }
 
-  Future<void> init() async {
+  Future<void> _init() async {
     if (vacancyId != null) {
       final vacancy = await db.getVacancy(vacancyId!);
 
@@ -173,17 +177,13 @@ class VacancyFormNotifier
     }
   }
 
-  void addDirection(int directionId) {
-    if (!state.directionIds.contains(directionId)) {
-      state = state.copyWith(directionIds: state.directionIds.add(directionId));
-    }
-  }
-
-  void removeDirection(int directionId) {
+  void toggleDirection(int directionId) {
     if (state.directionIds.contains(directionId)) {
       state = state.copyWith(
         directionIds: state.directionIds.remove(directionId),
       );
+    } else {
+      state = state.copyWith(directionIds: state.directionIds.add(directionId));
     }
   }
 
@@ -304,9 +304,7 @@ class VacancyFormNotifier
               order: index,
             ),
         ]);
-      });
 
-      await db.batch((batch) {
         batch.insertAll(db.contacts, [
           for (final contact in state.contacts)
             ContactsCompanion.insert(
@@ -317,18 +315,17 @@ class VacancyFormNotifier
         ]);
       });
     } else {
-      final stmt = db.update(db.vacancies)
-        ..where((v) => v.id.equals(vacancyId!));
-
-      await stmt.write(
-        VacanciesCompanion(
-          link: Value(state.link.value),
-          comment: Value(state.comment),
-          grades: Value(state.grades),
-        ),
-      );
-
       await db.batch((batch) {
+        batch.update(
+          db.vacancies,
+          VacanciesCompanion(
+            link: Value(state.link.value),
+            comment: Value(state.comment),
+            grades: Value(state.grades),
+          ),
+          where: (v) => v.id.equals(vacancyId!),
+        );
+
         batch.deleteWhere(
           db.vacancyDirections,
           (v) => v.vacancy.equals(vacancyId!),
@@ -342,9 +339,7 @@ class VacancyFormNotifier
               order: index,
             ),
         ]);
-      });
 
-      await db.batch((batch) {
         batch.deleteWhere(db.contacts, (c) => c.vacancy.equals(vacancyId!));
 
         batch.insertAll(db.contacts, [
@@ -378,3 +373,8 @@ final vacancyFormProvider =
       VacancyFormState,
       VacancyFormParams
     >(() => VacancyFormNotifier());
+
+final jobDirectionsProvider = AutoDisposeFutureProvider((ref) {
+  final db = ref.watch(dbProvider);
+  return db.select(db.jobDirections).get();
+});

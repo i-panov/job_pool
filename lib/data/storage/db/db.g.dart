@@ -979,7 +979,7 @@ class ContactsCompanion extends UpdateCompanion<Contact> {
 }
 
 class $StoryItemsTable extends StoryItems
-    with TableInfo<$StoryItemsTable, StoryItem> {
+    with TableInfo<$StoryItemsTable, StoryItemDto> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -1008,6 +1008,107 @@ class $StoryItemsTable extends StoryItems
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  @override
+  late final GeneratedColumnWithTypeConverter<StoryItemType, int> type =
+      GeneratedColumn<int>(
+        'type',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<StoryItemType>($StoryItemsTable.$convertertype);
+  static const VerificationMeta _commonTimeMeta = const VerificationMeta(
+    'commonTime',
+  );
+  @override
+  late final GeneratedColumn<DateTime> commonTime = GeneratedColumn<DateTime>(
+    'common_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _commonCommentMeta = const VerificationMeta(
+    'commonComment',
+  );
+  @override
+  late final GeneratedColumn<String> commonComment = GeneratedColumn<String>(
+    'common_comment',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: Constant(''),
+  );
+  static const VerificationMeta _interviewIsOnlineMeta = const VerificationMeta(
+    'interviewIsOnline',
+  );
+  @override
+  late final GeneratedColumn<bool> interviewIsOnline = GeneratedColumn<bool>(
+    'interview_is_online',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("interview_is_online" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _interviewTargetMeta = const VerificationMeta(
+    'interviewTarget',
+  );
+  @override
+  late final GeneratedColumn<String> interviewTarget = GeneratedColumn<String>(
+    'interview_target',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: Constant(''),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<InterviewTypes?, int>
+  interviewType = GeneratedColumn<int>(
+    'interview_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  ).withConverter<InterviewTypes?>($StoryItemsTable.$converterinterviewTypen);
+  static const VerificationMeta _taskDeadlineMeta = const VerificationMeta(
+    'taskDeadline',
+  );
+  @override
+  late final GeneratedColumn<DateTime> taskDeadline = GeneratedColumn<DateTime>(
+    'task_deadline',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _taskLinkMeta = const VerificationMeta(
+    'taskLink',
+  );
+  @override
+  late final GeneratedColumn<String> taskLink = GeneratedColumn<String>(
+    'task_link',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: Constant(''),
+  );
+  static const VerificationMeta _offerSalaryMeta = const VerificationMeta(
+    'offerSalary',
+  );
+  @override
+  late final GeneratedColumn<int> offerSalary = GeneratedColumn<int>(
+    'offer_salary',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _vacancyMeta = const VerificationMeta(
     'vacancy',
   );
@@ -1023,7 +1124,20 @@ class $StoryItemsTable extends StoryItems
     ),
   );
   @override
-  List<GeneratedColumn> get $columns => [id, createdAt, vacancy];
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    type,
+    commonTime,
+    commonComment,
+    interviewIsOnline,
+    interviewTarget,
+    interviewType,
+    taskDeadline,
+    taskLink,
+    offerSalary,
+    vacancy,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1031,7 +1145,7 @@ class $StoryItemsTable extends StoryItems
   static const String $name = 'story_items';
   @override
   VerificationContext validateIntegrity(
-    Insertable<StoryItem> instance, {
+    Insertable<StoryItemDto> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -1047,6 +1161,63 @@ class $StoryItemsTable extends StoryItems
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('common_time')) {
+      context.handle(
+        _commonTimeMeta,
+        commonTime.isAcceptableOrUnknown(data['common_time']!, _commonTimeMeta),
+      );
+    }
+    if (data.containsKey('common_comment')) {
+      context.handle(
+        _commonCommentMeta,
+        commonComment.isAcceptableOrUnknown(
+          data['common_comment']!,
+          _commonCommentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('interview_is_online')) {
+      context.handle(
+        _interviewIsOnlineMeta,
+        interviewIsOnline.isAcceptableOrUnknown(
+          data['interview_is_online']!,
+          _interviewIsOnlineMeta,
+        ),
+      );
+    }
+    if (data.containsKey('interview_target')) {
+      context.handle(
+        _interviewTargetMeta,
+        interviewTarget.isAcceptableOrUnknown(
+          data['interview_target']!,
+          _interviewTargetMeta,
+        ),
+      );
+    }
+    if (data.containsKey('task_deadline')) {
+      context.handle(
+        _taskDeadlineMeta,
+        taskDeadline.isAcceptableOrUnknown(
+          data['task_deadline']!,
+          _taskDeadlineMeta,
+        ),
+      );
+    }
+    if (data.containsKey('task_link')) {
+      context.handle(
+        _taskLinkMeta,
+        taskLink.isAcceptableOrUnknown(data['task_link']!, _taskLinkMeta),
+      );
+    }
+    if (data.containsKey('offer_salary')) {
+      context.handle(
+        _offerSalaryMeta,
+        offerSalary.isAcceptableOrUnknown(
+          data['offer_salary']!,
+          _offerSalaryMeta,
+        ),
+      );
+    }
     if (data.containsKey('vacancy')) {
       context.handle(
         _vacancyMeta,
@@ -1061,9 +1232,9 @@ class $StoryItemsTable extends StoryItems
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  StoryItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+  StoryItemDto map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return StoryItem(
+    return StoryItemDto(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -1072,6 +1243,46 @@ class $StoryItemsTable extends StoryItems
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      type: $StoryItemsTable.$convertertype.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}type'],
+        )!,
+      ),
+      commonTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}common_time'],
+      ),
+      commonComment: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}common_comment'],
+      )!,
+      interviewIsOnline: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}interview_is_online'],
+      ),
+      interviewTarget: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}interview_target'],
+      )!,
+      interviewType: $StoryItemsTable.$converterinterviewTypen.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}interview_type'],
+        ),
+      ),
+      taskDeadline: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}task_deadline'],
+      ),
+      taskLink: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}task_link'],
+      )!,
+      offerSalary: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}offer_salary'],
+      ),
       vacancy: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}vacancy'],
@@ -1083,15 +1294,42 @@ class $StoryItemsTable extends StoryItems
   $StoryItemsTable createAlias(String alias) {
     return $StoryItemsTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<StoryItemType, int, int> $convertertype =
+      const EnumIndexConverter<StoryItemType>(StoryItemType.values);
+  static JsonTypeConverter2<InterviewTypes, int, int> $converterinterviewType =
+      const EnumIndexConverter<InterviewTypes>(InterviewTypes.values);
+  static JsonTypeConverter2<InterviewTypes?, int?, int?>
+  $converterinterviewTypen = JsonTypeConverter2.asNullable(
+    $converterinterviewType,
+  );
 }
 
-class StoryItem extends DataClass implements Insertable<StoryItem> {
+class StoryItemDto extends DataClass implements Insertable<StoryItemDto> {
   final int id;
   final DateTime createdAt;
+  final StoryItemType type;
+  final DateTime? commonTime;
+  final String commonComment;
+  final bool? interviewIsOnline;
+  final String interviewTarget;
+  final InterviewTypes? interviewType;
+  final DateTime? taskDeadline;
+  final String taskLink;
+  final int? offerSalary;
   final int vacancy;
-  const StoryItem({
+  const StoryItemDto({
     required this.id,
     required this.createdAt,
+    required this.type,
+    this.commonTime,
+    required this.commonComment,
+    this.interviewIsOnline,
+    required this.interviewTarget,
+    this.interviewType,
+    this.taskDeadline,
+    required this.taskLink,
+    this.offerSalary,
     required this.vacancy,
   });
   @override
@@ -1099,6 +1337,29 @@ class StoryItem extends DataClass implements Insertable<StoryItem> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['created_at'] = Variable<DateTime>(createdAt);
+    {
+      map['type'] = Variable<int>($StoryItemsTable.$convertertype.toSql(type));
+    }
+    if (!nullToAbsent || commonTime != null) {
+      map['common_time'] = Variable<DateTime>(commonTime);
+    }
+    map['common_comment'] = Variable<String>(commonComment);
+    if (!nullToAbsent || interviewIsOnline != null) {
+      map['interview_is_online'] = Variable<bool>(interviewIsOnline);
+    }
+    map['interview_target'] = Variable<String>(interviewTarget);
+    if (!nullToAbsent || interviewType != null) {
+      map['interview_type'] = Variable<int>(
+        $StoryItemsTable.$converterinterviewTypen.toSql(interviewType),
+      );
+    }
+    if (!nullToAbsent || taskDeadline != null) {
+      map['task_deadline'] = Variable<DateTime>(taskDeadline);
+    }
+    map['task_link'] = Variable<String>(taskLink);
+    if (!nullToAbsent || offerSalary != null) {
+      map['offer_salary'] = Variable<int>(offerSalary);
+    }
     map['vacancy'] = Variable<int>(vacancy);
     return map;
   }
@@ -1107,18 +1368,50 @@ class StoryItem extends DataClass implements Insertable<StoryItem> {
     return StoryItemsCompanion(
       id: Value(id),
       createdAt: Value(createdAt),
+      type: Value(type),
+      commonTime: commonTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(commonTime),
+      commonComment: Value(commonComment),
+      interviewIsOnline: interviewIsOnline == null && nullToAbsent
+          ? const Value.absent()
+          : Value(interviewIsOnline),
+      interviewTarget: Value(interviewTarget),
+      interviewType: interviewType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(interviewType),
+      taskDeadline: taskDeadline == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taskDeadline),
+      taskLink: Value(taskLink),
+      offerSalary: offerSalary == null && nullToAbsent
+          ? const Value.absent()
+          : Value(offerSalary),
       vacancy: Value(vacancy),
     );
   }
 
-  factory StoryItem.fromJson(
+  factory StoryItemDto.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return StoryItem(
+    return StoryItemDto(
       id: serializer.fromJson<int>(json['id']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      type: $StoryItemsTable.$convertertype.fromJson(
+        serializer.fromJson<int>(json['type']),
+      ),
+      commonTime: serializer.fromJson<DateTime?>(json['commonTime']),
+      commonComment: serializer.fromJson<String>(json['commonComment']),
+      interviewIsOnline: serializer.fromJson<bool?>(json['interviewIsOnline']),
+      interviewTarget: serializer.fromJson<String>(json['interviewTarget']),
+      interviewType: $StoryItemsTable.$converterinterviewTypen.fromJson(
+        serializer.fromJson<int?>(json['interviewType']),
+      ),
+      taskDeadline: serializer.fromJson<DateTime?>(json['taskDeadline']),
+      taskLink: serializer.fromJson<String>(json['taskLink']),
+      offerSalary: serializer.fromJson<int?>(json['offerSalary']),
       vacancy: serializer.fromJson<int>(json['vacancy']),
     );
   }
@@ -1128,67 +1421,206 @@ class StoryItem extends DataClass implements Insertable<StoryItem> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'type': serializer.toJson<int>(
+        $StoryItemsTable.$convertertype.toJson(type),
+      ),
+      'commonTime': serializer.toJson<DateTime?>(commonTime),
+      'commonComment': serializer.toJson<String>(commonComment),
+      'interviewIsOnline': serializer.toJson<bool?>(interviewIsOnline),
+      'interviewTarget': serializer.toJson<String>(interviewTarget),
+      'interviewType': serializer.toJson<int?>(
+        $StoryItemsTable.$converterinterviewTypen.toJson(interviewType),
+      ),
+      'taskDeadline': serializer.toJson<DateTime?>(taskDeadline),
+      'taskLink': serializer.toJson<String>(taskLink),
+      'offerSalary': serializer.toJson<int?>(offerSalary),
       'vacancy': serializer.toJson<int>(vacancy),
     };
   }
 
-  StoryItem copyWith({int? id, DateTime? createdAt, int? vacancy}) => StoryItem(
+  StoryItemDto copyWith({
+    int? id,
+    DateTime? createdAt,
+    StoryItemType? type,
+    Value<DateTime?> commonTime = const Value.absent(),
+    String? commonComment,
+    Value<bool?> interviewIsOnline = const Value.absent(),
+    String? interviewTarget,
+    Value<InterviewTypes?> interviewType = const Value.absent(),
+    Value<DateTime?> taskDeadline = const Value.absent(),
+    String? taskLink,
+    Value<int?> offerSalary = const Value.absent(),
+    int? vacancy,
+  }) => StoryItemDto(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
+    type: type ?? this.type,
+    commonTime: commonTime.present ? commonTime.value : this.commonTime,
+    commonComment: commonComment ?? this.commonComment,
+    interviewIsOnline: interviewIsOnline.present
+        ? interviewIsOnline.value
+        : this.interviewIsOnline,
+    interviewTarget: interviewTarget ?? this.interviewTarget,
+    interviewType: interviewType.present
+        ? interviewType.value
+        : this.interviewType,
+    taskDeadline: taskDeadline.present ? taskDeadline.value : this.taskDeadline,
+    taskLink: taskLink ?? this.taskLink,
+    offerSalary: offerSalary.present ? offerSalary.value : this.offerSalary,
     vacancy: vacancy ?? this.vacancy,
   );
-  StoryItem copyWithCompanion(StoryItemsCompanion data) {
-    return StoryItem(
+  StoryItemDto copyWithCompanion(StoryItemsCompanion data) {
+    return StoryItemDto(
       id: data.id.present ? data.id.value : this.id,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      type: data.type.present ? data.type.value : this.type,
+      commonTime: data.commonTime.present
+          ? data.commonTime.value
+          : this.commonTime,
+      commonComment: data.commonComment.present
+          ? data.commonComment.value
+          : this.commonComment,
+      interviewIsOnline: data.interviewIsOnline.present
+          ? data.interviewIsOnline.value
+          : this.interviewIsOnline,
+      interviewTarget: data.interviewTarget.present
+          ? data.interviewTarget.value
+          : this.interviewTarget,
+      interviewType: data.interviewType.present
+          ? data.interviewType.value
+          : this.interviewType,
+      taskDeadline: data.taskDeadline.present
+          ? data.taskDeadline.value
+          : this.taskDeadline,
+      taskLink: data.taskLink.present ? data.taskLink.value : this.taskLink,
+      offerSalary: data.offerSalary.present
+          ? data.offerSalary.value
+          : this.offerSalary,
       vacancy: data.vacancy.present ? data.vacancy.value : this.vacancy,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('StoryItem(')
+    return (StringBuffer('StoryItemDto(')
           ..write('id: $id, ')
           ..write('createdAt: $createdAt, ')
+          ..write('type: $type, ')
+          ..write('commonTime: $commonTime, ')
+          ..write('commonComment: $commonComment, ')
+          ..write('interviewIsOnline: $interviewIsOnline, ')
+          ..write('interviewTarget: $interviewTarget, ')
+          ..write('interviewType: $interviewType, ')
+          ..write('taskDeadline: $taskDeadline, ')
+          ..write('taskLink: $taskLink, ')
+          ..write('offerSalary: $offerSalary, ')
           ..write('vacancy: $vacancy')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, createdAt, vacancy);
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    type,
+    commonTime,
+    commonComment,
+    interviewIsOnline,
+    interviewTarget,
+    interviewType,
+    taskDeadline,
+    taskLink,
+    offerSalary,
+    vacancy,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is StoryItem &&
+      (other is StoryItemDto &&
           other.id == this.id &&
           other.createdAt == this.createdAt &&
+          other.type == this.type &&
+          other.commonTime == this.commonTime &&
+          other.commonComment == this.commonComment &&
+          other.interviewIsOnline == this.interviewIsOnline &&
+          other.interviewTarget == this.interviewTarget &&
+          other.interviewType == this.interviewType &&
+          other.taskDeadline == this.taskDeadline &&
+          other.taskLink == this.taskLink &&
+          other.offerSalary == this.offerSalary &&
           other.vacancy == this.vacancy);
 }
 
-class StoryItemsCompanion extends UpdateCompanion<StoryItem> {
+class StoryItemsCompanion extends UpdateCompanion<StoryItemDto> {
   final Value<int> id;
   final Value<DateTime> createdAt;
+  final Value<StoryItemType> type;
+  final Value<DateTime?> commonTime;
+  final Value<String> commonComment;
+  final Value<bool?> interviewIsOnline;
+  final Value<String> interviewTarget;
+  final Value<InterviewTypes?> interviewType;
+  final Value<DateTime?> taskDeadline;
+  final Value<String> taskLink;
+  final Value<int?> offerSalary;
   final Value<int> vacancy;
   const StoryItemsCompanion({
     this.id = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.type = const Value.absent(),
+    this.commonTime = const Value.absent(),
+    this.commonComment = const Value.absent(),
+    this.interviewIsOnline = const Value.absent(),
+    this.interviewTarget = const Value.absent(),
+    this.interviewType = const Value.absent(),
+    this.taskDeadline = const Value.absent(),
+    this.taskLink = const Value.absent(),
+    this.offerSalary = const Value.absent(),
     this.vacancy = const Value.absent(),
   });
   StoryItemsCompanion.insert({
     this.id = const Value.absent(),
     required DateTime createdAt,
+    required StoryItemType type,
+    this.commonTime = const Value.absent(),
+    this.commonComment = const Value.absent(),
+    this.interviewIsOnline = const Value.absent(),
+    this.interviewTarget = const Value.absent(),
+    this.interviewType = const Value.absent(),
+    this.taskDeadline = const Value.absent(),
+    this.taskLink = const Value.absent(),
+    this.offerSalary = const Value.absent(),
     required int vacancy,
   }) : createdAt = Value(createdAt),
+       type = Value(type),
        vacancy = Value(vacancy);
-  static Insertable<StoryItem> custom({
+  static Insertable<StoryItemDto> custom({
     Expression<int>? id,
     Expression<DateTime>? createdAt,
+    Expression<int>? type,
+    Expression<DateTime>? commonTime,
+    Expression<String>? commonComment,
+    Expression<bool>? interviewIsOnline,
+    Expression<String>? interviewTarget,
+    Expression<int>? interviewType,
+    Expression<DateTime>? taskDeadline,
+    Expression<String>? taskLink,
+    Expression<int>? offerSalary,
     Expression<int>? vacancy,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (createdAt != null) 'created_at': createdAt,
+      if (type != null) 'type': type,
+      if (commonTime != null) 'common_time': commonTime,
+      if (commonComment != null) 'common_comment': commonComment,
+      if (interviewIsOnline != null) 'interview_is_online': interviewIsOnline,
+      if (interviewTarget != null) 'interview_target': interviewTarget,
+      if (interviewType != null) 'interview_type': interviewType,
+      if (taskDeadline != null) 'task_deadline': taskDeadline,
+      if (taskLink != null) 'task_link': taskLink,
+      if (offerSalary != null) 'offer_salary': offerSalary,
       if (vacancy != null) 'vacancy': vacancy,
     });
   }
@@ -1196,11 +1628,29 @@ class StoryItemsCompanion extends UpdateCompanion<StoryItem> {
   StoryItemsCompanion copyWith({
     Value<int>? id,
     Value<DateTime>? createdAt,
+    Value<StoryItemType>? type,
+    Value<DateTime?>? commonTime,
+    Value<String>? commonComment,
+    Value<bool?>? interviewIsOnline,
+    Value<String>? interviewTarget,
+    Value<InterviewTypes?>? interviewType,
+    Value<DateTime?>? taskDeadline,
+    Value<String>? taskLink,
+    Value<int?>? offerSalary,
     Value<int>? vacancy,
   }) {
     return StoryItemsCompanion(
       id: id ?? this.id,
       createdAt: createdAt ?? this.createdAt,
+      type: type ?? this.type,
+      commonTime: commonTime ?? this.commonTime,
+      commonComment: commonComment ?? this.commonComment,
+      interviewIsOnline: interviewIsOnline ?? this.interviewIsOnline,
+      interviewTarget: interviewTarget ?? this.interviewTarget,
+      interviewType: interviewType ?? this.interviewType,
+      taskDeadline: taskDeadline ?? this.taskDeadline,
+      taskLink: taskLink ?? this.taskLink,
+      offerSalary: offerSalary ?? this.offerSalary,
       vacancy: vacancy ?? this.vacancy,
     );
   }
@@ -1214,6 +1664,37 @@ class StoryItemsCompanion extends UpdateCompanion<StoryItem> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (type.present) {
+      map['type'] = Variable<int>(
+        $StoryItemsTable.$convertertype.toSql(type.value),
+      );
+    }
+    if (commonTime.present) {
+      map['common_time'] = Variable<DateTime>(commonTime.value);
+    }
+    if (commonComment.present) {
+      map['common_comment'] = Variable<String>(commonComment.value);
+    }
+    if (interviewIsOnline.present) {
+      map['interview_is_online'] = Variable<bool>(interviewIsOnline.value);
+    }
+    if (interviewTarget.present) {
+      map['interview_target'] = Variable<String>(interviewTarget.value);
+    }
+    if (interviewType.present) {
+      map['interview_type'] = Variable<int>(
+        $StoryItemsTable.$converterinterviewTypen.toSql(interviewType.value),
+      );
+    }
+    if (taskDeadline.present) {
+      map['task_deadline'] = Variable<DateTime>(taskDeadline.value);
+    }
+    if (taskLink.present) {
+      map['task_link'] = Variable<String>(taskLink.value);
+    }
+    if (offerSalary.present) {
+      map['offer_salary'] = Variable<int>(offerSalary.value);
+    }
     if (vacancy.present) {
       map['vacancy'] = Variable<int>(vacancy.value);
     }
@@ -1225,6 +1706,15 @@ class StoryItemsCompanion extends UpdateCompanion<StoryItem> {
     return (StringBuffer('StoryItemsCompanion(')
           ..write('id: $id, ')
           ..write('createdAt: $createdAt, ')
+          ..write('type: $type, ')
+          ..write('commonTime: $commonTime, ')
+          ..write('commonComment: $commonComment, ')
+          ..write('interviewIsOnline: $interviewIsOnline, ')
+          ..write('interviewTarget: $interviewTarget, ')
+          ..write('interviewType: $interviewType, ')
+          ..write('taskDeadline: $taskDeadline, ')
+          ..write('taskLink: $taskLink, ')
+          ..write('offerSalary: $offerSalary, ')
           ..write('vacancy: $vacancy')
           ..write(')'))
         .toString();
@@ -1695,1320 +2185,6 @@ class VacancyDirectionsCompanion extends UpdateCompanion<VacancyDirection> {
   }
 }
 
-class $InterviewStoryItemsTable extends InterviewStoryItems
-    with TableInfo<$InterviewStoryItemsTable, InterviewStoryItem> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $InterviewStoryItemsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _itemMeta = const VerificationMeta('item');
-  @override
-  late final GeneratedColumn<int> item = GeneratedColumn<int>(
-    'item',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES story_items (id) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED',
-    ),
-  );
-  static const VerificationMeta _timeMeta = const VerificationMeta('time');
-  @override
-  late final GeneratedColumn<DateTime> time = GeneratedColumn<DateTime>(
-    'time',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _isOnlineMeta = const VerificationMeta(
-    'isOnline',
-  );
-  @override
-  late final GeneratedColumn<bool> isOnline = GeneratedColumn<bool>(
-    'is_online',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_online" IN (0, 1))',
-    ),
-  );
-  static const VerificationMeta _targetMeta = const VerificationMeta('target');
-  @override
-  late final GeneratedColumn<String> target = GeneratedColumn<String>(
-    'target',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  @override
-  late final GeneratedColumnWithTypeConverter<InterviewTypes, int> type =
-      GeneratedColumn<int>(
-        'type',
-        aliasedName,
-        false,
-        type: DriftSqlType.int,
-        requiredDuringInsert: true,
-      ).withConverter<InterviewTypes>($InterviewStoryItemsTable.$convertertype);
-  @override
-  List<GeneratedColumn> get $columns => [item, time, isOnline, target, type];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'interview_story_items';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<InterviewStoryItem> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('item')) {
-      context.handle(
-        _itemMeta,
-        item.isAcceptableOrUnknown(data['item']!, _itemMeta),
-      );
-    }
-    if (data.containsKey('time')) {
-      context.handle(
-        _timeMeta,
-        time.isAcceptableOrUnknown(data['time']!, _timeMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_timeMeta);
-    }
-    if (data.containsKey('is_online')) {
-      context.handle(
-        _isOnlineMeta,
-        isOnline.isAcceptableOrUnknown(data['is_online']!, _isOnlineMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_isOnlineMeta);
-    }
-    if (data.containsKey('target')) {
-      context.handle(
-        _targetMeta,
-        target.isAcceptableOrUnknown(data['target']!, _targetMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_targetMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {item};
-  @override
-  InterviewStoryItem map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return InterviewStoryItem(
-      item: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}item'],
-      )!,
-      time: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}time'],
-      )!,
-      isOnline: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_online'],
-      )!,
-      target: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}target'],
-      )!,
-      type: $InterviewStoryItemsTable.$convertertype.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.int,
-          data['${effectivePrefix}type'],
-        )!,
-      ),
-    );
-  }
-
-  @override
-  $InterviewStoryItemsTable createAlias(String alias) {
-    return $InterviewStoryItemsTable(attachedDatabase, alias);
-  }
-
-  static JsonTypeConverter2<InterviewTypes, int, int> $convertertype =
-      const EnumIndexConverter<InterviewTypes>(InterviewTypes.values);
-}
-
-class InterviewStoryItem extends DataClass
-    implements Insertable<InterviewStoryItem> {
-  final int item;
-  final DateTime time;
-  final bool isOnline;
-  final String target;
-  final InterviewTypes type;
-  const InterviewStoryItem({
-    required this.item,
-    required this.time,
-    required this.isOnline,
-    required this.target,
-    required this.type,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['item'] = Variable<int>(item);
-    map['time'] = Variable<DateTime>(time);
-    map['is_online'] = Variable<bool>(isOnline);
-    map['target'] = Variable<String>(target);
-    {
-      map['type'] = Variable<int>(
-        $InterviewStoryItemsTable.$convertertype.toSql(type),
-      );
-    }
-    return map;
-  }
-
-  InterviewStoryItemsCompanion toCompanion(bool nullToAbsent) {
-    return InterviewStoryItemsCompanion(
-      item: Value(item),
-      time: Value(time),
-      isOnline: Value(isOnline),
-      target: Value(target),
-      type: Value(type),
-    );
-  }
-
-  factory InterviewStoryItem.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return InterviewStoryItem(
-      item: serializer.fromJson<int>(json['item']),
-      time: serializer.fromJson<DateTime>(json['time']),
-      isOnline: serializer.fromJson<bool>(json['isOnline']),
-      target: serializer.fromJson<String>(json['target']),
-      type: $InterviewStoryItemsTable.$convertertype.fromJson(
-        serializer.fromJson<int>(json['type']),
-      ),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'item': serializer.toJson<int>(item),
-      'time': serializer.toJson<DateTime>(time),
-      'isOnline': serializer.toJson<bool>(isOnline),
-      'target': serializer.toJson<String>(target),
-      'type': serializer.toJson<int>(
-        $InterviewStoryItemsTable.$convertertype.toJson(type),
-      ),
-    };
-  }
-
-  InterviewStoryItem copyWith({
-    int? item,
-    DateTime? time,
-    bool? isOnline,
-    String? target,
-    InterviewTypes? type,
-  }) => InterviewStoryItem(
-    item: item ?? this.item,
-    time: time ?? this.time,
-    isOnline: isOnline ?? this.isOnline,
-    target: target ?? this.target,
-    type: type ?? this.type,
-  );
-  InterviewStoryItem copyWithCompanion(InterviewStoryItemsCompanion data) {
-    return InterviewStoryItem(
-      item: data.item.present ? data.item.value : this.item,
-      time: data.time.present ? data.time.value : this.time,
-      isOnline: data.isOnline.present ? data.isOnline.value : this.isOnline,
-      target: data.target.present ? data.target.value : this.target,
-      type: data.type.present ? data.type.value : this.type,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('InterviewStoryItem(')
-          ..write('item: $item, ')
-          ..write('time: $time, ')
-          ..write('isOnline: $isOnline, ')
-          ..write('target: $target, ')
-          ..write('type: $type')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(item, time, isOnline, target, type);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is InterviewStoryItem &&
-          other.item == this.item &&
-          other.time == this.time &&
-          other.isOnline == this.isOnline &&
-          other.target == this.target &&
-          other.type == this.type);
-}
-
-class InterviewStoryItemsCompanion extends UpdateCompanion<InterviewStoryItem> {
-  final Value<int> item;
-  final Value<DateTime> time;
-  final Value<bool> isOnline;
-  final Value<String> target;
-  final Value<InterviewTypes> type;
-  const InterviewStoryItemsCompanion({
-    this.item = const Value.absent(),
-    this.time = const Value.absent(),
-    this.isOnline = const Value.absent(),
-    this.target = const Value.absent(),
-    this.type = const Value.absent(),
-  });
-  InterviewStoryItemsCompanion.insert({
-    this.item = const Value.absent(),
-    required DateTime time,
-    required bool isOnline,
-    required String target,
-    required InterviewTypes type,
-  }) : time = Value(time),
-       isOnline = Value(isOnline),
-       target = Value(target),
-       type = Value(type);
-  static Insertable<InterviewStoryItem> custom({
-    Expression<int>? item,
-    Expression<DateTime>? time,
-    Expression<bool>? isOnline,
-    Expression<String>? target,
-    Expression<int>? type,
-  }) {
-    return RawValuesInsertable({
-      if (item != null) 'item': item,
-      if (time != null) 'time': time,
-      if (isOnline != null) 'is_online': isOnline,
-      if (target != null) 'target': target,
-      if (type != null) 'type': type,
-    });
-  }
-
-  InterviewStoryItemsCompanion copyWith({
-    Value<int>? item,
-    Value<DateTime>? time,
-    Value<bool>? isOnline,
-    Value<String>? target,
-    Value<InterviewTypes>? type,
-  }) {
-    return InterviewStoryItemsCompanion(
-      item: item ?? this.item,
-      time: time ?? this.time,
-      isOnline: isOnline ?? this.isOnline,
-      target: target ?? this.target,
-      type: type ?? this.type,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (item.present) {
-      map['item'] = Variable<int>(item.value);
-    }
-    if (time.present) {
-      map['time'] = Variable<DateTime>(time.value);
-    }
-    if (isOnline.present) {
-      map['is_online'] = Variable<bool>(isOnline.value);
-    }
-    if (target.present) {
-      map['target'] = Variable<String>(target.value);
-    }
-    if (type.present) {
-      map['type'] = Variable<int>(
-        $InterviewStoryItemsTable.$convertertype.toSql(type.value),
-      );
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('InterviewStoryItemsCompanion(')
-          ..write('item: $item, ')
-          ..write('time: $time, ')
-          ..write('isOnline: $isOnline, ')
-          ..write('target: $target, ')
-          ..write('type: $type')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $WaitingForFeedbackStoryItemsTable extends WaitingForFeedbackStoryItems
-    with
-        TableInfo<
-          $WaitingForFeedbackStoryItemsTable,
-          WaitingForFeedbackStoryItem
-        > {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $WaitingForFeedbackStoryItemsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _itemMeta = const VerificationMeta('item');
-  @override
-  late final GeneratedColumn<int> item = GeneratedColumn<int>(
-    'item',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES story_items (id) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED',
-    ),
-  );
-  static const VerificationMeta _timeMeta = const VerificationMeta('time');
-  @override
-  late final GeneratedColumn<DateTime> time = GeneratedColumn<DateTime>(
-    'time',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _commentMeta = const VerificationMeta(
-    'comment',
-  );
-  @override
-  late final GeneratedColumn<String> comment = GeneratedColumn<String>(
-    'comment',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: Constant(''),
-  );
-  @override
-  List<GeneratedColumn> get $columns => [item, time, comment];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'waiting_for_feedback_story_items';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<WaitingForFeedbackStoryItem> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('item')) {
-      context.handle(
-        _itemMeta,
-        item.isAcceptableOrUnknown(data['item']!, _itemMeta),
-      );
-    }
-    if (data.containsKey('time')) {
-      context.handle(
-        _timeMeta,
-        time.isAcceptableOrUnknown(data['time']!, _timeMeta),
-      );
-    }
-    if (data.containsKey('comment')) {
-      context.handle(
-        _commentMeta,
-        comment.isAcceptableOrUnknown(data['comment']!, _commentMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {item};
-  @override
-  WaitingForFeedbackStoryItem map(
-    Map<String, dynamic> data, {
-    String? tablePrefix,
-  }) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return WaitingForFeedbackStoryItem(
-      item: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}item'],
-      )!,
-      time: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}time'],
-      ),
-      comment: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}comment'],
-      )!,
-    );
-  }
-
-  @override
-  $WaitingForFeedbackStoryItemsTable createAlias(String alias) {
-    return $WaitingForFeedbackStoryItemsTable(attachedDatabase, alias);
-  }
-}
-
-class WaitingForFeedbackStoryItem extends DataClass
-    implements Insertable<WaitingForFeedbackStoryItem> {
-  final int item;
-  final DateTime? time;
-  final String comment;
-  const WaitingForFeedbackStoryItem({
-    required this.item,
-    this.time,
-    required this.comment,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['item'] = Variable<int>(item);
-    if (!nullToAbsent || time != null) {
-      map['time'] = Variable<DateTime>(time);
-    }
-    map['comment'] = Variable<String>(comment);
-    return map;
-  }
-
-  WaitingForFeedbackStoryItemsCompanion toCompanion(bool nullToAbsent) {
-    return WaitingForFeedbackStoryItemsCompanion(
-      item: Value(item),
-      time: time == null && nullToAbsent ? const Value.absent() : Value(time),
-      comment: Value(comment),
-    );
-  }
-
-  factory WaitingForFeedbackStoryItem.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return WaitingForFeedbackStoryItem(
-      item: serializer.fromJson<int>(json['item']),
-      time: serializer.fromJson<DateTime?>(json['time']),
-      comment: serializer.fromJson<String>(json['comment']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'item': serializer.toJson<int>(item),
-      'time': serializer.toJson<DateTime?>(time),
-      'comment': serializer.toJson<String>(comment),
-    };
-  }
-
-  WaitingForFeedbackStoryItem copyWith({
-    int? item,
-    Value<DateTime?> time = const Value.absent(),
-    String? comment,
-  }) => WaitingForFeedbackStoryItem(
-    item: item ?? this.item,
-    time: time.present ? time.value : this.time,
-    comment: comment ?? this.comment,
-  );
-  WaitingForFeedbackStoryItem copyWithCompanion(
-    WaitingForFeedbackStoryItemsCompanion data,
-  ) {
-    return WaitingForFeedbackStoryItem(
-      item: data.item.present ? data.item.value : this.item,
-      time: data.time.present ? data.time.value : this.time,
-      comment: data.comment.present ? data.comment.value : this.comment,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('WaitingForFeedbackStoryItem(')
-          ..write('item: $item, ')
-          ..write('time: $time, ')
-          ..write('comment: $comment')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(item, time, comment);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is WaitingForFeedbackStoryItem &&
-          other.item == this.item &&
-          other.time == this.time &&
-          other.comment == this.comment);
-}
-
-class WaitingForFeedbackStoryItemsCompanion
-    extends UpdateCompanion<WaitingForFeedbackStoryItem> {
-  final Value<int> item;
-  final Value<DateTime?> time;
-  final Value<String> comment;
-  const WaitingForFeedbackStoryItemsCompanion({
-    this.item = const Value.absent(),
-    this.time = const Value.absent(),
-    this.comment = const Value.absent(),
-  });
-  WaitingForFeedbackStoryItemsCompanion.insert({
-    this.item = const Value.absent(),
-    this.time = const Value.absent(),
-    this.comment = const Value.absent(),
-  });
-  static Insertable<WaitingForFeedbackStoryItem> custom({
-    Expression<int>? item,
-    Expression<DateTime>? time,
-    Expression<String>? comment,
-  }) {
-    return RawValuesInsertable({
-      if (item != null) 'item': item,
-      if (time != null) 'time': time,
-      if (comment != null) 'comment': comment,
-    });
-  }
-
-  WaitingForFeedbackStoryItemsCompanion copyWith({
-    Value<int>? item,
-    Value<DateTime?>? time,
-    Value<String>? comment,
-  }) {
-    return WaitingForFeedbackStoryItemsCompanion(
-      item: item ?? this.item,
-      time: time ?? this.time,
-      comment: comment ?? this.comment,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (item.present) {
-      map['item'] = Variable<int>(item.value);
-    }
-    if (time.present) {
-      map['time'] = Variable<DateTime>(time.value);
-    }
-    if (comment.present) {
-      map['comment'] = Variable<String>(comment.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('WaitingForFeedbackStoryItemsCompanion(')
-          ..write('item: $item, ')
-          ..write('time: $time, ')
-          ..write('comment: $comment')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $TaskStoryItemsTable extends TaskStoryItems
-    with TableInfo<$TaskStoryItemsTable, TaskStoryItem> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $TaskStoryItemsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _itemMeta = const VerificationMeta('item');
-  @override
-  late final GeneratedColumn<int> item = GeneratedColumn<int>(
-    'item',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES story_items (id) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED',
-    ),
-  );
-  static const VerificationMeta _deadlineMeta = const VerificationMeta(
-    'deadline',
-  );
-  @override
-  late final GeneratedColumn<DateTime> deadline = GeneratedColumn<DateTime>(
-    'deadline',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _linkMeta = const VerificationMeta('link');
-  @override
-  late final GeneratedColumn<String> link = GeneratedColumn<String>(
-    'link',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _commentMeta = const VerificationMeta(
-    'comment',
-  );
-  @override
-  late final GeneratedColumn<String> comment = GeneratedColumn<String>(
-    'comment',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: Constant(''),
-  );
-  @override
-  List<GeneratedColumn> get $columns => [item, deadline, link, comment];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'task_story_items';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<TaskStoryItem> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('item')) {
-      context.handle(
-        _itemMeta,
-        item.isAcceptableOrUnknown(data['item']!, _itemMeta),
-      );
-    }
-    if (data.containsKey('deadline')) {
-      context.handle(
-        _deadlineMeta,
-        deadline.isAcceptableOrUnknown(data['deadline']!, _deadlineMeta),
-      );
-    }
-    if (data.containsKey('link')) {
-      context.handle(
-        _linkMeta,
-        link.isAcceptableOrUnknown(data['link']!, _linkMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_linkMeta);
-    }
-    if (data.containsKey('comment')) {
-      context.handle(
-        _commentMeta,
-        comment.isAcceptableOrUnknown(data['comment']!, _commentMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {item};
-  @override
-  TaskStoryItem map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return TaskStoryItem(
-      item: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}item'],
-      )!,
-      deadline: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}deadline'],
-      ),
-      link: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}link'],
-      )!,
-      comment: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}comment'],
-      )!,
-    );
-  }
-
-  @override
-  $TaskStoryItemsTable createAlias(String alias) {
-    return $TaskStoryItemsTable(attachedDatabase, alias);
-  }
-}
-
-class TaskStoryItem extends DataClass implements Insertable<TaskStoryItem> {
-  final int item;
-  final DateTime? deadline;
-  final String link;
-  final String comment;
-  const TaskStoryItem({
-    required this.item,
-    this.deadline,
-    required this.link,
-    required this.comment,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['item'] = Variable<int>(item);
-    if (!nullToAbsent || deadline != null) {
-      map['deadline'] = Variable<DateTime>(deadline);
-    }
-    map['link'] = Variable<String>(link);
-    map['comment'] = Variable<String>(comment);
-    return map;
-  }
-
-  TaskStoryItemsCompanion toCompanion(bool nullToAbsent) {
-    return TaskStoryItemsCompanion(
-      item: Value(item),
-      deadline: deadline == null && nullToAbsent
-          ? const Value.absent()
-          : Value(deadline),
-      link: Value(link),
-      comment: Value(comment),
-    );
-  }
-
-  factory TaskStoryItem.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return TaskStoryItem(
-      item: serializer.fromJson<int>(json['item']),
-      deadline: serializer.fromJson<DateTime?>(json['deadline']),
-      link: serializer.fromJson<String>(json['link']),
-      comment: serializer.fromJson<String>(json['comment']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'item': serializer.toJson<int>(item),
-      'deadline': serializer.toJson<DateTime?>(deadline),
-      'link': serializer.toJson<String>(link),
-      'comment': serializer.toJson<String>(comment),
-    };
-  }
-
-  TaskStoryItem copyWith({
-    int? item,
-    Value<DateTime?> deadline = const Value.absent(),
-    String? link,
-    String? comment,
-  }) => TaskStoryItem(
-    item: item ?? this.item,
-    deadline: deadline.present ? deadline.value : this.deadline,
-    link: link ?? this.link,
-    comment: comment ?? this.comment,
-  );
-  TaskStoryItem copyWithCompanion(TaskStoryItemsCompanion data) {
-    return TaskStoryItem(
-      item: data.item.present ? data.item.value : this.item,
-      deadline: data.deadline.present ? data.deadline.value : this.deadline,
-      link: data.link.present ? data.link.value : this.link,
-      comment: data.comment.present ? data.comment.value : this.comment,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('TaskStoryItem(')
-          ..write('item: $item, ')
-          ..write('deadline: $deadline, ')
-          ..write('link: $link, ')
-          ..write('comment: $comment')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(item, deadline, link, comment);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is TaskStoryItem &&
-          other.item == this.item &&
-          other.deadline == this.deadline &&
-          other.link == this.link &&
-          other.comment == this.comment);
-}
-
-class TaskStoryItemsCompanion extends UpdateCompanion<TaskStoryItem> {
-  final Value<int> item;
-  final Value<DateTime?> deadline;
-  final Value<String> link;
-  final Value<String> comment;
-  const TaskStoryItemsCompanion({
-    this.item = const Value.absent(),
-    this.deadline = const Value.absent(),
-    this.link = const Value.absent(),
-    this.comment = const Value.absent(),
-  });
-  TaskStoryItemsCompanion.insert({
-    this.item = const Value.absent(),
-    this.deadline = const Value.absent(),
-    required String link,
-    this.comment = const Value.absent(),
-  }) : link = Value(link);
-  static Insertable<TaskStoryItem> custom({
-    Expression<int>? item,
-    Expression<DateTime>? deadline,
-    Expression<String>? link,
-    Expression<String>? comment,
-  }) {
-    return RawValuesInsertable({
-      if (item != null) 'item': item,
-      if (deadline != null) 'deadline': deadline,
-      if (link != null) 'link': link,
-      if (comment != null) 'comment': comment,
-    });
-  }
-
-  TaskStoryItemsCompanion copyWith({
-    Value<int>? item,
-    Value<DateTime?>? deadline,
-    Value<String>? link,
-    Value<String>? comment,
-  }) {
-    return TaskStoryItemsCompanion(
-      item: item ?? this.item,
-      deadline: deadline ?? this.deadline,
-      link: link ?? this.link,
-      comment: comment ?? this.comment,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (item.present) {
-      map['item'] = Variable<int>(item.value);
-    }
-    if (deadline.present) {
-      map['deadline'] = Variable<DateTime>(deadline.value);
-    }
-    if (link.present) {
-      map['link'] = Variable<String>(link.value);
-    }
-    if (comment.present) {
-      map['comment'] = Variable<String>(comment.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('TaskStoryItemsCompanion(')
-          ..write('item: $item, ')
-          ..write('deadline: $deadline, ')
-          ..write('link: $link, ')
-          ..write('comment: $comment')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $FailureStoryItemsTable extends FailureStoryItems
-    with TableInfo<$FailureStoryItemsTable, FailureStoryItem> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $FailureStoryItemsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _itemMeta = const VerificationMeta('item');
-  @override
-  late final GeneratedColumn<int> item = GeneratedColumn<int>(
-    'item',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES story_items (id) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED',
-    ),
-  );
-  static const VerificationMeta _commentMeta = const VerificationMeta(
-    'comment',
-  );
-  @override
-  late final GeneratedColumn<String> comment = GeneratedColumn<String>(
-    'comment',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: Constant(''),
-  );
-  @override
-  List<GeneratedColumn> get $columns => [item, comment];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'failure_story_items';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<FailureStoryItem> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('item')) {
-      context.handle(
-        _itemMeta,
-        item.isAcceptableOrUnknown(data['item']!, _itemMeta),
-      );
-    }
-    if (data.containsKey('comment')) {
-      context.handle(
-        _commentMeta,
-        comment.isAcceptableOrUnknown(data['comment']!, _commentMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {item};
-  @override
-  FailureStoryItem map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return FailureStoryItem(
-      item: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}item'],
-      )!,
-      comment: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}comment'],
-      )!,
-    );
-  }
-
-  @override
-  $FailureStoryItemsTable createAlias(String alias) {
-    return $FailureStoryItemsTable(attachedDatabase, alias);
-  }
-}
-
-class FailureStoryItem extends DataClass
-    implements Insertable<FailureStoryItem> {
-  final int item;
-  final String comment;
-  const FailureStoryItem({required this.item, required this.comment});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['item'] = Variable<int>(item);
-    map['comment'] = Variable<String>(comment);
-    return map;
-  }
-
-  FailureStoryItemsCompanion toCompanion(bool nullToAbsent) {
-    return FailureStoryItemsCompanion(
-      item: Value(item),
-      comment: Value(comment),
-    );
-  }
-
-  factory FailureStoryItem.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return FailureStoryItem(
-      item: serializer.fromJson<int>(json['item']),
-      comment: serializer.fromJson<String>(json['comment']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'item': serializer.toJson<int>(item),
-      'comment': serializer.toJson<String>(comment),
-    };
-  }
-
-  FailureStoryItem copyWith({int? item, String? comment}) => FailureStoryItem(
-    item: item ?? this.item,
-    comment: comment ?? this.comment,
-  );
-  FailureStoryItem copyWithCompanion(FailureStoryItemsCompanion data) {
-    return FailureStoryItem(
-      item: data.item.present ? data.item.value : this.item,
-      comment: data.comment.present ? data.comment.value : this.comment,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('FailureStoryItem(')
-          ..write('item: $item, ')
-          ..write('comment: $comment')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(item, comment);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is FailureStoryItem &&
-          other.item == this.item &&
-          other.comment == this.comment);
-}
-
-class FailureStoryItemsCompanion extends UpdateCompanion<FailureStoryItem> {
-  final Value<int> item;
-  final Value<String> comment;
-  const FailureStoryItemsCompanion({
-    this.item = const Value.absent(),
-    this.comment = const Value.absent(),
-  });
-  FailureStoryItemsCompanion.insert({
-    this.item = const Value.absent(),
-    this.comment = const Value.absent(),
-  });
-  static Insertable<FailureStoryItem> custom({
-    Expression<int>? item,
-    Expression<String>? comment,
-  }) {
-    return RawValuesInsertable({
-      if (item != null) 'item': item,
-      if (comment != null) 'comment': comment,
-    });
-  }
-
-  FailureStoryItemsCompanion copyWith({
-    Value<int>? item,
-    Value<String>? comment,
-  }) {
-    return FailureStoryItemsCompanion(
-      item: item ?? this.item,
-      comment: comment ?? this.comment,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (item.present) {
-      map['item'] = Variable<int>(item.value);
-    }
-    if (comment.present) {
-      map['comment'] = Variable<String>(comment.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('FailureStoryItemsCompanion(')
-          ..write('item: $item, ')
-          ..write('comment: $comment')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $OfferStoryItemsTable extends OfferStoryItems
-    with TableInfo<$OfferStoryItemsTable, OfferStoryItem> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $OfferStoryItemsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _itemMeta = const VerificationMeta('item');
-  @override
-  late final GeneratedColumn<int> item = GeneratedColumn<int>(
-    'item',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES story_items (id) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED',
-    ),
-  );
-  static const VerificationMeta _salaryMeta = const VerificationMeta('salary');
-  @override
-  late final GeneratedColumn<int> salary = GeneratedColumn<int>(
-    'salary',
-    aliasedName,
-    false,
-    check: () => ComparableExpr(salary).isBiggerOrEqualValue(0),
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [item, salary];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'offer_story_items';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<OfferStoryItem> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('item')) {
-      context.handle(
-        _itemMeta,
-        item.isAcceptableOrUnknown(data['item']!, _itemMeta),
-      );
-    }
-    if (data.containsKey('salary')) {
-      context.handle(
-        _salaryMeta,
-        salary.isAcceptableOrUnknown(data['salary']!, _salaryMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_salaryMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {item};
-  @override
-  OfferStoryItem map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return OfferStoryItem(
-      item: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}item'],
-      )!,
-      salary: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}salary'],
-      )!,
-    );
-  }
-
-  @override
-  $OfferStoryItemsTable createAlias(String alias) {
-    return $OfferStoryItemsTable(attachedDatabase, alias);
-  }
-}
-
-class OfferStoryItem extends DataClass implements Insertable<OfferStoryItem> {
-  final int item;
-  final int salary;
-  const OfferStoryItem({required this.item, required this.salary});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['item'] = Variable<int>(item);
-    map['salary'] = Variable<int>(salary);
-    return map;
-  }
-
-  OfferStoryItemsCompanion toCompanion(bool nullToAbsent) {
-    return OfferStoryItemsCompanion(item: Value(item), salary: Value(salary));
-  }
-
-  factory OfferStoryItem.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return OfferStoryItem(
-      item: serializer.fromJson<int>(json['item']),
-      salary: serializer.fromJson<int>(json['salary']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'item': serializer.toJson<int>(item),
-      'salary': serializer.toJson<int>(salary),
-    };
-  }
-
-  OfferStoryItem copyWith({int? item, int? salary}) =>
-      OfferStoryItem(item: item ?? this.item, salary: salary ?? this.salary);
-  OfferStoryItem copyWithCompanion(OfferStoryItemsCompanion data) {
-    return OfferStoryItem(
-      item: data.item.present ? data.item.value : this.item,
-      salary: data.salary.present ? data.salary.value : this.salary,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('OfferStoryItem(')
-          ..write('item: $item, ')
-          ..write('salary: $salary')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(item, salary);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is OfferStoryItem &&
-          other.item == this.item &&
-          other.salary == this.salary);
-}
-
-class OfferStoryItemsCompanion extends UpdateCompanion<OfferStoryItem> {
-  final Value<int> item;
-  final Value<int> salary;
-  const OfferStoryItemsCompanion({
-    this.item = const Value.absent(),
-    this.salary = const Value.absent(),
-  });
-  OfferStoryItemsCompanion.insert({
-    this.item = const Value.absent(),
-    required int salary,
-  }) : salary = Value(salary);
-  static Insertable<OfferStoryItem> custom({
-    Expression<int>? item,
-    Expression<int>? salary,
-  }) {
-    return RawValuesInsertable({
-      if (item != null) 'item': item,
-      if (salary != null) 'salary': salary,
-    });
-  }
-
-  OfferStoryItemsCompanion copyWith({Value<int>? item, Value<int>? salary}) {
-    return OfferStoryItemsCompanion(
-      item: item ?? this.item,
-      salary: salary ?? this.salary,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (item.present) {
-      map['item'] = Variable<int>(item.value);
-    }
-    if (salary.present) {
-      map['salary'] = Variable<int>(salary.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('OfferStoryItemsCompanion(')
-          ..write('item: $item, ')
-          ..write('salary: $salary')
-          ..write(')'))
-        .toString();
-  }
-}
-
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3019,16 +2195,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $JobDirectionsTable jobDirections = $JobDirectionsTable(this);
   late final $VacancyDirectionsTable vacancyDirections =
       $VacancyDirectionsTable(this);
-  late final $InterviewStoryItemsTable interviewStoryItems =
-      $InterviewStoryItemsTable(this);
-  late final $WaitingForFeedbackStoryItemsTable waitingForFeedbackStoryItems =
-      $WaitingForFeedbackStoryItemsTable(this);
-  late final $TaskStoryItemsTable taskStoryItems = $TaskStoryItemsTable(this);
-  late final $FailureStoryItemsTable failureStoryItems =
-      $FailureStoryItemsTable(this);
-  late final $OfferStoryItemsTable offerStoryItems = $OfferStoryItemsTable(
-    this,
-  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3040,11 +2206,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     storyItems,
     jobDirections,
     vacancyDirections,
-    interviewStoryItems,
-    waitingForFeedbackStoryItems,
-    taskStoryItems,
-    failureStoryItems,
-    offerStoryItems,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -3082,46 +2243,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('vacancy_directions', kind: UpdateKind.delete)],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'story_items',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [TableUpdate('interview_story_items', kind: UpdateKind.delete)],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'story_items',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [
-        TableUpdate(
-          'waiting_for_feedback_story_items',
-          kind: UpdateKind.delete,
-        ),
-      ],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'story_items',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [TableUpdate('task_story_items', kind: UpdateKind.delete)],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'story_items',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [TableUpdate('failure_story_items', kind: UpdateKind.delete)],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'story_items',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [TableUpdate('offer_story_items', kind: UpdateKind.delete)],
     ),
   ]);
   @override
@@ -3481,7 +2602,7 @@ final class $$VacanciesTableReferences
     );
   }
 
-  static MultiTypedResultKey<$StoryItemsTable, List<StoryItem>>
+  static MultiTypedResultKey<$StoryItemsTable, List<StoryItemDto>>
   _storyItemsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.storyItems,
     aliasName: $_aliasNameGenerator(db.vacancies.id, db.storyItems.vacancy),
@@ -3966,7 +3087,7 @@ class $$VacanciesTableTableManager
                         await $_getPrefetchedData<
                           Vacancy,
                           $VacanciesTable,
-                          StoryItem
+                          StoryItemDto
                         >(
                           currentTable: table,
                           referencedTable: $$VacanciesTableReferences
@@ -4320,17 +3441,35 @@ typedef $$StoryItemsTableCreateCompanionBuilder =
     StoryItemsCompanion Function({
       Value<int> id,
       required DateTime createdAt,
+      required StoryItemType type,
+      Value<DateTime?> commonTime,
+      Value<String> commonComment,
+      Value<bool?> interviewIsOnline,
+      Value<String> interviewTarget,
+      Value<InterviewTypes?> interviewType,
+      Value<DateTime?> taskDeadline,
+      Value<String> taskLink,
+      Value<int?> offerSalary,
       required int vacancy,
     });
 typedef $$StoryItemsTableUpdateCompanionBuilder =
     StoryItemsCompanion Function({
       Value<int> id,
       Value<DateTime> createdAt,
+      Value<StoryItemType> type,
+      Value<DateTime?> commonTime,
+      Value<String> commonComment,
+      Value<bool?> interviewIsOnline,
+      Value<String> interviewTarget,
+      Value<InterviewTypes?> interviewType,
+      Value<DateTime?> taskDeadline,
+      Value<String> taskLink,
+      Value<int?> offerSalary,
       Value<int> vacancy,
     });
 
 final class $$StoryItemsTableReferences
-    extends BaseReferences<_$AppDatabase, $StoryItemsTable, StoryItem> {
+    extends BaseReferences<_$AppDatabase, $StoryItemsTable, StoryItemDto> {
   $$StoryItemsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $VacanciesTable _vacancyTable(_$AppDatabase db) =>
@@ -4351,123 +3490,6 @@ final class $$StoryItemsTableReferences
       manager.$state.copyWith(prefetchedData: [item]),
     );
   }
-
-  static MultiTypedResultKey<
-    $InterviewStoryItemsTable,
-    List<InterviewStoryItem>
-  >
-  _interviewStoryItemsRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.interviewStoryItems,
-        aliasName: $_aliasNameGenerator(
-          db.storyItems.id,
-          db.interviewStoryItems.item,
-        ),
-      );
-
-  $$InterviewStoryItemsTableProcessedTableManager get interviewStoryItemsRefs {
-    final manager = $$InterviewStoryItemsTableTableManager(
-      $_db,
-      $_db.interviewStoryItems,
-    ).filter((f) => f.item.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _interviewStoryItemsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<
-    $WaitingForFeedbackStoryItemsTable,
-    List<WaitingForFeedbackStoryItem>
-  >
-  _waitingForFeedbackStoryItemsRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.waitingForFeedbackStoryItems,
-        aliasName: $_aliasNameGenerator(
-          db.storyItems.id,
-          db.waitingForFeedbackStoryItems.item,
-        ),
-      );
-
-  $$WaitingForFeedbackStoryItemsTableProcessedTableManager
-  get waitingForFeedbackStoryItemsRefs {
-    final manager = $$WaitingForFeedbackStoryItemsTableTableManager(
-      $_db,
-      $_db.waitingForFeedbackStoryItems,
-    ).filter((f) => f.item.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _waitingForFeedbackStoryItemsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$TaskStoryItemsTable, List<TaskStoryItem>>
-  _taskStoryItemsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.taskStoryItems,
-    aliasName: $_aliasNameGenerator(db.storyItems.id, db.taskStoryItems.item),
-  );
-
-  $$TaskStoryItemsTableProcessedTableManager get taskStoryItemsRefs {
-    final manager = $$TaskStoryItemsTableTableManager(
-      $_db,
-      $_db.taskStoryItems,
-    ).filter((f) => f.item.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_taskStoryItemsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$FailureStoryItemsTable, List<FailureStoryItem>>
-  _failureStoryItemsRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.failureStoryItems,
-        aliasName: $_aliasNameGenerator(
-          db.storyItems.id,
-          db.failureStoryItems.item,
-        ),
-      );
-
-  $$FailureStoryItemsTableProcessedTableManager get failureStoryItemsRefs {
-    final manager = $$FailureStoryItemsTableTableManager(
-      $_db,
-      $_db.failureStoryItems,
-    ).filter((f) => f.item.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _failureStoryItemsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$OfferStoryItemsTable, List<OfferStoryItem>>
-  _offerStoryItemsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.offerStoryItems,
-    aliasName: $_aliasNameGenerator(db.storyItems.id, db.offerStoryItems.item),
-  );
-
-  $$OfferStoryItemsTableProcessedTableManager get offerStoryItemsRefs {
-    final manager = $$OfferStoryItemsTableTableManager(
-      $_db,
-      $_db.offerStoryItems,
-    ).filter((f) => f.item.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _offerStoryItemsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
 }
 
 class $$StoryItemsTableFilterComposer
@@ -4486,6 +3508,53 @@ class $$StoryItemsTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<StoryItemType, StoryItemType, int> get type =>
+      $composableBuilder(
+        column: $table.type,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<DateTime> get commonTime => $composableBuilder(
+    column: $table.commonTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get commonComment => $composableBuilder(
+    column: $table.commonComment,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get interviewIsOnline => $composableBuilder(
+    column: $table.interviewIsOnline,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get interviewTarget => $composableBuilder(
+    column: $table.interviewTarget,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<InterviewTypes?, InterviewTypes, int>
+  get interviewType => $composableBuilder(
+    column: $table.interviewType,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<DateTime> get taskDeadline => $composableBuilder(
+    column: $table.taskDeadline,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get taskLink => $composableBuilder(
+    column: $table.taskLink,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get offerSalary => $composableBuilder(
+    column: $table.offerSalary,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4511,135 +3580,6 @@ class $$StoryItemsTableFilterComposer
     );
     return composer;
   }
-
-  Expression<bool> interviewStoryItemsRefs(
-    Expression<bool> Function($$InterviewStoryItemsTableFilterComposer f) f,
-  ) {
-    final $$InterviewStoryItemsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.interviewStoryItems,
-      getReferencedColumn: (t) => t.item,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$InterviewStoryItemsTableFilterComposer(
-            $db: $db,
-            $table: $db.interviewStoryItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> waitingForFeedbackStoryItemsRefs(
-    Expression<bool> Function(
-      $$WaitingForFeedbackStoryItemsTableFilterComposer f,
-    )
-    f,
-  ) {
-    final $$WaitingForFeedbackStoryItemsTableFilterComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.waitingForFeedbackStoryItems,
-          getReferencedColumn: (t) => t.item,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$WaitingForFeedbackStoryItemsTableFilterComposer(
-                $db: $db,
-                $table: $db.waitingForFeedbackStoryItems,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<bool> taskStoryItemsRefs(
-    Expression<bool> Function($$TaskStoryItemsTableFilterComposer f) f,
-  ) {
-    final $$TaskStoryItemsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.taskStoryItems,
-      getReferencedColumn: (t) => t.item,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$TaskStoryItemsTableFilterComposer(
-            $db: $db,
-            $table: $db.taskStoryItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> failureStoryItemsRefs(
-    Expression<bool> Function($$FailureStoryItemsTableFilterComposer f) f,
-  ) {
-    final $$FailureStoryItemsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.failureStoryItems,
-      getReferencedColumn: (t) => t.item,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$FailureStoryItemsTableFilterComposer(
-            $db: $db,
-            $table: $db.failureStoryItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> offerStoryItemsRefs(
-    Expression<bool> Function($$OfferStoryItemsTableFilterComposer f) f,
-  ) {
-    final $$OfferStoryItemsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.offerStoryItems,
-      getReferencedColumn: (t) => t.item,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$OfferStoryItemsTableFilterComposer(
-            $db: $db,
-            $table: $db.offerStoryItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
 class $$StoryItemsTableOrderingComposer
@@ -4658,6 +3598,51 @@ class $$StoryItemsTableOrderingComposer
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get commonTime => $composableBuilder(
+    column: $table.commonTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get commonComment => $composableBuilder(
+    column: $table.commonComment,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get interviewIsOnline => $composableBuilder(
+    column: $table.interviewIsOnline,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get interviewTarget => $composableBuilder(
+    column: $table.interviewTarget,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get interviewType => $composableBuilder(
+    column: $table.interviewType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get taskDeadline => $composableBuilder(
+    column: $table.taskDeadline,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get taskLink => $composableBuilder(
+    column: $table.taskLink,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get offerSalary => $composableBuilder(
+    column: $table.offerSalary,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -4700,6 +3685,48 @@ class $$StoryItemsTableAnnotationComposer
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
+  GeneratedColumnWithTypeConverter<StoryItemType, int> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get commonTime => $composableBuilder(
+    column: $table.commonTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get commonComment => $composableBuilder(
+    column: $table.commonComment,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get interviewIsOnline => $composableBuilder(
+    column: $table.interviewIsOnline,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get interviewTarget => $composableBuilder(
+    column: $table.interviewTarget,
+    builder: (column) => column,
+  );
+
+  GeneratedColumnWithTypeConverter<InterviewTypes?, int> get interviewType =>
+      $composableBuilder(
+        column: $table.interviewType,
+        builder: (column) => column,
+      );
+
+  GeneratedColumn<DateTime> get taskDeadline => $composableBuilder(
+    column: $table.taskDeadline,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get taskLink =>
+      $composableBuilder(column: $table.taskLink, builder: (column) => column);
+
+  GeneratedColumn<int> get offerSalary => $composableBuilder(
+    column: $table.offerSalary,
+    builder: (column) => column,
+  );
+
   $$VacanciesTableAnnotationComposer get vacancy {
     final $$VacanciesTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -4722,137 +3749,6 @@ class $$StoryItemsTableAnnotationComposer
     );
     return composer;
   }
-
-  Expression<T> interviewStoryItemsRefs<T extends Object>(
-    Expression<T> Function($$InterviewStoryItemsTableAnnotationComposer a) f,
-  ) {
-    final $$InterviewStoryItemsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.interviewStoryItems,
-          getReferencedColumn: (t) => t.item,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$InterviewStoryItemsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.interviewStoryItems,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<T> waitingForFeedbackStoryItemsRefs<T extends Object>(
-    Expression<T> Function(
-      $$WaitingForFeedbackStoryItemsTableAnnotationComposer a,
-    )
-    f,
-  ) {
-    final $$WaitingForFeedbackStoryItemsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.waitingForFeedbackStoryItems,
-          getReferencedColumn: (t) => t.item,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$WaitingForFeedbackStoryItemsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.waitingForFeedbackStoryItems,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<T> taskStoryItemsRefs<T extends Object>(
-    Expression<T> Function($$TaskStoryItemsTableAnnotationComposer a) f,
-  ) {
-    final $$TaskStoryItemsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.taskStoryItems,
-      getReferencedColumn: (t) => t.item,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$TaskStoryItemsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.taskStoryItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> failureStoryItemsRefs<T extends Object>(
-    Expression<T> Function($$FailureStoryItemsTableAnnotationComposer a) f,
-  ) {
-    final $$FailureStoryItemsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.failureStoryItems,
-          getReferencedColumn: (t) => t.item,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$FailureStoryItemsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.failureStoryItems,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<T> offerStoryItemsRefs<T extends Object>(
-    Expression<T> Function($$OfferStoryItemsTableAnnotationComposer a) f,
-  ) {
-    final $$OfferStoryItemsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.offerStoryItems,
-      getReferencedColumn: (t) => t.item,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$OfferStoryItemsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.offerStoryItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
 class $$StoryItemsTableTableManager
@@ -4860,22 +3756,15 @@ class $$StoryItemsTableTableManager
         RootTableManager<
           _$AppDatabase,
           $StoryItemsTable,
-          StoryItem,
+          StoryItemDto,
           $$StoryItemsTableFilterComposer,
           $$StoryItemsTableOrderingComposer,
           $$StoryItemsTableAnnotationComposer,
           $$StoryItemsTableCreateCompanionBuilder,
           $$StoryItemsTableUpdateCompanionBuilder,
-          (StoryItem, $$StoryItemsTableReferences),
-          StoryItem,
-          PrefetchHooks Function({
-            bool vacancy,
-            bool interviewStoryItemsRefs,
-            bool waitingForFeedbackStoryItemsRefs,
-            bool taskStoryItemsRefs,
-            bool failureStoryItemsRefs,
-            bool offerStoryItemsRefs,
-          })
+          (StoryItemDto, $$StoryItemsTableReferences),
+          StoryItemDto,
+          PrefetchHooks Function({bool vacancy})
         > {
   $$StoryItemsTableTableManager(_$AppDatabase db, $StoryItemsTable table)
     : super(
@@ -4892,20 +3781,56 @@ class $$StoryItemsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<StoryItemType> type = const Value.absent(),
+                Value<DateTime?> commonTime = const Value.absent(),
+                Value<String> commonComment = const Value.absent(),
+                Value<bool?> interviewIsOnline = const Value.absent(),
+                Value<String> interviewTarget = const Value.absent(),
+                Value<InterviewTypes?> interviewType = const Value.absent(),
+                Value<DateTime?> taskDeadline = const Value.absent(),
+                Value<String> taskLink = const Value.absent(),
+                Value<int?> offerSalary = const Value.absent(),
                 Value<int> vacancy = const Value.absent(),
               }) => StoryItemsCompanion(
                 id: id,
                 createdAt: createdAt,
+                type: type,
+                commonTime: commonTime,
+                commonComment: commonComment,
+                interviewIsOnline: interviewIsOnline,
+                interviewTarget: interviewTarget,
+                interviewType: interviewType,
+                taskDeadline: taskDeadline,
+                taskLink: taskLink,
+                offerSalary: offerSalary,
                 vacancy: vacancy,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required DateTime createdAt,
+                required StoryItemType type,
+                Value<DateTime?> commonTime = const Value.absent(),
+                Value<String> commonComment = const Value.absent(),
+                Value<bool?> interviewIsOnline = const Value.absent(),
+                Value<String> interviewTarget = const Value.absent(),
+                Value<InterviewTypes?> interviewType = const Value.absent(),
+                Value<DateTime?> taskDeadline = const Value.absent(),
+                Value<String> taskLink = const Value.absent(),
+                Value<int?> offerSalary = const Value.absent(),
                 required int vacancy,
               }) => StoryItemsCompanion.insert(
                 id: id,
                 createdAt: createdAt,
+                type: type,
+                commonTime: commonTime,
+                commonComment: commonComment,
+                interviewIsOnline: interviewIsOnline,
+                interviewTarget: interviewTarget,
+                interviewType: interviewType,
+                taskDeadline: taskDeadline,
+                taskLink: taskLink,
+                offerSalary: offerSalary,
                 vacancy: vacancy,
               ),
           withReferenceMapper: (p0) => p0
@@ -4916,169 +3841,47 @@ class $$StoryItemsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback:
-              ({
-                vacancy = false,
-                interviewStoryItemsRefs = false,
-                waitingForFeedbackStoryItemsRefs = false,
-                taskStoryItemsRefs = false,
-                failureStoryItemsRefs = false,
-                offerStoryItemsRefs = false,
-              }) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (interviewStoryItemsRefs) db.interviewStoryItems,
-                    if (waitingForFeedbackStoryItemsRefs)
-                      db.waitingForFeedbackStoryItems,
-                    if (taskStoryItemsRefs) db.taskStoryItems,
-                    if (failureStoryItemsRefs) db.failureStoryItems,
-                    if (offerStoryItemsRefs) db.offerStoryItems,
-                  ],
-                  addJoins:
-                      <
-                        T extends TableManagerState<
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic
-                        >
-                      >(state) {
-                        if (vacancy) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.vacancy,
-                                    referencedTable: $$StoryItemsTableReferences
-                                        ._vacancyTable(db),
-                                    referencedColumn:
-                                        $$StoryItemsTableReferences
-                                            ._vacancyTable(db)
-                                            .id,
-                                  )
-                                  as T;
-                        }
+          prefetchHooksCallback: ({vacancy = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (vacancy) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.vacancy,
+                                referencedTable: $$StoryItemsTableReferences
+                                    ._vacancyTable(db),
+                                referencedColumn: $$StoryItemsTableReferences
+                                    ._vacancyTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
 
-                        return state;
-                      },
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (interviewStoryItemsRefs)
-                        await $_getPrefetchedData<
-                          StoryItem,
-                          $StoryItemsTable,
-                          InterviewStoryItem
-                        >(
-                          currentTable: table,
-                          referencedTable: $$StoryItemsTableReferences
-                              ._interviewStoryItemsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$StoryItemsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).interviewStoryItemsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.item == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (waitingForFeedbackStoryItemsRefs)
-                        await $_getPrefetchedData<
-                          StoryItem,
-                          $StoryItemsTable,
-                          WaitingForFeedbackStoryItem
-                        >(
-                          currentTable: table,
-                          referencedTable: $$StoryItemsTableReferences
-                              ._waitingForFeedbackStoryItemsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$StoryItemsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).waitingForFeedbackStoryItemsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.item == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (taskStoryItemsRefs)
-                        await $_getPrefetchedData<
-                          StoryItem,
-                          $StoryItemsTable,
-                          TaskStoryItem
-                        >(
-                          currentTable: table,
-                          referencedTable: $$StoryItemsTableReferences
-                              ._taskStoryItemsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$StoryItemsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).taskStoryItemsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.item == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (failureStoryItemsRefs)
-                        await $_getPrefetchedData<
-                          StoryItem,
-                          $StoryItemsTable,
-                          FailureStoryItem
-                        >(
-                          currentTable: table,
-                          referencedTable: $$StoryItemsTableReferences
-                              ._failureStoryItemsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$StoryItemsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).failureStoryItemsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.item == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (offerStoryItemsRefs)
-                        await $_getPrefetchedData<
-                          StoryItem,
-                          $StoryItemsTable,
-                          OfferStoryItem
-                        >(
-                          currentTable: table,
-                          referencedTable: $$StoryItemsTableReferences
-                              ._offerStoryItemsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$StoryItemsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).offerStoryItemsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.item == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
+                    return state;
                   },
-                );
+              getPrefetchedDataCallback: (items) async {
+                return [];
               },
+            );
+          },
         ),
       );
 }
@@ -5087,22 +3890,15 @@ typedef $$StoryItemsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $StoryItemsTable,
-      StoryItem,
+      StoryItemDto,
       $$StoryItemsTableFilterComposer,
       $$StoryItemsTableOrderingComposer,
       $$StoryItemsTableAnnotationComposer,
       $$StoryItemsTableCreateCompanionBuilder,
       $$StoryItemsTableUpdateCompanionBuilder,
-      (StoryItem, $$StoryItemsTableReferences),
-      StoryItem,
-      PrefetchHooks Function({
-        bool vacancy,
-        bool interviewStoryItemsRefs,
-        bool waitingForFeedbackStoryItemsRefs,
-        bool taskStoryItemsRefs,
-        bool failureStoryItemsRefs,
-        bool offerStoryItemsRefs,
-      })
+      (StoryItemDto, $$StoryItemsTableReferences),
+      StoryItemDto,
+      PrefetchHooks Function({bool vacancy})
     >;
 typedef $$JobDirectionsTableCreateCompanionBuilder =
     JobDirectionsCompanion Function({Value<int> id, required String name});
@@ -5731,1467 +4527,6 @@ typedef $$VacancyDirectionsTableProcessedTableManager =
       VacancyDirection,
       PrefetchHooks Function({bool vacancy, bool direction})
     >;
-typedef $$InterviewStoryItemsTableCreateCompanionBuilder =
-    InterviewStoryItemsCompanion Function({
-      Value<int> item,
-      required DateTime time,
-      required bool isOnline,
-      required String target,
-      required InterviewTypes type,
-    });
-typedef $$InterviewStoryItemsTableUpdateCompanionBuilder =
-    InterviewStoryItemsCompanion Function({
-      Value<int> item,
-      Value<DateTime> time,
-      Value<bool> isOnline,
-      Value<String> target,
-      Value<InterviewTypes> type,
-    });
-
-final class $$InterviewStoryItemsTableReferences
-    extends
-        BaseReferences<
-          _$AppDatabase,
-          $InterviewStoryItemsTable,
-          InterviewStoryItem
-        > {
-  $$InterviewStoryItemsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $StoryItemsTable _itemTable(_$AppDatabase db) =>
-      db.storyItems.createAlias(
-        $_aliasNameGenerator(db.interviewStoryItems.item, db.storyItems.id),
-      );
-
-  $$StoryItemsTableProcessedTableManager get item {
-    final $_column = $_itemColumn<int>('item')!;
-
-    final manager = $$StoryItemsTableTableManager(
-      $_db,
-      $_db.storyItems,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_itemTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
-class $$InterviewStoryItemsTableFilterComposer
-    extends Composer<_$AppDatabase, $InterviewStoryItemsTable> {
-  $$InterviewStoryItemsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<DateTime> get time => $composableBuilder(
-    column: $table.time,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isOnline => $composableBuilder(
-    column: $table.isOnline,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get target => $composableBuilder(
-    column: $table.target,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnWithTypeConverterFilters<InterviewTypes, InterviewTypes, int>
-  get type => $composableBuilder(
-    column: $table.type,
-    builder: (column) => ColumnWithTypeConverterFilters(column),
-  );
-
-  $$StoryItemsTableFilterComposer get item {
-    final $$StoryItemsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableFilterComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$InterviewStoryItemsTableOrderingComposer
-    extends Composer<_$AppDatabase, $InterviewStoryItemsTable> {
-  $$InterviewStoryItemsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<DateTime> get time => $composableBuilder(
-    column: $table.time,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isOnline => $composableBuilder(
-    column: $table.isOnline,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get target => $composableBuilder(
-    column: $table.target,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get type => $composableBuilder(
-    column: $table.type,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$StoryItemsTableOrderingComposer get item {
-    final $$StoryItemsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableOrderingComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$InterviewStoryItemsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $InterviewStoryItemsTable> {
-  $$InterviewStoryItemsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<DateTime> get time =>
-      $composableBuilder(column: $table.time, builder: (column) => column);
-
-  GeneratedColumn<bool> get isOnline =>
-      $composableBuilder(column: $table.isOnline, builder: (column) => column);
-
-  GeneratedColumn<String> get target =>
-      $composableBuilder(column: $table.target, builder: (column) => column);
-
-  GeneratedColumnWithTypeConverter<InterviewTypes, int> get type =>
-      $composableBuilder(column: $table.type, builder: (column) => column);
-
-  $$StoryItemsTableAnnotationComposer get item {
-    final $$StoryItemsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$InterviewStoryItemsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $InterviewStoryItemsTable,
-          InterviewStoryItem,
-          $$InterviewStoryItemsTableFilterComposer,
-          $$InterviewStoryItemsTableOrderingComposer,
-          $$InterviewStoryItemsTableAnnotationComposer,
-          $$InterviewStoryItemsTableCreateCompanionBuilder,
-          $$InterviewStoryItemsTableUpdateCompanionBuilder,
-          (InterviewStoryItem, $$InterviewStoryItemsTableReferences),
-          InterviewStoryItem,
-          PrefetchHooks Function({bool item})
-        > {
-  $$InterviewStoryItemsTableTableManager(
-    _$AppDatabase db,
-    $InterviewStoryItemsTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$InterviewStoryItemsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$InterviewStoryItemsTableOrderingComposer(
-                $db: db,
-                $table: table,
-              ),
-          createComputedFieldComposer: () =>
-              $$InterviewStoryItemsTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<int> item = const Value.absent(),
-                Value<DateTime> time = const Value.absent(),
-                Value<bool> isOnline = const Value.absent(),
-                Value<String> target = const Value.absent(),
-                Value<InterviewTypes> type = const Value.absent(),
-              }) => InterviewStoryItemsCompanion(
-                item: item,
-                time: time,
-                isOnline: isOnline,
-                target: target,
-                type: type,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> item = const Value.absent(),
-                required DateTime time,
-                required bool isOnline,
-                required String target,
-                required InterviewTypes type,
-              }) => InterviewStoryItemsCompanion.insert(
-                item: item,
-                time: time,
-                isOnline: isOnline,
-                target: target,
-                type: type,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$InterviewStoryItemsTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({item = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (item) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.item,
-                                referencedTable:
-                                    $$InterviewStoryItemsTableReferences
-                                        ._itemTable(db),
-                                referencedColumn:
-                                    $$InterviewStoryItemsTableReferences
-                                        ._itemTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$InterviewStoryItemsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $InterviewStoryItemsTable,
-      InterviewStoryItem,
-      $$InterviewStoryItemsTableFilterComposer,
-      $$InterviewStoryItemsTableOrderingComposer,
-      $$InterviewStoryItemsTableAnnotationComposer,
-      $$InterviewStoryItemsTableCreateCompanionBuilder,
-      $$InterviewStoryItemsTableUpdateCompanionBuilder,
-      (InterviewStoryItem, $$InterviewStoryItemsTableReferences),
-      InterviewStoryItem,
-      PrefetchHooks Function({bool item})
-    >;
-typedef $$WaitingForFeedbackStoryItemsTableCreateCompanionBuilder =
-    WaitingForFeedbackStoryItemsCompanion Function({
-      Value<int> item,
-      Value<DateTime?> time,
-      Value<String> comment,
-    });
-typedef $$WaitingForFeedbackStoryItemsTableUpdateCompanionBuilder =
-    WaitingForFeedbackStoryItemsCompanion Function({
-      Value<int> item,
-      Value<DateTime?> time,
-      Value<String> comment,
-    });
-
-final class $$WaitingForFeedbackStoryItemsTableReferences
-    extends
-        BaseReferences<
-          _$AppDatabase,
-          $WaitingForFeedbackStoryItemsTable,
-          WaitingForFeedbackStoryItem
-        > {
-  $$WaitingForFeedbackStoryItemsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $StoryItemsTable _itemTable(_$AppDatabase db) =>
-      db.storyItems.createAlias(
-        $_aliasNameGenerator(
-          db.waitingForFeedbackStoryItems.item,
-          db.storyItems.id,
-        ),
-      );
-
-  $$StoryItemsTableProcessedTableManager get item {
-    final $_column = $_itemColumn<int>('item')!;
-
-    final manager = $$StoryItemsTableTableManager(
-      $_db,
-      $_db.storyItems,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_itemTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
-class $$WaitingForFeedbackStoryItemsTableFilterComposer
-    extends Composer<_$AppDatabase, $WaitingForFeedbackStoryItemsTable> {
-  $$WaitingForFeedbackStoryItemsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<DateTime> get time => $composableBuilder(
-    column: $table.time,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get comment => $composableBuilder(
-    column: $table.comment,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$StoryItemsTableFilterComposer get item {
-    final $$StoryItemsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableFilterComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$WaitingForFeedbackStoryItemsTableOrderingComposer
-    extends Composer<_$AppDatabase, $WaitingForFeedbackStoryItemsTable> {
-  $$WaitingForFeedbackStoryItemsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<DateTime> get time => $composableBuilder(
-    column: $table.time,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get comment => $composableBuilder(
-    column: $table.comment,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$StoryItemsTableOrderingComposer get item {
-    final $$StoryItemsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableOrderingComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$WaitingForFeedbackStoryItemsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $WaitingForFeedbackStoryItemsTable> {
-  $$WaitingForFeedbackStoryItemsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<DateTime> get time =>
-      $composableBuilder(column: $table.time, builder: (column) => column);
-
-  GeneratedColumn<String> get comment =>
-      $composableBuilder(column: $table.comment, builder: (column) => column);
-
-  $$StoryItemsTableAnnotationComposer get item {
-    final $$StoryItemsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$WaitingForFeedbackStoryItemsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $WaitingForFeedbackStoryItemsTable,
-          WaitingForFeedbackStoryItem,
-          $$WaitingForFeedbackStoryItemsTableFilterComposer,
-          $$WaitingForFeedbackStoryItemsTableOrderingComposer,
-          $$WaitingForFeedbackStoryItemsTableAnnotationComposer,
-          $$WaitingForFeedbackStoryItemsTableCreateCompanionBuilder,
-          $$WaitingForFeedbackStoryItemsTableUpdateCompanionBuilder,
-          (
-            WaitingForFeedbackStoryItem,
-            $$WaitingForFeedbackStoryItemsTableReferences,
-          ),
-          WaitingForFeedbackStoryItem,
-          PrefetchHooks Function({bool item})
-        > {
-  $$WaitingForFeedbackStoryItemsTableTableManager(
-    _$AppDatabase db,
-    $WaitingForFeedbackStoryItemsTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$WaitingForFeedbackStoryItemsTableFilterComposer(
-                $db: db,
-                $table: table,
-              ),
-          createOrderingComposer: () =>
-              $$WaitingForFeedbackStoryItemsTableOrderingComposer(
-                $db: db,
-                $table: table,
-              ),
-          createComputedFieldComposer: () =>
-              $$WaitingForFeedbackStoryItemsTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<int> item = const Value.absent(),
-                Value<DateTime?> time = const Value.absent(),
-                Value<String> comment = const Value.absent(),
-              }) => WaitingForFeedbackStoryItemsCompanion(
-                item: item,
-                time: time,
-                comment: comment,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> item = const Value.absent(),
-                Value<DateTime?> time = const Value.absent(),
-                Value<String> comment = const Value.absent(),
-              }) => WaitingForFeedbackStoryItemsCompanion.insert(
-                item: item,
-                time: time,
-                comment: comment,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$WaitingForFeedbackStoryItemsTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({item = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (item) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.item,
-                                referencedTable:
-                                    $$WaitingForFeedbackStoryItemsTableReferences
-                                        ._itemTable(db),
-                                referencedColumn:
-                                    $$WaitingForFeedbackStoryItemsTableReferences
-                                        ._itemTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$WaitingForFeedbackStoryItemsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $WaitingForFeedbackStoryItemsTable,
-      WaitingForFeedbackStoryItem,
-      $$WaitingForFeedbackStoryItemsTableFilterComposer,
-      $$WaitingForFeedbackStoryItemsTableOrderingComposer,
-      $$WaitingForFeedbackStoryItemsTableAnnotationComposer,
-      $$WaitingForFeedbackStoryItemsTableCreateCompanionBuilder,
-      $$WaitingForFeedbackStoryItemsTableUpdateCompanionBuilder,
-      (
-        WaitingForFeedbackStoryItem,
-        $$WaitingForFeedbackStoryItemsTableReferences,
-      ),
-      WaitingForFeedbackStoryItem,
-      PrefetchHooks Function({bool item})
-    >;
-typedef $$TaskStoryItemsTableCreateCompanionBuilder =
-    TaskStoryItemsCompanion Function({
-      Value<int> item,
-      Value<DateTime?> deadline,
-      required String link,
-      Value<String> comment,
-    });
-typedef $$TaskStoryItemsTableUpdateCompanionBuilder =
-    TaskStoryItemsCompanion Function({
-      Value<int> item,
-      Value<DateTime?> deadline,
-      Value<String> link,
-      Value<String> comment,
-    });
-
-final class $$TaskStoryItemsTableReferences
-    extends BaseReferences<_$AppDatabase, $TaskStoryItemsTable, TaskStoryItem> {
-  $$TaskStoryItemsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $StoryItemsTable _itemTable(_$AppDatabase db) =>
-      db.storyItems.createAlias(
-        $_aliasNameGenerator(db.taskStoryItems.item, db.storyItems.id),
-      );
-
-  $$StoryItemsTableProcessedTableManager get item {
-    final $_column = $_itemColumn<int>('item')!;
-
-    final manager = $$StoryItemsTableTableManager(
-      $_db,
-      $_db.storyItems,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_itemTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
-class $$TaskStoryItemsTableFilterComposer
-    extends Composer<_$AppDatabase, $TaskStoryItemsTable> {
-  $$TaskStoryItemsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<DateTime> get deadline => $composableBuilder(
-    column: $table.deadline,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get link => $composableBuilder(
-    column: $table.link,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get comment => $composableBuilder(
-    column: $table.comment,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$StoryItemsTableFilterComposer get item {
-    final $$StoryItemsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableFilterComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$TaskStoryItemsTableOrderingComposer
-    extends Composer<_$AppDatabase, $TaskStoryItemsTable> {
-  $$TaskStoryItemsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<DateTime> get deadline => $composableBuilder(
-    column: $table.deadline,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get link => $composableBuilder(
-    column: $table.link,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get comment => $composableBuilder(
-    column: $table.comment,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$StoryItemsTableOrderingComposer get item {
-    final $$StoryItemsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableOrderingComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$TaskStoryItemsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $TaskStoryItemsTable> {
-  $$TaskStoryItemsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<DateTime> get deadline =>
-      $composableBuilder(column: $table.deadline, builder: (column) => column);
-
-  GeneratedColumn<String> get link =>
-      $composableBuilder(column: $table.link, builder: (column) => column);
-
-  GeneratedColumn<String> get comment =>
-      $composableBuilder(column: $table.comment, builder: (column) => column);
-
-  $$StoryItemsTableAnnotationComposer get item {
-    final $$StoryItemsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$TaskStoryItemsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $TaskStoryItemsTable,
-          TaskStoryItem,
-          $$TaskStoryItemsTableFilterComposer,
-          $$TaskStoryItemsTableOrderingComposer,
-          $$TaskStoryItemsTableAnnotationComposer,
-          $$TaskStoryItemsTableCreateCompanionBuilder,
-          $$TaskStoryItemsTableUpdateCompanionBuilder,
-          (TaskStoryItem, $$TaskStoryItemsTableReferences),
-          TaskStoryItem,
-          PrefetchHooks Function({bool item})
-        > {
-  $$TaskStoryItemsTableTableManager(
-    _$AppDatabase db,
-    $TaskStoryItemsTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$TaskStoryItemsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$TaskStoryItemsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$TaskStoryItemsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> item = const Value.absent(),
-                Value<DateTime?> deadline = const Value.absent(),
-                Value<String> link = const Value.absent(),
-                Value<String> comment = const Value.absent(),
-              }) => TaskStoryItemsCompanion(
-                item: item,
-                deadline: deadline,
-                link: link,
-                comment: comment,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> item = const Value.absent(),
-                Value<DateTime?> deadline = const Value.absent(),
-                required String link,
-                Value<String> comment = const Value.absent(),
-              }) => TaskStoryItemsCompanion.insert(
-                item: item,
-                deadline: deadline,
-                link: link,
-                comment: comment,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$TaskStoryItemsTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({item = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (item) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.item,
-                                referencedTable: $$TaskStoryItemsTableReferences
-                                    ._itemTable(db),
-                                referencedColumn:
-                                    $$TaskStoryItemsTableReferences
-                                        ._itemTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$TaskStoryItemsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $TaskStoryItemsTable,
-      TaskStoryItem,
-      $$TaskStoryItemsTableFilterComposer,
-      $$TaskStoryItemsTableOrderingComposer,
-      $$TaskStoryItemsTableAnnotationComposer,
-      $$TaskStoryItemsTableCreateCompanionBuilder,
-      $$TaskStoryItemsTableUpdateCompanionBuilder,
-      (TaskStoryItem, $$TaskStoryItemsTableReferences),
-      TaskStoryItem,
-      PrefetchHooks Function({bool item})
-    >;
-typedef $$FailureStoryItemsTableCreateCompanionBuilder =
-    FailureStoryItemsCompanion Function({
-      Value<int> item,
-      Value<String> comment,
-    });
-typedef $$FailureStoryItemsTableUpdateCompanionBuilder =
-    FailureStoryItemsCompanion Function({
-      Value<int> item,
-      Value<String> comment,
-    });
-
-final class $$FailureStoryItemsTableReferences
-    extends
-        BaseReferences<
-          _$AppDatabase,
-          $FailureStoryItemsTable,
-          FailureStoryItem
-        > {
-  $$FailureStoryItemsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $StoryItemsTable _itemTable(_$AppDatabase db) =>
-      db.storyItems.createAlias(
-        $_aliasNameGenerator(db.failureStoryItems.item, db.storyItems.id),
-      );
-
-  $$StoryItemsTableProcessedTableManager get item {
-    final $_column = $_itemColumn<int>('item')!;
-
-    final manager = $$StoryItemsTableTableManager(
-      $_db,
-      $_db.storyItems,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_itemTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
-class $$FailureStoryItemsTableFilterComposer
-    extends Composer<_$AppDatabase, $FailureStoryItemsTable> {
-  $$FailureStoryItemsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get comment => $composableBuilder(
-    column: $table.comment,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$StoryItemsTableFilterComposer get item {
-    final $$StoryItemsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableFilterComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$FailureStoryItemsTableOrderingComposer
-    extends Composer<_$AppDatabase, $FailureStoryItemsTable> {
-  $$FailureStoryItemsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get comment => $composableBuilder(
-    column: $table.comment,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$StoryItemsTableOrderingComposer get item {
-    final $$StoryItemsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableOrderingComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$FailureStoryItemsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $FailureStoryItemsTable> {
-  $$FailureStoryItemsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get comment =>
-      $composableBuilder(column: $table.comment, builder: (column) => column);
-
-  $$StoryItemsTableAnnotationComposer get item {
-    final $$StoryItemsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$FailureStoryItemsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $FailureStoryItemsTable,
-          FailureStoryItem,
-          $$FailureStoryItemsTableFilterComposer,
-          $$FailureStoryItemsTableOrderingComposer,
-          $$FailureStoryItemsTableAnnotationComposer,
-          $$FailureStoryItemsTableCreateCompanionBuilder,
-          $$FailureStoryItemsTableUpdateCompanionBuilder,
-          (FailureStoryItem, $$FailureStoryItemsTableReferences),
-          FailureStoryItem,
-          PrefetchHooks Function({bool item})
-        > {
-  $$FailureStoryItemsTableTableManager(
-    _$AppDatabase db,
-    $FailureStoryItemsTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$FailureStoryItemsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$FailureStoryItemsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$FailureStoryItemsTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<int> item = const Value.absent(),
-                Value<String> comment = const Value.absent(),
-              }) => FailureStoryItemsCompanion(item: item, comment: comment),
-          createCompanionCallback:
-              ({
-                Value<int> item = const Value.absent(),
-                Value<String> comment = const Value.absent(),
-              }) => FailureStoryItemsCompanion.insert(
-                item: item,
-                comment: comment,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$FailureStoryItemsTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({item = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (item) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.item,
-                                referencedTable:
-                                    $$FailureStoryItemsTableReferences
-                                        ._itemTable(db),
-                                referencedColumn:
-                                    $$FailureStoryItemsTableReferences
-                                        ._itemTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$FailureStoryItemsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $FailureStoryItemsTable,
-      FailureStoryItem,
-      $$FailureStoryItemsTableFilterComposer,
-      $$FailureStoryItemsTableOrderingComposer,
-      $$FailureStoryItemsTableAnnotationComposer,
-      $$FailureStoryItemsTableCreateCompanionBuilder,
-      $$FailureStoryItemsTableUpdateCompanionBuilder,
-      (FailureStoryItem, $$FailureStoryItemsTableReferences),
-      FailureStoryItem,
-      PrefetchHooks Function({bool item})
-    >;
-typedef $$OfferStoryItemsTableCreateCompanionBuilder =
-    OfferStoryItemsCompanion Function({Value<int> item, required int salary});
-typedef $$OfferStoryItemsTableUpdateCompanionBuilder =
-    OfferStoryItemsCompanion Function({Value<int> item, Value<int> salary});
-
-final class $$OfferStoryItemsTableReferences
-    extends
-        BaseReferences<_$AppDatabase, $OfferStoryItemsTable, OfferStoryItem> {
-  $$OfferStoryItemsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $StoryItemsTable _itemTable(_$AppDatabase db) =>
-      db.storyItems.createAlias(
-        $_aliasNameGenerator(db.offerStoryItems.item, db.storyItems.id),
-      );
-
-  $$StoryItemsTableProcessedTableManager get item {
-    final $_column = $_itemColumn<int>('item')!;
-
-    final manager = $$StoryItemsTableTableManager(
-      $_db,
-      $_db.storyItems,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_itemTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
-class $$OfferStoryItemsTableFilterComposer
-    extends Composer<_$AppDatabase, $OfferStoryItemsTable> {
-  $$OfferStoryItemsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get salary => $composableBuilder(
-    column: $table.salary,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$StoryItemsTableFilterComposer get item {
-    final $$StoryItemsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableFilterComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$OfferStoryItemsTableOrderingComposer
-    extends Composer<_$AppDatabase, $OfferStoryItemsTable> {
-  $$OfferStoryItemsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get salary => $composableBuilder(
-    column: $table.salary,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$StoryItemsTableOrderingComposer get item {
-    final $$StoryItemsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableOrderingComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$OfferStoryItemsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $OfferStoryItemsTable> {
-  $$OfferStoryItemsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get salary =>
-      $composableBuilder(column: $table.salary, builder: (column) => column);
-
-  $$StoryItemsTableAnnotationComposer get item {
-    final $$StoryItemsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.item,
-      referencedTable: $db.storyItems,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$StoryItemsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.storyItems,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$OfferStoryItemsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $OfferStoryItemsTable,
-          OfferStoryItem,
-          $$OfferStoryItemsTableFilterComposer,
-          $$OfferStoryItemsTableOrderingComposer,
-          $$OfferStoryItemsTableAnnotationComposer,
-          $$OfferStoryItemsTableCreateCompanionBuilder,
-          $$OfferStoryItemsTableUpdateCompanionBuilder,
-          (OfferStoryItem, $$OfferStoryItemsTableReferences),
-          OfferStoryItem,
-          PrefetchHooks Function({bool item})
-        > {
-  $$OfferStoryItemsTableTableManager(
-    _$AppDatabase db,
-    $OfferStoryItemsTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$OfferStoryItemsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$OfferStoryItemsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$OfferStoryItemsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> item = const Value.absent(),
-                Value<int> salary = const Value.absent(),
-              }) => OfferStoryItemsCompanion(item: item, salary: salary),
-          createCompanionCallback:
-              ({Value<int> item = const Value.absent(), required int salary}) =>
-                  OfferStoryItemsCompanion.insert(item: item, salary: salary),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$OfferStoryItemsTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({item = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (item) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.item,
-                                referencedTable:
-                                    $$OfferStoryItemsTableReferences._itemTable(
-                                      db,
-                                    ),
-                                referencedColumn:
-                                    $$OfferStoryItemsTableReferences
-                                        ._itemTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$OfferStoryItemsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $OfferStoryItemsTable,
-      OfferStoryItem,
-      $$OfferStoryItemsTableFilterComposer,
-      $$OfferStoryItemsTableOrderingComposer,
-      $$OfferStoryItemsTableAnnotationComposer,
-      $$OfferStoryItemsTableCreateCompanionBuilder,
-      $$OfferStoryItemsTableUpdateCompanionBuilder,
-      (OfferStoryItem, $$OfferStoryItemsTableReferences),
-      OfferStoryItem,
-      PrefetchHooks Function({bool item})
-    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -7208,18 +4543,4 @@ class $AppDatabaseManager {
       $$JobDirectionsTableTableManager(_db, _db.jobDirections);
   $$VacancyDirectionsTableTableManager get vacancyDirections =>
       $$VacancyDirectionsTableTableManager(_db, _db.vacancyDirections);
-  $$InterviewStoryItemsTableTableManager get interviewStoryItems =>
-      $$InterviewStoryItemsTableTableManager(_db, _db.interviewStoryItems);
-  $$WaitingForFeedbackStoryItemsTableTableManager
-  get waitingForFeedbackStoryItems =>
-      $$WaitingForFeedbackStoryItemsTableTableManager(
-        _db,
-        _db.waitingForFeedbackStoryItems,
-      );
-  $$TaskStoryItemsTableTableManager get taskStoryItems =>
-      $$TaskStoryItemsTableTableManager(_db, _db.taskStoryItems);
-  $$FailureStoryItemsTableTableManager get failureStoryItems =>
-      $$FailureStoryItemsTableTableManager(_db, _db.failureStoryItems);
-  $$OfferStoryItemsTableTableManager get offerStoryItems =>
-      $$OfferStoryItemsTableTableManager(_db, _db.offerStoryItems);
 }

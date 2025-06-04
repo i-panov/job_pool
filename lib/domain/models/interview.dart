@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 
-class InterviewDto extends Equatable {
+class Interview extends Equatable {
   final DateTime time;
   final bool isOnline;
   final String target;
@@ -14,7 +14,7 @@ class InterviewDto extends Equatable {
   final ISet<String> jobDirections;
   final ISet<JobGrades> jobGrades;
 
-  const InterviewDto({
+  const Interview({
     required this.vacancyId,
     required this.time,
     required this.isOnline,

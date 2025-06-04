@@ -6,7 +6,7 @@ import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 import 'package:job_pool/data/storage/schemas/story_items.dart';
 import 'package:job_pool/data/storage/schemas/vacancies.dart';
 import 'package:job_pool/data/storage/types.dart';
-import 'package:job_pool/domain/models/interview_dto.dart';
+import 'package:job_pool/domain/models/interview.dart';
 import 'package:path_provider/path_provider.dart';
 
 part 'db.g.dart';
@@ -18,11 +18,6 @@ part 'db.g.dart';
     StoryItems,
     Vacancies,
     VacancyDirections,
-    InterviewStoryItems,
-    WaitingForFeedbackStoryItems,
-    TaskStoryItems,
-    FailureStoryItems,
-    OfferStoryItems,
     JobDirections,
   ],
 )
@@ -94,15 +89,12 @@ class AppDatabase extends _$AppDatabase {
     return query.get();
   }
 
-  Selectable<InterviewDto> selectInterviews() {
+  Selectable<Interview> selectInterviews() {
     final directions = jobDirections.name.groupConcat(separator: _separator);
 
-    final query = selectOnly(interviewStoryItems)
+    final query = selectOnly(storyItems)
+      ..where(storyItems.type.equalsValue(StoryItemType.interview))
       ..join([
-        innerJoin(
-          storyItems,
-          storyItems.id.equalsExp(interviewStoryItems.item),
-        ),
         innerJoin(vacancies, vacancies.id.equalsExp(storyItems.vacancy)),
         innerJoin(companies, companies.id.equalsExp(vacancies.company)),
         leftOuterJoin(
@@ -114,13 +106,13 @@ class AppDatabase extends _$AppDatabase {
           jobDirections.id.equalsExp(vacancyDirections.direction),
         ),
       ])
-      ..groupBy([interviewStoryItems.item])
-      ..orderBy([OrderingTerm.desc(interviewStoryItems.time)])
+      ..groupBy([storyItems.id])
+      ..orderBy([OrderingTerm.desc(storyItems.commonTime)])
       ..addColumns([
-        interviewStoryItems.time,
-        interviewStoryItems.isOnline,
-        interviewStoryItems.target,
-        interviewStoryItems.type,
+        storyItems.commonTime,
+        storyItems.interviewIsOnline,
+        storyItems.interviewTarget,
+        storyItems.interviewType,
         vacancies.id,
         companies.name,
         directions,
@@ -128,11 +120,11 @@ class AppDatabase extends _$AppDatabase {
       ]);
 
     return query.map((row) {
-      return InterviewDto(
-        time: row.read(interviewStoryItems.time)!,
-        isOnline: row.read(interviewStoryItems.isOnline)!,
-        target: row.read(interviewStoryItems.target)!,
-        type: row.readWithConverter(interviewStoryItems.type)!,
+      return Interview(
+        time: row.read(storyItems.commonTime)!,
+        isOnline: row.read(storyItems.interviewIsOnline)!,
+        target: row.read(storyItems.interviewTarget)!,
+        type: row.readWithConverter(storyItems.interviewType) as InterviewTypes,
         vacancyId: row.read(vacancies.id)!,
         companyName: row.read(companies.name)!,
         jobDirections: row.read(directions)!.split(_separator).toISet(),

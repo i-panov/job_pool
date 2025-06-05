@@ -22,13 +22,17 @@ class ContactItem extends Equatable {
     };
   }
 
-  ContactItem getValidated(String newValue) => ContactItem(
-    type,
-    value.copyWith(
-      value: newValue,
-      error: valueValidators.validate(newValue) ?? '',
-    ),
-  );
+  ContactItem getValidated([String? newValue]) {
+    newValue ??= value.value;
+
+    return ContactItem(
+      type,
+      value.copyWith(
+        value: newValue,
+        error: valueValidators.validate(newValue) ?? '',
+      ),
+    );
+  }
 
   @override
   List<Object?> get props => [type, value];
@@ -225,7 +229,10 @@ class VacancyFormNotifier
     final value = state.contacts[index].value;
 
     state = state.copyWith(
-      contacts: state.contacts.replace(index, ContactItem(type, value)),
+      contacts: state.contacts.replace(
+        index,
+        ContactItem(type, value).getValidated(),
+      ),
     );
   }
 

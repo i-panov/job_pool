@@ -24,9 +24,9 @@ class VacancyFormPage extends ConsumerWidget {
 
     ref.listen(vacancyFormProvider(params), (prev, next) {
       if (next.error.isNotEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(next.error))
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.error)));
         context.router.pop();
       } else if (next.isSubmitted) {
         context.router.pop();
@@ -45,6 +45,7 @@ class VacancyFormPage extends ConsumerWidget {
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 20,
                 children: [
                   TextFormField(
                     key: const ValueKey('link_field'),
@@ -55,7 +56,6 @@ class VacancyFormPage extends ConsumerWidget {
                       errorText: state.link.errorOrNull,
                     ),
                   ),
-                  const SizedBox(height: 20),
                   TextFormField(
                     key: const ValueKey('comment_field'),
                     initialValue: state.comment,
@@ -63,17 +63,21 @@ class VacancyFormPage extends ConsumerWidget {
                     decoration: const InputDecoration(labelText: 'Комментарий'),
                     onChanged: form.changeComment,
                   ),
-                  const SizedBox(height: 20),
                   _GradesSelect(
                     initialValue: state.grades,
                     toggle: form.toggleGrade,
                   ),
-                  const SizedBox(height: 20),
                   _VacancyDirectionsSelect(
                     initialValue: state.directionIds,
                     toggle: form.toggleDirection,
                   ),
-                  const SizedBox(height: 20),
+                  _Contacts(
+                    contacts: state.contacts,
+                    changeType: form.changeContactType,
+                    changeValue: form.changeContactValue,
+                    add: form.addContact,
+                    remove: form.removeContact,
+                  ),
                   Center(
                     child: ElevatedButton(
                       onPressed: state.canSubmit ? form.submit : null,
@@ -136,7 +140,10 @@ class _VacancyDirectionsSelect extends ConsumerWidget {
       data: (directions) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Направления:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            'Направления:',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -152,6 +159,58 @@ class _VacancyDirectionsSelect extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _Contacts extends StatelessWidget {
+  final IList<ContactItem> contacts;
+  final void Function(int, ContactTypes) changeType;
+  final void Function(int, String) changeValue;
+  final void Function() add;
+  final void Function(int) remove;
+
+  const _Contacts({
+    required this.contacts,
+    required this.changeType,
+    required this.changeValue,
+    required this.add,
+    required this.remove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      spacing: 20,
+      children: [
+        Row(
+          children: [
+            Text('Контакты:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Spacer(),
+            IconButton(icon: Icon(Icons.add), onPressed: add),
+          ],
+        ),
+        for (final (index, contact) in contacts.indexed)
+          ListTile(
+            leading: DropdownButton(
+              value: contact.type,
+              items: [
+                for (final type in ContactTypes.values)
+                  DropdownMenuItem(value: type, child: Text(type.name)),
+              ],
+              onChanged: (type) => changeType(index, type!),
+            ),
+            title: TextFormField(
+              initialValue: contact.value.value,
+              decoration: InputDecoration(errorText: contact.value.errorOrNull),
+              onChanged: (value) => changeValue(index, value),
+            ),
+            trailing: IconButton(
+              icon: Icon(Icons.remove),
+              onPressed: () => remove(index),
+            ),
+          ),
+      ],
     );
   }
 }

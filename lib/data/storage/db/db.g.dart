@@ -4,7 +4,7 @@ part of 'db.dart';
 
 // ignore_for_file: type=lint
 class $CompaniesTable extends Companies
-    with TableInfo<$CompaniesTable, Company> {
+    with TableInfo<$CompaniesTable, CompanyDto> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -74,7 +74,7 @@ class $CompaniesTable extends Companies
   static const String $name = 'companies';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Company> instance, {
+    Insertable<CompanyDto> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -118,9 +118,9 @@ class $CompaniesTable extends Companies
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Company map(Map<String, dynamic> data, {String? tablePrefix}) {
+  CompanyDto map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Company(
+    return CompanyDto(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -150,13 +150,13 @@ class $CompaniesTable extends Companies
   }
 }
 
-class Company extends DataClass implements Insertable<Company> {
+class CompanyDto extends DataClass implements Insertable<CompanyDto> {
   final int id;
   final String name;
   final bool isIT;
   final String comment;
   final ISet<String> links;
-  const Company({
+  const CompanyDto({
     required this.id,
     required this.name,
     required this.isIT,
@@ -184,12 +184,12 @@ class Company extends DataClass implements Insertable<Company> {
     );
   }
 
-  factory Company.fromJson(
+  factory CompanyDto.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Company(
+    return CompanyDto(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       isIT: serializer.fromJson<bool>(json['isIT']),
@@ -209,21 +209,21 @@ class Company extends DataClass implements Insertable<Company> {
     };
   }
 
-  Company copyWith({
+  CompanyDto copyWith({
     int? id,
     String? name,
     bool? isIT,
     String? comment,
     ISet<String>? links,
-  }) => Company(
+  }) => CompanyDto(
     id: id ?? this.id,
     name: name ?? this.name,
     isIT: isIT ?? this.isIT,
     comment: comment ?? this.comment,
     links: links ?? this.links,
   );
-  Company copyWithCompanion(CompaniesCompanion data) {
-    return Company(
+  CompanyDto copyWithCompanion(CompaniesCompanion data) {
+    return CompanyDto(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       isIT: data.isIT.present ? data.isIT.value : this.isIT,
@@ -234,7 +234,7 @@ class Company extends DataClass implements Insertable<Company> {
 
   @override
   String toString() {
-    return (StringBuffer('Company(')
+    return (StringBuffer('CompanyDto(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('isIT: $isIT, ')
@@ -249,7 +249,7 @@ class Company extends DataClass implements Insertable<Company> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Company &&
+      (other is CompanyDto &&
           other.id == this.id &&
           other.name == this.name &&
           other.isIT == this.isIT &&
@@ -257,7 +257,7 @@ class Company extends DataClass implements Insertable<Company> {
           other.links == this.links);
 }
 
-class CompaniesCompanion extends UpdateCompanion<Company> {
+class CompaniesCompanion extends UpdateCompanion<CompanyDto> {
   final Value<int> id;
   final Value<String> name;
   final Value<bool> isIT;
@@ -279,7 +279,7 @@ class CompaniesCompanion extends UpdateCompanion<Company> {
   }) : name = Value(name),
        isIT = Value(isIT),
        links = Value(links);
-  static Insertable<Company> custom({
+  static Insertable<CompanyDto> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<bool>? isIT,
@@ -346,7 +346,7 @@ class CompaniesCompanion extends UpdateCompanion<Company> {
 }
 
 class $VacanciesTable extends Vacancies
-    with TableInfo<$VacanciesTable, Vacancy> {
+    with TableInfo<$VacanciesTable, VacancyDto> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -418,7 +418,7 @@ class $VacanciesTable extends Vacancies
   static const String $name = 'vacancies';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Vacancy> instance, {
+    Insertable<VacancyDto> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -462,9 +462,9 @@ class $VacanciesTable extends Vacancies
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Vacancy map(Map<String, dynamic> data, {String? tablePrefix}) {
+  VacancyDto map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Vacancy(
+    return VacancyDto(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -494,13 +494,13 @@ class $VacanciesTable extends Vacancies
   }
 }
 
-class Vacancy extends DataClass implements Insertable<Vacancy> {
+class VacancyDto extends DataClass implements Insertable<VacancyDto> {
   final int id;
   final String link;
   final String comment;
   final int company;
   final ISet<JobGrades> grades;
-  const Vacancy({
+  const VacancyDto({
     required this.id,
     required this.link,
     required this.comment,
@@ -531,12 +531,12 @@ class Vacancy extends DataClass implements Insertable<Vacancy> {
     );
   }
 
-  factory Vacancy.fromJson(
+  factory VacancyDto.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Vacancy(
+    return VacancyDto(
       id: serializer.fromJson<int>(json['id']),
       link: serializer.fromJson<String>(json['link']),
       comment: serializer.fromJson<String>(json['comment']),
@@ -556,21 +556,21 @@ class Vacancy extends DataClass implements Insertable<Vacancy> {
     };
   }
 
-  Vacancy copyWith({
+  VacancyDto copyWith({
     int? id,
     String? link,
     String? comment,
     int? company,
     ISet<JobGrades>? grades,
-  }) => Vacancy(
+  }) => VacancyDto(
     id: id ?? this.id,
     link: link ?? this.link,
     comment: comment ?? this.comment,
     company: company ?? this.company,
     grades: grades ?? this.grades,
   );
-  Vacancy copyWithCompanion(VacanciesCompanion data) {
-    return Vacancy(
+  VacancyDto copyWithCompanion(VacanciesCompanion data) {
+    return VacancyDto(
       id: data.id.present ? data.id.value : this.id,
       link: data.link.present ? data.link.value : this.link,
       comment: data.comment.present ? data.comment.value : this.comment,
@@ -581,7 +581,7 @@ class Vacancy extends DataClass implements Insertable<Vacancy> {
 
   @override
   String toString() {
-    return (StringBuffer('Vacancy(')
+    return (StringBuffer('VacancyDto(')
           ..write('id: $id, ')
           ..write('link: $link, ')
           ..write('comment: $comment, ')
@@ -596,7 +596,7 @@ class Vacancy extends DataClass implements Insertable<Vacancy> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Vacancy &&
+      (other is VacancyDto &&
           other.id == this.id &&
           other.link == this.link &&
           other.comment == this.comment &&
@@ -604,7 +604,7 @@ class Vacancy extends DataClass implements Insertable<Vacancy> {
           other.grades == this.grades);
 }
 
-class VacanciesCompanion extends UpdateCompanion<Vacancy> {
+class VacanciesCompanion extends UpdateCompanion<VacancyDto> {
   final Value<int> id;
   final Value<String> link;
   final Value<String> comment;
@@ -626,7 +626,7 @@ class VacanciesCompanion extends UpdateCompanion<Vacancy> {
   }) : link = Value(link),
        company = Value(company),
        grades = Value(grades);
-  static Insertable<Vacancy> custom({
+  static Insertable<VacancyDto> custom({
     Expression<int>? id,
     Expression<String>? link,
     Expression<String>? comment,
@@ -695,7 +695,8 @@ class VacanciesCompanion extends UpdateCompanion<Vacancy> {
   }
 }
 
-class $ContactsTable extends Contacts with TableInfo<$ContactsTable, Contact> {
+class $ContactsTable extends Contacts
+    with TableInfo<$ContactsTable, ContactDto> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -743,7 +744,7 @@ class $ContactsTable extends Contacts with TableInfo<$ContactsTable, Contact> {
   static const String $name = 'contacts';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Contact> instance, {
+    Insertable<ContactDto> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -773,9 +774,9 @@ class $ContactsTable extends Contacts with TableInfo<$ContactsTable, Contact> {
   @override
   Set<GeneratedColumn> get $primaryKey => {vacancy, contactType};
   @override
-  Contact map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ContactDto map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Contact(
+    return ContactDto(
       vacancy: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}vacancy'],
@@ -802,11 +803,11 @@ class $ContactsTable extends Contacts with TableInfo<$ContactsTable, Contact> {
       const EnumIndexConverter<ContactTypes>(ContactTypes.values);
 }
 
-class Contact extends DataClass implements Insertable<Contact> {
+class ContactDto extends DataClass implements Insertable<ContactDto> {
   final int vacancy;
   final ContactTypes contactType;
   final String contactValue;
-  const Contact({
+  const ContactDto({
     required this.vacancy,
     required this.contactType,
     required this.contactValue,
@@ -832,12 +833,12 @@ class Contact extends DataClass implements Insertable<Contact> {
     );
   }
 
-  factory Contact.fromJson(
+  factory ContactDto.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Contact(
+    return ContactDto(
       vacancy: serializer.fromJson<int>(json['vacancy']),
       contactType: $ContactsTable.$convertercontactType.fromJson(
         serializer.fromJson<int>(json['contactType']),
@@ -857,17 +858,17 @@ class Contact extends DataClass implements Insertable<Contact> {
     };
   }
 
-  Contact copyWith({
+  ContactDto copyWith({
     int? vacancy,
     ContactTypes? contactType,
     String? contactValue,
-  }) => Contact(
+  }) => ContactDto(
     vacancy: vacancy ?? this.vacancy,
     contactType: contactType ?? this.contactType,
     contactValue: contactValue ?? this.contactValue,
   );
-  Contact copyWithCompanion(ContactsCompanion data) {
-    return Contact(
+  ContactDto copyWithCompanion(ContactsCompanion data) {
+    return ContactDto(
       vacancy: data.vacancy.present ? data.vacancy.value : this.vacancy,
       contactType: data.contactType.present
           ? data.contactType.value
@@ -880,7 +881,7 @@ class Contact extends DataClass implements Insertable<Contact> {
 
   @override
   String toString() {
-    return (StringBuffer('Contact(')
+    return (StringBuffer('ContactDto(')
           ..write('vacancy: $vacancy, ')
           ..write('contactType: $contactType, ')
           ..write('contactValue: $contactValue')
@@ -893,13 +894,13 @@ class Contact extends DataClass implements Insertable<Contact> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Contact &&
+      (other is ContactDto &&
           other.vacancy == this.vacancy &&
           other.contactType == this.contactType &&
           other.contactValue == this.contactValue);
 }
 
-class ContactsCompanion extends UpdateCompanion<Contact> {
+class ContactsCompanion extends UpdateCompanion<ContactDto> {
   final Value<int> vacancy;
   final Value<ContactTypes> contactType;
   final Value<String> contactValue;
@@ -918,7 +919,7 @@ class ContactsCompanion extends UpdateCompanion<Contact> {
   }) : vacancy = Value(vacancy),
        contactType = Value(contactType),
        contactValue = Value(contactValue);
-  static Insertable<Contact> custom({
+  static Insertable<ContactDto> custom({
     Expression<int>? vacancy,
     Expression<int>? contactType,
     Expression<String>? contactValue,
@@ -1722,7 +1723,7 @@ class StoryItemsCompanion extends UpdateCompanion<StoryItemDto> {
 }
 
 class $JobDirectionsTable extends JobDirections
-    with TableInfo<$JobDirectionsTable, JobDirection> {
+    with TableInfo<$JobDirectionsTable, JobDirectionDto> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -1759,7 +1760,7 @@ class $JobDirectionsTable extends JobDirections
   static const String $name = 'job_directions';
   @override
   VerificationContext validateIntegrity(
-    Insertable<JobDirection> instance, {
+    Insertable<JobDirectionDto> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -1781,9 +1782,9 @@ class $JobDirectionsTable extends JobDirections
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  JobDirection map(Map<String, dynamic> data, {String? tablePrefix}) {
+  JobDirectionDto map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return JobDirection(
+    return JobDirectionDto(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -1801,10 +1802,10 @@ class $JobDirectionsTable extends JobDirections
   }
 }
 
-class JobDirection extends DataClass implements Insertable<JobDirection> {
+class JobDirectionDto extends DataClass implements Insertable<JobDirectionDto> {
   final int id;
   final String name;
-  const JobDirection({required this.id, required this.name});
+  const JobDirectionDto({required this.id, required this.name});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1817,12 +1818,12 @@ class JobDirection extends DataClass implements Insertable<JobDirection> {
     return JobDirectionsCompanion(id: Value(id), name: Value(name));
   }
 
-  factory JobDirection.fromJson(
+  factory JobDirectionDto.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return JobDirection(
+    return JobDirectionDto(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
     );
@@ -1836,10 +1837,10 @@ class JobDirection extends DataClass implements Insertable<JobDirection> {
     };
   }
 
-  JobDirection copyWith({int? id, String? name}) =>
-      JobDirection(id: id ?? this.id, name: name ?? this.name);
-  JobDirection copyWithCompanion(JobDirectionsCompanion data) {
-    return JobDirection(
+  JobDirectionDto copyWith({int? id, String? name}) =>
+      JobDirectionDto(id: id ?? this.id, name: name ?? this.name);
+  JobDirectionDto copyWithCompanion(JobDirectionsCompanion data) {
+    return JobDirectionDto(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
     );
@@ -1847,7 +1848,7 @@ class JobDirection extends DataClass implements Insertable<JobDirection> {
 
   @override
   String toString() {
-    return (StringBuffer('JobDirection(')
+    return (StringBuffer('JobDirectionDto(')
           ..write('id: $id, ')
           ..write('name: $name')
           ..write(')'))
@@ -1859,10 +1860,12 @@ class JobDirection extends DataClass implements Insertable<JobDirection> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is JobDirection && other.id == this.id && other.name == this.name);
+      (other is JobDirectionDto &&
+          other.id == this.id &&
+          other.name == this.name);
 }
 
-class JobDirectionsCompanion extends UpdateCompanion<JobDirection> {
+class JobDirectionsCompanion extends UpdateCompanion<JobDirectionDto> {
   final Value<int> id;
   final Value<String> name;
   const JobDirectionsCompanion({
@@ -1873,7 +1876,7 @@ class JobDirectionsCompanion extends UpdateCompanion<JobDirection> {
     this.id = const Value.absent(),
     required String name,
   }) : name = Value(name);
-  static Insertable<JobDirection> custom({
+  static Insertable<JobDirectionDto> custom({
     Expression<int>? id,
     Expression<String>? name,
   }) {
@@ -1910,7 +1913,7 @@ class JobDirectionsCompanion extends UpdateCompanion<JobDirection> {
 }
 
 class $VacancyDirectionsTable extends VacancyDirections
-    with TableInfo<$VacancyDirectionsTable, VacancyDirection> {
+    with TableInfo<$VacancyDirectionsTable, VacancyDirectionDto> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -1962,7 +1965,7 @@ class $VacancyDirectionsTable extends VacancyDirections
   static const String $name = 'vacancy_directions';
   @override
   VerificationContext validateIntegrity(
-    Insertable<VacancyDirection> instance, {
+    Insertable<VacancyDirectionDto> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -2001,9 +2004,9 @@ class $VacancyDirectionsTable extends VacancyDirections
     {vacancy, order},
   ];
   @override
-  VacancyDirection map(Map<String, dynamic> data, {String? tablePrefix}) {
+  VacancyDirectionDto map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return VacancyDirection(
+    return VacancyDirectionDto(
       vacancy: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}vacancy'],
@@ -2025,12 +2028,12 @@ class $VacancyDirectionsTable extends VacancyDirections
   }
 }
 
-class VacancyDirection extends DataClass
-    implements Insertable<VacancyDirection> {
+class VacancyDirectionDto extends DataClass
+    implements Insertable<VacancyDirectionDto> {
   final int vacancy;
   final int direction;
   final int order;
-  const VacancyDirection({
+  const VacancyDirectionDto({
     required this.vacancy,
     required this.direction,
     required this.order,
@@ -2052,12 +2055,12 @@ class VacancyDirection extends DataClass
     );
   }
 
-  factory VacancyDirection.fromJson(
+  factory VacancyDirectionDto.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return VacancyDirection(
+    return VacancyDirectionDto(
       vacancy: serializer.fromJson<int>(json['vacancy']),
       direction: serializer.fromJson<int>(json['direction']),
       order: serializer.fromJson<int>(json['order']),
@@ -2073,14 +2076,14 @@ class VacancyDirection extends DataClass
     };
   }
 
-  VacancyDirection copyWith({int? vacancy, int? direction, int? order}) =>
-      VacancyDirection(
+  VacancyDirectionDto copyWith({int? vacancy, int? direction, int? order}) =>
+      VacancyDirectionDto(
         vacancy: vacancy ?? this.vacancy,
         direction: direction ?? this.direction,
         order: order ?? this.order,
       );
-  VacancyDirection copyWithCompanion(VacancyDirectionsCompanion data) {
-    return VacancyDirection(
+  VacancyDirectionDto copyWithCompanion(VacancyDirectionsCompanion data) {
+    return VacancyDirectionDto(
       vacancy: data.vacancy.present ? data.vacancy.value : this.vacancy,
       direction: data.direction.present ? data.direction.value : this.direction,
       order: data.order.present ? data.order.value : this.order,
@@ -2089,7 +2092,7 @@ class VacancyDirection extends DataClass
 
   @override
   String toString() {
-    return (StringBuffer('VacancyDirection(')
+    return (StringBuffer('VacancyDirectionDto(')
           ..write('vacancy: $vacancy, ')
           ..write('direction: $direction, ')
           ..write('order: $order')
@@ -2102,13 +2105,13 @@ class VacancyDirection extends DataClass
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is VacancyDirection &&
+      (other is VacancyDirectionDto &&
           other.vacancy == this.vacancy &&
           other.direction == this.direction &&
           other.order == this.order);
 }
 
-class VacancyDirectionsCompanion extends UpdateCompanion<VacancyDirection> {
+class VacancyDirectionsCompanion extends UpdateCompanion<VacancyDirectionDto> {
   final Value<int> vacancy;
   final Value<int> direction;
   final Value<int> order;
@@ -2127,7 +2130,7 @@ class VacancyDirectionsCompanion extends UpdateCompanion<VacancyDirection> {
   }) : vacancy = Value(vacancy),
        direction = Value(direction),
        order = Value(order);
-  static Insertable<VacancyDirection> custom({
+  static Insertable<VacancyDirectionDto> custom({
     Expression<int>? vacancy,
     Expression<int>? direction,
     Expression<int>? order,
@@ -2268,10 +2271,10 @@ typedef $$CompaniesTableUpdateCompanionBuilder =
     });
 
 final class $$CompaniesTableReferences
-    extends BaseReferences<_$AppDatabase, $CompaniesTable, Company> {
+    extends BaseReferences<_$AppDatabase, $CompaniesTable, CompanyDto> {
   $$CompaniesTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static MultiTypedResultKey<$VacanciesTable, List<Vacancy>>
+  static MultiTypedResultKey<$VacanciesTable, List<VacancyDto>>
   _vacanciesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.vacancies,
     aliasName: $_aliasNameGenerator(db.companies.id, db.vacancies.company),
@@ -2440,14 +2443,14 @@ class $$CompaniesTableTableManager
         RootTableManager<
           _$AppDatabase,
           $CompaniesTable,
-          Company,
+          CompanyDto,
           $$CompaniesTableFilterComposer,
           $$CompaniesTableOrderingComposer,
           $$CompaniesTableAnnotationComposer,
           $$CompaniesTableCreateCompanionBuilder,
           $$CompaniesTableUpdateCompanionBuilder,
-          (Company, $$CompaniesTableReferences),
-          Company,
+          (CompanyDto, $$CompaniesTableReferences),
+          CompanyDto,
           PrefetchHooks Function({bool vacanciesRefs})
         > {
   $$CompaniesTableTableManager(_$AppDatabase db, $CompaniesTable table)
@@ -2506,9 +2509,9 @@ class $$CompaniesTableTableManager
                 return [
                   if (vacanciesRefs)
                     await $_getPrefetchedData<
-                      Company,
+                      CompanyDto,
                       $CompaniesTable,
-                      Vacancy
+                      VacancyDto
                     >(
                       currentTable: table,
                       referencedTable: $$CompaniesTableReferences
@@ -2535,14 +2538,14 @@ typedef $$CompaniesTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $CompaniesTable,
-      Company,
+      CompanyDto,
       $$CompaniesTableFilterComposer,
       $$CompaniesTableOrderingComposer,
       $$CompaniesTableAnnotationComposer,
       $$CompaniesTableCreateCompanionBuilder,
       $$CompaniesTableUpdateCompanionBuilder,
-      (Company, $$CompaniesTableReferences),
-      Company,
+      (CompanyDto, $$CompaniesTableReferences),
+      CompanyDto,
       PrefetchHooks Function({bool vacanciesRefs})
     >;
 typedef $$VacanciesTableCreateCompanionBuilder =
@@ -2563,7 +2566,7 @@ typedef $$VacanciesTableUpdateCompanionBuilder =
     });
 
 final class $$VacanciesTableReferences
-    extends BaseReferences<_$AppDatabase, $VacanciesTable, Vacancy> {
+    extends BaseReferences<_$AppDatabase, $VacanciesTable, VacancyDto> {
   $$VacanciesTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $CompaniesTable _companyTable(_$AppDatabase db) => db.companies
@@ -2583,9 +2586,8 @@ final class $$VacanciesTableReferences
     );
   }
 
-  static MultiTypedResultKey<$ContactsTable, List<Contact>> _contactsRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
+  static MultiTypedResultKey<$ContactsTable, List<ContactDto>>
+  _contactsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.contacts,
     aliasName: $_aliasNameGenerator(db.vacancies.id, db.contacts.vacancy),
   );
@@ -2620,7 +2622,7 @@ final class $$VacanciesTableReferences
     );
   }
 
-  static MultiTypedResultKey<$VacancyDirectionsTable, List<VacancyDirection>>
+  static MultiTypedResultKey<$VacancyDirectionsTable, List<VacancyDirectionDto>>
   _vacancyDirectionsRefsTable(_$AppDatabase db) =>
       MultiTypedResultKey.fromTable(
         db.vacancyDirections,
@@ -2952,14 +2954,14 @@ class $$VacanciesTableTableManager
         RootTableManager<
           _$AppDatabase,
           $VacanciesTable,
-          Vacancy,
+          VacancyDto,
           $$VacanciesTableFilterComposer,
           $$VacanciesTableOrderingComposer,
           $$VacanciesTableAnnotationComposer,
           $$VacanciesTableCreateCompanionBuilder,
           $$VacanciesTableUpdateCompanionBuilder,
-          (Vacancy, $$VacanciesTableReferences),
-          Vacancy,
+          (VacancyDto, $$VacanciesTableReferences),
+          VacancyDto,
           PrefetchHooks Function({
             bool company,
             bool contactsRefs,
@@ -3064,9 +3066,9 @@ class $$VacanciesTableTableManager
                     return [
                       if (contactsRefs)
                         await $_getPrefetchedData<
-                          Vacancy,
+                          VacancyDto,
                           $VacanciesTable,
-                          Contact
+                          ContactDto
                         >(
                           currentTable: table,
                           referencedTable: $$VacanciesTableReferences
@@ -3085,7 +3087,7 @@ class $$VacanciesTableTableManager
                         ),
                       if (storyItemsRefs)
                         await $_getPrefetchedData<
-                          Vacancy,
+                          VacancyDto,
                           $VacanciesTable,
                           StoryItemDto
                         >(
@@ -3106,9 +3108,9 @@ class $$VacanciesTableTableManager
                         ),
                       if (vacancyDirectionsRefs)
                         await $_getPrefetchedData<
-                          Vacancy,
+                          VacancyDto,
                           $VacanciesTable,
-                          VacancyDirection
+                          VacancyDirectionDto
                         >(
                           currentTable: table,
                           referencedTable: $$VacanciesTableReferences
@@ -3137,14 +3139,14 @@ typedef $$VacanciesTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $VacanciesTable,
-      Vacancy,
+      VacancyDto,
       $$VacanciesTableFilterComposer,
       $$VacanciesTableOrderingComposer,
       $$VacanciesTableAnnotationComposer,
       $$VacanciesTableCreateCompanionBuilder,
       $$VacanciesTableUpdateCompanionBuilder,
-      (Vacancy, $$VacanciesTableReferences),
-      Vacancy,
+      (VacancyDto, $$VacanciesTableReferences),
+      VacancyDto,
       PrefetchHooks Function({
         bool company,
         bool contactsRefs,
@@ -3168,7 +3170,7 @@ typedef $$ContactsTableUpdateCompanionBuilder =
     });
 
 final class $$ContactsTableReferences
-    extends BaseReferences<_$AppDatabase, $ContactsTable, Contact> {
+    extends BaseReferences<_$AppDatabase, $ContactsTable, ContactDto> {
   $$ContactsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $VacanciesTable _vacancyTable(_$AppDatabase db) => db.vacancies
@@ -3325,14 +3327,14 @@ class $$ContactsTableTableManager
         RootTableManager<
           _$AppDatabase,
           $ContactsTable,
-          Contact,
+          ContactDto,
           $$ContactsTableFilterComposer,
           $$ContactsTableOrderingComposer,
           $$ContactsTableAnnotationComposer,
           $$ContactsTableCreateCompanionBuilder,
           $$ContactsTableUpdateCompanionBuilder,
-          (Contact, $$ContactsTableReferences),
-          Contact,
+          (ContactDto, $$ContactsTableReferences),
+          ContactDto,
           PrefetchHooks Function({bool vacancy})
         > {
   $$ContactsTableTableManager(_$AppDatabase db, $ContactsTable table)
@@ -3427,14 +3429,14 @@ typedef $$ContactsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $ContactsTable,
-      Contact,
+      ContactDto,
       $$ContactsTableFilterComposer,
       $$ContactsTableOrderingComposer,
       $$ContactsTableAnnotationComposer,
       $$ContactsTableCreateCompanionBuilder,
       $$ContactsTableUpdateCompanionBuilder,
-      (Contact, $$ContactsTableReferences),
-      Contact,
+      (ContactDto, $$ContactsTableReferences),
+      ContactDto,
       PrefetchHooks Function({bool vacancy})
     >;
 typedef $$StoryItemsTableCreateCompanionBuilder =
@@ -3906,14 +3908,15 @@ typedef $$JobDirectionsTableUpdateCompanionBuilder =
     JobDirectionsCompanion Function({Value<int> id, Value<String> name});
 
 final class $$JobDirectionsTableReferences
-    extends BaseReferences<_$AppDatabase, $JobDirectionsTable, JobDirection> {
+    extends
+        BaseReferences<_$AppDatabase, $JobDirectionsTable, JobDirectionDto> {
   $$JobDirectionsTableReferences(
     super.$_db,
     super.$_table,
     super.$_typedResult,
   );
 
-  static MultiTypedResultKey<$VacancyDirectionsTable, List<VacancyDirection>>
+  static MultiTypedResultKey<$VacancyDirectionsTable, List<VacancyDirectionDto>>
   _vacancyDirectionsRefsTable(_$AppDatabase db) =>
       MultiTypedResultKey.fromTable(
         db.vacancyDirections,
@@ -4050,14 +4053,14 @@ class $$JobDirectionsTableTableManager
         RootTableManager<
           _$AppDatabase,
           $JobDirectionsTable,
-          JobDirection,
+          JobDirectionDto,
           $$JobDirectionsTableFilterComposer,
           $$JobDirectionsTableOrderingComposer,
           $$JobDirectionsTableAnnotationComposer,
           $$JobDirectionsTableCreateCompanionBuilder,
           $$JobDirectionsTableUpdateCompanionBuilder,
-          (JobDirection, $$JobDirectionsTableReferences),
-          JobDirection,
+          (JobDirectionDto, $$JobDirectionsTableReferences),
+          JobDirectionDto,
           PrefetchHooks Function({bool vacancyDirectionsRefs})
         > {
   $$JobDirectionsTableTableManager(_$AppDatabase db, $JobDirectionsTable table)
@@ -4098,9 +4101,9 @@ class $$JobDirectionsTableTableManager
                 return [
                   if (vacancyDirectionsRefs)
                     await $_getPrefetchedData<
-                      JobDirection,
+                      JobDirectionDto,
                       $JobDirectionsTable,
-                      VacancyDirection
+                      VacancyDirectionDto
                     >(
                       currentTable: table,
                       referencedTable: $$JobDirectionsTableReferences
@@ -4127,14 +4130,14 @@ typedef $$JobDirectionsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $JobDirectionsTable,
-      JobDirection,
+      JobDirectionDto,
       $$JobDirectionsTableFilterComposer,
       $$JobDirectionsTableOrderingComposer,
       $$JobDirectionsTableAnnotationComposer,
       $$JobDirectionsTableCreateCompanionBuilder,
       $$JobDirectionsTableUpdateCompanionBuilder,
-      (JobDirection, $$JobDirectionsTableReferences),
-      JobDirection,
+      (JobDirectionDto, $$JobDirectionsTableReferences),
+      JobDirectionDto,
       PrefetchHooks Function({bool vacancyDirectionsRefs})
     >;
 typedef $$VacancyDirectionsTableCreateCompanionBuilder =
@@ -4157,7 +4160,7 @@ final class $$VacancyDirectionsTableReferences
         BaseReferences<
           _$AppDatabase,
           $VacancyDirectionsTable,
-          VacancyDirection
+          VacancyDirectionDto
         > {
   $$VacancyDirectionsTableReferences(
     super.$_db,
@@ -4393,14 +4396,14 @@ class $$VacancyDirectionsTableTableManager
         RootTableManager<
           _$AppDatabase,
           $VacancyDirectionsTable,
-          VacancyDirection,
+          VacancyDirectionDto,
           $$VacancyDirectionsTableFilterComposer,
           $$VacancyDirectionsTableOrderingComposer,
           $$VacancyDirectionsTableAnnotationComposer,
           $$VacancyDirectionsTableCreateCompanionBuilder,
           $$VacancyDirectionsTableUpdateCompanionBuilder,
-          (VacancyDirection, $$VacancyDirectionsTableReferences),
-          VacancyDirection,
+          (VacancyDirectionDto, $$VacancyDirectionsTableReferences),
+          VacancyDirectionDto,
           PrefetchHooks Function({bool vacancy, bool direction})
         > {
   $$VacancyDirectionsTableTableManager(
@@ -4517,14 +4520,14 @@ typedef $$VacancyDirectionsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $VacancyDirectionsTable,
-      VacancyDirection,
+      VacancyDirectionDto,
       $$VacancyDirectionsTableFilterComposer,
       $$VacancyDirectionsTableOrderingComposer,
       $$VacancyDirectionsTableAnnotationComposer,
       $$VacancyDirectionsTableCreateCompanionBuilder,
       $$VacancyDirectionsTableUpdateCompanionBuilder,
-      (VacancyDirection, $$VacancyDirectionsTableReferences),
-      VacancyDirection,
+      (VacancyDirectionDto, $$VacancyDirectionsTableReferences),
+      VacancyDirectionDto,
       PrefetchHooks Function({bool vacancy, bool direction})
     >;
 

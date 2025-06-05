@@ -3,7 +3,7 @@ import 'package:job_pool/data/storage/schemas/companies.dart';
 import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 import 'package:job_pool/data/storage/types.dart';
 
-@DataClassName('Vacancy')
+@DataClassName('VacancyDto')
 class Vacancies extends Table {
   late final id = integer().autoIncrement()();
   late final link = text()();
@@ -19,6 +19,7 @@ class Vacancies extends Table {
   late final grades = customType(const EnumSetType(JobGrades.values))();
 }
 
+@DataClassName('VacancyDirectionDto')
 class VacancyDirections extends Table {
   late final vacancy = integer().references(
     Vacancies,
@@ -45,6 +46,7 @@ class VacancyDirections extends Table {
   List<Set<Column>>? get uniqueKeys => [{vacancy, order}];
 }
 
+@DataClassName('ContactDto')
 class Contacts extends Table {
   late final vacancy = integer().references(
     Vacancies,

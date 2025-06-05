@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:job_pool/data/storage/types.dart';
 
-@DataClassName('Company')
+@DataClassName('CompanyDto')
 class Companies extends Table {
   late final id = integer().autoIncrement()();
   late final name = text()();

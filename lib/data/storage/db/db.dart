@@ -7,6 +7,7 @@ import 'package:job_pool/data/storage/schemas/story_items.dart';
 import 'package:job_pool/data/storage/schemas/vacancies.dart';
 import 'package:job_pool/data/storage/types.dart';
 import 'package:job_pool/domain/models/interview.dart';
+import 'package:job_pool/domain/models/vacancy.dart';
 import 'package:path_provider/path_provider.dart';
 
 part 'db.g.dart';
@@ -62,29 +63,101 @@ class AppDatabase extends _$AppDatabase {
     return query.map((row) => row.direction).get();
   }
 
-  Future<List<Contact>> getVacancyContacts(int vacancyId) {
-    final query = select(contacts)
-      ..where((f) => f.vacancy.equals(vacancyId));
-
+  Future<List<ContactDto>> getVacancyContacts(int vacancyId) {
+    final query = select(contacts)..where((f) => f.vacancy.equals(vacancyId));
     return query.get();
   }
 
-  Future<Vacancy?> getVacancy(int id) {
+  Selectable<Vacancy> getFullVacancyInfo(int vacancyId) {
+    final directionIds = jobDirections.id.groupConcat(separator: _separator);
+
+    final directionNames = jobDirections.name.groupConcat(
+      separator: _separator,
+    );
+
+    final contactTypes = contacts.contactType.groupConcat(
+      separator: _separator,
+    );
+
+    final contactValues = contacts.contactValue.groupConcat(
+      separator: _separator,
+    );
+
+    final query = selectOnly(vacancies)
+      ..where(vacancies.id.equals(vacancyId))
+      ..join([
+        innerJoin(companies, companies.id.equalsExp(vacancies.company)),
+        leftOuterJoin(
+          vacancyDirections,
+          vacancyDirections.vacancy.equalsExp(vacancies.id),
+        ),
+        innerJoin(
+          jobDirections,
+          jobDirections.id.equalsExp(vacancyDirections.direction),
+        ),
+        innerJoin(contacts, contacts.vacancy.equalsExp(vacancies.id)),
+      ])
+      ..addColumns([
+        vacancies.id,
+        vacancies.link,
+        vacancies.comment,
+        vacancies.grades,
+        companies.id,
+        companies.name,
+        directionIds,
+        directionNames,
+        contactTypes,
+        contactValues,
+      ]);
+
+    return query.map((row) {
+      final valueDirectionIds = row
+          .read(directionIds)!
+          .split(_separator)
+          .map(int.parse);
+
+      final valueDirectionNames = row
+          .read(directionNames)!
+          .split(_separator);
+
+      final valueContactTypes = row
+          .read(contactTypes)!
+          .split(_separator)
+          .map(ContactTypes.values.byName);
+
+      final valueContactValues = row
+          .read(contactValues)!
+          .split(_separator);
+
+      return Vacancy(
+        id: row.read(vacancies.id)!,
+        link: row.read(vacancies.link)!,
+        comment: row.read(vacancies.comment)!,
+        grades: row.read(vacancies.grades)!,
+        companyId: row.read(companies.id)!,
+        companyName: row.read(companies.name)!,
+        directions: IMap.fromIterables(valueDirectionIds, valueDirectionNames),
+        contacts: IMap.fromIterables(valueContactTypes, valueContactValues),
+      );
+    });
+  }
+
+  Future<VacancyDto?> getVacancy(int id) {
     final query = select(vacancies)..where((f) => f.id.equals(id));
     return query.getSingleOrNull();
   }
 
-  Future<Company?> getCompany(int id) {
+  Future<CompanyDto?> getCompany(int id) {
     final query = select(companies)..where((f) => f.id.equals(id));
     return query.getSingleOrNull();
   }
 
-  Future<Company?> findCompanyByName(String name) {
+  Future<CompanyDto?> findCompanyByName(String name) {
     final query = select(companies)..where((f) => f.name.equals(name));
     return query.getSingleOrNull();
   }
 
-  Future<List<Company>> findCompaniesLikeName(String name) {
+  Future<List<CompanyDto>> findCompaniesLikeName(String name) {
     final query = select(companies)..where((f) => f.name.like('%$name%'));
     return query.get();
   }

@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+@DataClassName('JobDirectionDto')
 class JobDirections extends Table {
   late final id = integer().autoIncrement()();
   late final name = text().unique()();

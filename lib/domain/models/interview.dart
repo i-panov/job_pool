@@ -6,13 +6,13 @@ class Interview extends Equatable {
   final DateTime time;
   final bool isOnline;
   final String target;
-  final InterviewTypes type;
+  final InterviewType type;
 
   final int vacancyId;
   
   final String companyName;
   final ISet<String> jobDirections;
-  final ISet<JobGrades> jobGrades;
+  final ISet<JobGrade> jobGrades;
 
   const Interview({
     required this.vacancyId,

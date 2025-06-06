@@ -129,7 +129,7 @@ class InterviewStoryItem extends StoryItem {
   final DateTime time;
   final bool isOnline;
   final String target;
-  final InterviewTypes type;
+  final InterviewType type;
 
   const InterviewStoryItem({
     required super.id,

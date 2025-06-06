@@ -401,12 +401,12 @@ class $VacanciesTable extends Vacancies
   );
   static const VerificationMeta _gradesMeta = const VerificationMeta('grades');
   @override
-  late final GeneratedColumn<ISet<JobGrades>> grades =
-      GeneratedColumn<ISet<JobGrades>>(
+  late final GeneratedColumn<ISet<JobGrade>> grades =
+      GeneratedColumn<ISet<JobGrade>>(
         'grades',
         aliasedName,
         false,
-        type: const EnumSetType(JobGrades.values),
+        type: const EnumSetType(JobGrade.values),
         requiredDuringInsert: true,
       );
   @override
@@ -482,7 +482,7 @@ class $VacanciesTable extends Vacancies
         data['${effectivePrefix}company'],
       )!,
       grades: attachedDatabase.typeMapping.read(
-        const EnumSetType(JobGrades.values),
+        const EnumSetType(JobGrade.values),
         data['${effectivePrefix}grades'],
       )!,
     );
@@ -499,7 +499,7 @@ class VacancyDto extends DataClass implements Insertable<VacancyDto> {
   final String link;
   final String comment;
   final int company;
-  final ISet<JobGrades> grades;
+  final ISet<JobGrade> grades;
   const VacancyDto({
     required this.id,
     required this.link,
@@ -514,9 +514,9 @@ class VacancyDto extends DataClass implements Insertable<VacancyDto> {
     map['link'] = Variable<String>(link);
     map['comment'] = Variable<String>(comment);
     map['company'] = Variable<int>(company);
-    map['grades'] = Variable<ISet<JobGrades>>(
+    map['grades'] = Variable<ISet<JobGrade>>(
       grades,
-      const EnumSetType(JobGrades.values),
+      const EnumSetType(JobGrade.values),
     );
     return map;
   }
@@ -541,7 +541,7 @@ class VacancyDto extends DataClass implements Insertable<VacancyDto> {
       link: serializer.fromJson<String>(json['link']),
       comment: serializer.fromJson<String>(json['comment']),
       company: serializer.fromJson<int>(json['company']),
-      grades: serializer.fromJson<ISet<JobGrades>>(json['grades']),
+      grades: serializer.fromJson<ISet<JobGrade>>(json['grades']),
     );
   }
   @override
@@ -552,7 +552,7 @@ class VacancyDto extends DataClass implements Insertable<VacancyDto> {
       'link': serializer.toJson<String>(link),
       'comment': serializer.toJson<String>(comment),
       'company': serializer.toJson<int>(company),
-      'grades': serializer.toJson<ISet<JobGrades>>(grades),
+      'grades': serializer.toJson<ISet<JobGrade>>(grades),
     };
   }
 
@@ -561,7 +561,7 @@ class VacancyDto extends DataClass implements Insertable<VacancyDto> {
     String? link,
     String? comment,
     int? company,
-    ISet<JobGrades>? grades,
+    ISet<JobGrade>? grades,
   }) => VacancyDto(
     id: id ?? this.id,
     link: link ?? this.link,
@@ -609,7 +609,7 @@ class VacanciesCompanion extends UpdateCompanion<VacancyDto> {
   final Value<String> link;
   final Value<String> comment;
   final Value<int> company;
-  final Value<ISet<JobGrades>> grades;
+  final Value<ISet<JobGrade>> grades;
   const VacanciesCompanion({
     this.id = const Value.absent(),
     this.link = const Value.absent(),
@@ -622,7 +622,7 @@ class VacanciesCompanion extends UpdateCompanion<VacancyDto> {
     required String link,
     this.comment = const Value.absent(),
     required int company,
-    required ISet<JobGrades> grades,
+    required ISet<JobGrade> grades,
   }) : link = Value(link),
        company = Value(company),
        grades = Value(grades);
@@ -631,7 +631,7 @@ class VacanciesCompanion extends UpdateCompanion<VacancyDto> {
     Expression<String>? link,
     Expression<String>? comment,
     Expression<int>? company,
-    Expression<ISet<JobGrades>>? grades,
+    Expression<ISet<JobGrade>>? grades,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -647,7 +647,7 @@ class VacanciesCompanion extends UpdateCompanion<VacancyDto> {
     Value<String>? link,
     Value<String>? comment,
     Value<int>? company,
-    Value<ISet<JobGrades>>? grades,
+    Value<ISet<JobGrade>>? grades,
   }) {
     return VacanciesCompanion(
       id: id ?? this.id,
@@ -674,9 +674,9 @@ class VacanciesCompanion extends UpdateCompanion<VacancyDto> {
       map['company'] = Variable<int>(company.value);
     }
     if (grades.present) {
-      map['grades'] = Variable<ISet<JobGrades>>(
+      map['grades'] = Variable<ISet<JobGrade>>(
         grades.value,
-        const EnumSetType(JobGrades.values),
+        const EnumSetType(JobGrade.values),
       );
     }
     return map;
@@ -716,14 +716,14 @@ class $ContactsTable extends Contacts
     ),
   );
   @override
-  late final GeneratedColumnWithTypeConverter<ContactTypes, int> contactType =
+  late final GeneratedColumnWithTypeConverter<ContactType, int> contactType =
       GeneratedColumn<int>(
         'contact_type',
         aliasedName,
         false,
         type: DriftSqlType.int,
         requiredDuringInsert: true,
-      ).withConverter<ContactTypes>($ContactsTable.$convertercontactType);
+      ).withConverter<ContactType>($ContactsTable.$convertercontactType);
   static const VerificationMeta _contactValueMeta = const VerificationMeta(
     'contactValue',
   );
@@ -799,13 +799,13 @@ class $ContactsTable extends Contacts
     return $ContactsTable(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter2<ContactTypes, int, int> $convertercontactType =
-      const EnumIndexConverter<ContactTypes>(ContactTypes.values);
+  static JsonTypeConverter2<ContactType, int, int> $convertercontactType =
+      const EnumIndexConverter<ContactType>(ContactType.values);
 }
 
 class ContactDto extends DataClass implements Insertable<ContactDto> {
   final int vacancy;
-  final ContactTypes contactType;
+  final ContactType contactType;
   final String contactValue;
   const ContactDto({
     required this.vacancy,
@@ -860,7 +860,7 @@ class ContactDto extends DataClass implements Insertable<ContactDto> {
 
   ContactDto copyWith({
     int? vacancy,
-    ContactTypes? contactType,
+    ContactType? contactType,
     String? contactValue,
   }) => ContactDto(
     vacancy: vacancy ?? this.vacancy,
@@ -902,7 +902,7 @@ class ContactDto extends DataClass implements Insertable<ContactDto> {
 
 class ContactsCompanion extends UpdateCompanion<ContactDto> {
   final Value<int> vacancy;
-  final Value<ContactTypes> contactType;
+  final Value<ContactType> contactType;
   final Value<String> contactValue;
   final Value<int> rowid;
   const ContactsCompanion({
@@ -913,7 +913,7 @@ class ContactsCompanion extends UpdateCompanion<ContactDto> {
   });
   ContactsCompanion.insert({
     required int vacancy,
-    required ContactTypes contactType,
+    required ContactType contactType,
     required String contactValue,
     this.rowid = const Value.absent(),
   }) : vacancy = Value(vacancy),
@@ -935,7 +935,7 @@ class ContactsCompanion extends UpdateCompanion<ContactDto> {
 
   ContactsCompanion copyWith({
     Value<int>? vacancy,
-    Value<ContactTypes>? contactType,
+    Value<ContactType>? contactType,
     Value<String>? contactValue,
     Value<int>? rowid,
   }) {
@@ -1068,14 +1068,14 @@ class $StoryItemsTable extends StoryItems
     defaultValue: Constant(''),
   );
   @override
-  late final GeneratedColumnWithTypeConverter<InterviewTypes?, int>
+  late final GeneratedColumnWithTypeConverter<InterviewType?, int>
   interviewType = GeneratedColumn<int>(
     'interview_type',
     aliasedName,
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-  ).withConverter<InterviewTypes?>($StoryItemsTable.$converterinterviewTypen);
+  ).withConverter<InterviewType?>($StoryItemsTable.$converterinterviewTypen);
   static const VerificationMeta _taskDeadlineMeta = const VerificationMeta(
     'taskDeadline',
   );
@@ -1298,9 +1298,9 @@ class $StoryItemsTable extends StoryItems
 
   static JsonTypeConverter2<StoryItemType, int, int> $convertertype =
       const EnumIndexConverter<StoryItemType>(StoryItemType.values);
-  static JsonTypeConverter2<InterviewTypes, int, int> $converterinterviewType =
-      const EnumIndexConverter<InterviewTypes>(InterviewTypes.values);
-  static JsonTypeConverter2<InterviewTypes?, int?, int?>
+  static JsonTypeConverter2<InterviewType, int, int> $converterinterviewType =
+      const EnumIndexConverter<InterviewType>(InterviewType.values);
+  static JsonTypeConverter2<InterviewType?, int?, int?>
   $converterinterviewTypen = JsonTypeConverter2.asNullable(
     $converterinterviewType,
   );
@@ -1314,7 +1314,7 @@ class StoryItemDto extends DataClass implements Insertable<StoryItemDto> {
   final String commonComment;
   final bool? interviewIsOnline;
   final String interviewTarget;
-  final InterviewTypes? interviewType;
+  final InterviewType? interviewType;
   final DateTime? taskDeadline;
   final String taskLink;
   final int? offerSalary;
@@ -1447,7 +1447,7 @@ class StoryItemDto extends DataClass implements Insertable<StoryItemDto> {
     String? commonComment,
     Value<bool?> interviewIsOnline = const Value.absent(),
     String? interviewTarget,
-    Value<InterviewTypes?> interviewType = const Value.absent(),
+    Value<InterviewType?> interviewType = const Value.absent(),
     Value<DateTime?> taskDeadline = const Value.absent(),
     String? taskLink,
     Value<int?> offerSalary = const Value.absent(),
@@ -1561,7 +1561,7 @@ class StoryItemsCompanion extends UpdateCompanion<StoryItemDto> {
   final Value<String> commonComment;
   final Value<bool?> interviewIsOnline;
   final Value<String> interviewTarget;
-  final Value<InterviewTypes?> interviewType;
+  final Value<InterviewType?> interviewType;
   final Value<DateTime?> taskDeadline;
   final Value<String> taskLink;
   final Value<int?> offerSalary;
@@ -1634,7 +1634,7 @@ class StoryItemsCompanion extends UpdateCompanion<StoryItemDto> {
     Value<String>? commonComment,
     Value<bool?>? interviewIsOnline,
     Value<String>? interviewTarget,
-    Value<InterviewTypes?>? interviewType,
+    Value<InterviewType?>? interviewType,
     Value<DateTime?>? taskDeadline,
     Value<String>? taskLink,
     Value<int?>? offerSalary,
@@ -2554,7 +2554,7 @@ typedef $$VacanciesTableCreateCompanionBuilder =
       required String link,
       Value<String> comment,
       required int company,
-      required ISet<JobGrades> grades,
+      required ISet<JobGrade> grades,
     });
 typedef $$VacanciesTableUpdateCompanionBuilder =
     VacanciesCompanion Function({
@@ -2562,7 +2562,7 @@ typedef $$VacanciesTableUpdateCompanionBuilder =
       Value<String> link,
       Value<String> comment,
       Value<int> company,
-      Value<ISet<JobGrades>> grades,
+      Value<ISet<JobGrade>> grades,
     });
 
 final class $$VacanciesTableReferences
@@ -2671,7 +2671,7 @@ class $$VacanciesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<ISet<JobGrades>> get grades => $composableBuilder(
+  ColumnFilters<ISet<JobGrade>> get grades => $composableBuilder(
     column: $table.grades,
     builder: (column) => ColumnFilters(column),
   );
@@ -2799,7 +2799,7 @@ class $$VacanciesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<ISet<JobGrades>> get grades => $composableBuilder(
+  ColumnOrderings<ISet<JobGrade>> get grades => $composableBuilder(
     column: $table.grades,
     builder: (column) => ColumnOrderings(column),
   );
@@ -2846,7 +2846,7 @@ class $$VacanciesTableAnnotationComposer
   GeneratedColumn<String> get comment =>
       $composableBuilder(column: $table.comment, builder: (column) => column);
 
-  GeneratedColumn<ISet<JobGrades>> get grades =>
+  GeneratedColumn<ISet<JobGrade>> get grades =>
       $composableBuilder(column: $table.grades, builder: (column) => column);
 
   $$CompaniesTableAnnotationComposer get company {
@@ -2986,7 +2986,7 @@ class $$VacanciesTableTableManager
                 Value<String> link = const Value.absent(),
                 Value<String> comment = const Value.absent(),
                 Value<int> company = const Value.absent(),
-                Value<ISet<JobGrades>> grades = const Value.absent(),
+                Value<ISet<JobGrade>> grades = const Value.absent(),
               }) => VacanciesCompanion(
                 id: id,
                 link: link,
@@ -3000,7 +3000,7 @@ class $$VacanciesTableTableManager
                 required String link,
                 Value<String> comment = const Value.absent(),
                 required int company,
-                required ISet<JobGrades> grades,
+                required ISet<JobGrade> grades,
               }) => VacanciesCompanion.insert(
                 id: id,
                 link: link,
@@ -3157,14 +3157,14 @@ typedef $$VacanciesTableProcessedTableManager =
 typedef $$ContactsTableCreateCompanionBuilder =
     ContactsCompanion Function({
       required int vacancy,
-      required ContactTypes contactType,
+      required ContactType contactType,
       required String contactValue,
       Value<int> rowid,
     });
 typedef $$ContactsTableUpdateCompanionBuilder =
     ContactsCompanion Function({
       Value<int> vacancy,
-      Value<ContactTypes> contactType,
+      Value<ContactType> contactType,
       Value<String> contactValue,
       Value<int> rowid,
     });
@@ -3200,7 +3200,7 @@ class $$ContactsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnWithTypeConverterFilters<ContactTypes, ContactTypes, int>
+  ColumnWithTypeConverterFilters<ContactType, ContactType, int>
   get contactType => $composableBuilder(
     column: $table.contactType,
     builder: (column) => ColumnWithTypeConverterFilters(column),
@@ -3287,7 +3287,7 @@ class $$ContactsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumnWithTypeConverter<ContactTypes, int> get contactType =>
+  GeneratedColumnWithTypeConverter<ContactType, int> get contactType =>
       $composableBuilder(
         column: $table.contactType,
         builder: (column) => column,
@@ -3351,7 +3351,7 @@ class $$ContactsTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> vacancy = const Value.absent(),
-                Value<ContactTypes> contactType = const Value.absent(),
+                Value<ContactType> contactType = const Value.absent(),
                 Value<String> contactValue = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ContactsCompanion(
@@ -3363,7 +3363,7 @@ class $$ContactsTableTableManager
           createCompanionCallback:
               ({
                 required int vacancy,
-                required ContactTypes contactType,
+                required ContactType contactType,
                 required String contactValue,
                 Value<int> rowid = const Value.absent(),
               }) => ContactsCompanion.insert(
@@ -3448,7 +3448,7 @@ typedef $$StoryItemsTableCreateCompanionBuilder =
       Value<String> commonComment,
       Value<bool?> interviewIsOnline,
       Value<String> interviewTarget,
-      Value<InterviewTypes?> interviewType,
+      Value<InterviewType?> interviewType,
       Value<DateTime?> taskDeadline,
       Value<String> taskLink,
       Value<int?> offerSalary,
@@ -3463,7 +3463,7 @@ typedef $$StoryItemsTableUpdateCompanionBuilder =
       Value<String> commonComment,
       Value<bool?> interviewIsOnline,
       Value<String> interviewTarget,
-      Value<InterviewTypes?> interviewType,
+      Value<InterviewType?> interviewType,
       Value<DateTime?> taskDeadline,
       Value<String> taskLink,
       Value<int?> offerSalary,
@@ -3539,7 +3539,7 @@ class $$StoryItemsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnWithTypeConverterFilters<InterviewTypes?, InterviewTypes, int>
+  ColumnWithTypeConverterFilters<InterviewType?, InterviewType, int>
   get interviewType => $composableBuilder(
     column: $table.interviewType,
     builder: (column) => ColumnWithTypeConverterFilters(column),
@@ -3710,7 +3710,7 @@ class $$StoryItemsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumnWithTypeConverter<InterviewTypes?, int> get interviewType =>
+  GeneratedColumnWithTypeConverter<InterviewType?, int> get interviewType =>
       $composableBuilder(
         column: $table.interviewType,
         builder: (column) => column,
@@ -3788,7 +3788,7 @@ class $$StoryItemsTableTableManager
                 Value<String> commonComment = const Value.absent(),
                 Value<bool?> interviewIsOnline = const Value.absent(),
                 Value<String> interviewTarget = const Value.absent(),
-                Value<InterviewTypes?> interviewType = const Value.absent(),
+                Value<InterviewType?> interviewType = const Value.absent(),
                 Value<DateTime?> taskDeadline = const Value.absent(),
                 Value<String> taskLink = const Value.absent(),
                 Value<int?> offerSalary = const Value.absent(),
@@ -3816,7 +3816,7 @@ class $$StoryItemsTableTableManager
                 Value<String> commonComment = const Value.absent(),
                 Value<bool?> interviewIsOnline = const Value.absent(),
                 Value<String> interviewTarget = const Value.absent(),
-                Value<InterviewTypes?> interviewType = const Value.absent(),
+                Value<InterviewType?> interviewType = const Value.absent(),
                 Value<DateTime?> taskDeadline = const Value.absent(),
                 Value<String> taskLink = const Value.absent(),
                 Value<int?> offerSalary = const Value.absent(),

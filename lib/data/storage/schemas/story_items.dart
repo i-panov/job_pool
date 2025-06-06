@@ -16,7 +16,7 @@ class StoryItems extends Table {
 
   late final interviewIsOnline = boolean().nullable()();
   late final interviewTarget = text().withDefault(Constant(''))();
-  late final interviewType = intEnum<InterviewTypes>().nullable()();
+  late final interviewType = intEnum<InterviewType>().nullable()();
 
   late final taskDeadline = dateTime().nullable()();
   late final taskLink = text().withDefault(Constant(''))();

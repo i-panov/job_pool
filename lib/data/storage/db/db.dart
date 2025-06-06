@@ -1,12 +1,14 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:job_pool/core/extensions.dart';
 import 'package:job_pool/data/storage/schemas/companies.dart';
 import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 import 'package:job_pool/data/storage/schemas/story_items.dart';
 import 'package:job_pool/data/storage/schemas/vacancies.dart';
 import 'package:job_pool/data/storage/types.dart';
 import 'package:job_pool/domain/models/interview.dart';
+import 'package:job_pool/domain/models/story_item.dart';
 import 'package:job_pool/domain/models/vacancy.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -68,19 +70,117 @@ class AppDatabase extends _$AppDatabase {
     return query.get();
   }
 
+  Stream<Vacancy> watchFullVacancyInfo(int vacancyId) {
+    const query =
+        '''
+    SELECT
+      v.id, v.link, v.comment, v.grades,
+      c.id AS company_id, c.name AS company_name,
+      (
+        SELECT GROUP_CONCAT(d.id, '$_separator')
+        FROM vacancy_directions vd
+        JOIN job_directions d ON d.id = vd.direction
+        WHERE vd.vacancy = v.id
+        ORDER BY vd."order"
+      ) AS direction_ids,
+      (
+        SELECT GROUP_CONCAT(d.name, '$_separator')
+        FROM vacancy_directions vd
+        JOIN job_directions d ON d.id = vd.direction
+        WHERE vd.vacancy = v.id
+        ORDER BY vd."order"
+      ) AS direction_names,
+      (
+        SELECT GROUP_CONCAT(ct.contact_type, '$_separator')
+        FROM contacts ct
+        WHERE ct.vacancy = v.id
+        ORDER BY ct.contact_type
+      ) AS contact_types,
+      (
+        SELECT GROUP_CONCAT(ct.contact_value, '$_separator')
+        FROM contacts ct
+        WHERE ct.vacancy = v.id
+        ORDER BY ct.contact_type
+      ) AS contact_values
+    FROM vacancies v
+    JOIN companies c ON c.id = v.company
+    WHERE v.id = ?
+  ''';
+
+    return customSelect(
+      query,
+      variables: [Variable.withInt(vacancyId)],
+      readsFrom: {
+        vacancies,
+        companies,
+        vacancyDirections,
+        jobDirections,
+        contacts,
+      },
+    ).asyncMap((row) async {
+      final directionIds = (row.read<String?>('direction_ids') ?? '').split(
+        _separator,
+      );
+      final directionNames = (row.read<String?>('direction_names') ?? '').split(
+        _separator,
+      );
+      final contactTypes = (row.read<String?>('contact_types') ?? '').split(
+        _separator,
+      );
+      final contactValues = (row.read<String?>('contact_values') ?? '').split(
+        _separator,
+      );
+
+      const converter = EnumSetType(JobGrade.values);
+      final grades = converter.read(row.read<String>('grades'));
+
+      return Vacancy(
+        id: row.read<int>('id'),
+        link: row.read<String>('link'),
+        comment: row.read<String>('comment'),
+        grades: grades,
+        companyId: row.read<int>('company_id'),
+        companyName: row.read<String>('company_name'),
+        directions: directionNames
+            .zip(
+              directionIds,
+              (name, id) => (id: int.tryParse(id) ?? -1, name: name),
+            )
+            .where((e) => e.id > 0)
+            .toIList(),
+        contacts: contactValues
+            .zip(
+              contactTypes,
+              (value, type) => (
+                type: ContactType.values[int.tryParse(type) ?? 0],
+                value: value,
+              ),
+            )
+            .where((e) => e.value.isNotEmpty)
+            .toIList(),
+      );
+    }).watchSingle();
+  }
+
   Selectable<Vacancy> getFullVacancyInfo(int vacancyId) {
-    final directionIds = jobDirections.id.groupConcat(separator: _separator);
+    final directionIds = jobDirections.id.groupConcat(
+      separator: _separator,
+      orderBy: OrderBy([OrderingTerm.asc(vacancyDirections.order)]),
+    );
 
     final directionNames = jobDirections.name.groupConcat(
       separator: _separator,
+      orderBy: OrderBy([OrderingTerm.asc(vacancyDirections.order)]),
     );
 
     final contactTypes = contacts.contactType.groupConcat(
       separator: _separator,
+      orderBy: OrderBy([OrderingTerm.asc(contacts.contactType)]),
     );
 
     final contactValues = contacts.contactValue.groupConcat(
       separator: _separator,
+      orderBy: OrderBy([OrderingTerm.asc(contacts.contactType)]),
     );
 
     final query = selectOnly(vacancies)
@@ -97,6 +197,7 @@ class AppDatabase extends _$AppDatabase {
         ),
         innerJoin(contacts, contacts.vacancy.equalsExp(vacancies.id)),
       ])
+      ..groupBy([vacancies.id])
       ..addColumns([
         vacancies.id,
         vacancies.link,
@@ -116,18 +217,15 @@ class AppDatabase extends _$AppDatabase {
           .split(_separator)
           .map(int.parse);
 
-      final valueDirectionNames = row
-          .read(directionNames)!
-          .split(_separator);
+      final valueDirectionNames = row.read(directionNames)!.split(_separator);
 
       final valueContactTypes = row
           .read(contactTypes)!
           .split(_separator)
-          .map(ContactTypes.values.byName);
+          .map(int.parse)
+          .map((i) => ContactType.values[i]);
 
-      final valueContactValues = row
-          .read(contactValues)!
-          .split(_separator);
+      final valueContactValues = row.read(contactValues)!.split(_separator);
 
       return Vacancy(
         id: row.read(vacancies.id)!,
@@ -136,8 +234,12 @@ class AppDatabase extends _$AppDatabase {
         grades: row.read(vacancies.grades)!,
         companyId: row.read(companies.id)!,
         companyName: row.read(companies.name)!,
-        directions: IMap.fromIterables(valueDirectionIds, valueDirectionNames),
-        contacts: IMap.fromIterables(valueContactTypes, valueContactValues),
+        directions: valueDirectionNames
+            .zip(valueDirectionIds, (name, id) => (id: id, name: name))
+            .toIList(),
+        contacts: valueContactValues
+            .zip(valueContactTypes, (value, type) => (type: type, value: value))
+            .toIList(),
       );
     });
   }
@@ -160,6 +262,14 @@ class AppDatabase extends _$AppDatabase {
   Future<List<CompanyDto>> findCompaniesLikeName(String name) {
     final query = select(companies)..where((f) => f.name.like('%$name%'));
     return query.get();
+  }
+
+  Selectable<StoryItem> selectVacancyStory(int vacancyId) {
+    final query = select(storyItems)
+      ..where((s) => s.vacancy.equals(vacancyId))
+      ..orderBy([(s) => OrderingTerm.asc(s.createdAt)]);
+
+    return query.map((item) => item.toDomain());
   }
 
   Selectable<Interview> selectInterviews() {
@@ -197,7 +307,7 @@ class AppDatabase extends _$AppDatabase {
         time: row.read(storyItems.commonTime)!,
         isOnline: row.read(storyItems.interviewIsOnline)!,
         target: row.read(storyItems.interviewTarget)!,
-        type: row.readWithConverter(storyItems.interviewType) as InterviewTypes,
+        type: row.readWithConverter(storyItems.interviewType) as InterviewType,
         vacancyId: row.read(vacancies.id)!,
         companyName: row.read(companies.name)!,
         jobDirections: row.read(directions)!.split(_separator).toISet(),

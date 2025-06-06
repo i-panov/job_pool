@@ -9,8 +9,8 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i9;
-import 'package:flutter/material.dart' as _i10;
+import 'package:auto_route/auto_route.dart' as _i10;
+import 'package:flutter/material.dart' as _i11;
 import 'package:job_pool/ui/pages/companies_page.dart' as _i1;
 import 'package:job_pool/ui/pages/company_form_page.dart' as _i2;
 import 'package:job_pool/ui/pages/company_page.dart' as _i3;
@@ -19,16 +19,17 @@ import 'package:job_pool/ui/pages/root_page.dart' as _i5;
 import 'package:job_pool/ui/pages/tasks_page.dart' as _i6;
 import 'package:job_pool/ui/pages/vacancies_page.dart' as _i7;
 import 'package:job_pool/ui/pages/vacancy_form_page.dart' as _i8;
+import 'package:job_pool/ui/pages/vacancy_page.dart' as _i9;
 
 /// generated route for
 /// [_i1.CompaniesPage]
-class CompaniesTab extends _i9.PageRouteInfo<void> {
-  const CompaniesTab({List<_i9.PageRouteInfo>? children})
+class CompaniesTab extends _i10.PageRouteInfo<void> {
+  const CompaniesTab({List<_i10.PageRouteInfo>? children})
     : super(CompaniesTab.name, initialChildren: children);
 
   static const String name = 'CompaniesTab';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
       return const _i1.CompaniesPage();
@@ -38,11 +39,11 @@ class CompaniesTab extends _i9.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i2.CompanyFormPage]
-class CompanyFormRoute extends _i9.PageRouteInfo<CompanyFormRouteArgs> {
+class CompanyFormRoute extends _i10.PageRouteInfo<CompanyFormRouteArgs> {
   CompanyFormRoute({
-    _i10.Key? key,
+    _i11.Key? key,
     int? companyId,
-    List<_i9.PageRouteInfo>? children,
+    List<_i10.PageRouteInfo>? children,
   }) : super(
          CompanyFormRoute.name,
          args: CompanyFormRouteArgs(key: key, companyId: companyId),
@@ -51,7 +52,7 @@ class CompanyFormRoute extends _i9.PageRouteInfo<CompanyFormRouteArgs> {
 
   static const String name = 'CompanyFormRoute';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<CompanyFormRouteArgs>(
@@ -65,7 +66,7 @@ class CompanyFormRoute extends _i9.PageRouteInfo<CompanyFormRouteArgs> {
 class CompanyFormRouteArgs {
   const CompanyFormRouteArgs({this.key, this.companyId});
 
-  final _i10.Key? key;
+  final _i11.Key? key;
 
   final int? companyId;
 
@@ -87,11 +88,11 @@ class CompanyFormRouteArgs {
 
 /// generated route for
 /// [_i3.CompanyPage]
-class CompanyRoute extends _i9.PageRouteInfo<CompanyRouteArgs> {
+class CompanyRoute extends _i10.PageRouteInfo<CompanyRouteArgs> {
   CompanyRoute({
-    _i10.Key? key,
+    _i11.Key? key,
     required int companyId,
-    List<_i9.PageRouteInfo>? children,
+    List<_i10.PageRouteInfo>? children,
   }) : super(
          CompanyRoute.name,
          args: CompanyRouteArgs(key: key, companyId: companyId),
@@ -100,7 +101,7 @@ class CompanyRoute extends _i9.PageRouteInfo<CompanyRouteArgs> {
 
   static const String name = 'CompanyRoute';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<CompanyRouteArgs>();
@@ -112,7 +113,7 @@ class CompanyRoute extends _i9.PageRouteInfo<CompanyRouteArgs> {
 class CompanyRouteArgs {
   const CompanyRouteArgs({this.key, required this.companyId});
 
-  final _i10.Key? key;
+  final _i11.Key? key;
 
   final int companyId;
 
@@ -134,13 +135,13 @@ class CompanyRouteArgs {
 
 /// generated route for
 /// [_i4.HomePage]
-class HomeTab extends _i9.PageRouteInfo<void> {
-  const HomeTab({List<_i9.PageRouteInfo>? children})
+class HomeTab extends _i10.PageRouteInfo<void> {
+  const HomeTab({List<_i10.PageRouteInfo>? children})
     : super(HomeTab.name, initialChildren: children);
 
   static const String name = 'HomeTab';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
       return const _i4.HomePage();
@@ -150,13 +151,13 @@ class HomeTab extends _i9.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i5.RootPage]
-class RootRoute extends _i9.PageRouteInfo<void> {
-  const RootRoute({List<_i9.PageRouteInfo>? children})
+class RootRoute extends _i10.PageRouteInfo<void> {
+  const RootRoute({List<_i10.PageRouteInfo>? children})
     : super(RootRoute.name, initialChildren: children);
 
   static const String name = 'RootRoute';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
       return const _i5.RootPage();
@@ -166,13 +167,13 @@ class RootRoute extends _i9.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i6.TasksPage]
-class TasksTab extends _i9.PageRouteInfo<void> {
-  const TasksTab({List<_i9.PageRouteInfo>? children})
+class TasksTab extends _i10.PageRouteInfo<void> {
+  const TasksTab({List<_i10.PageRouteInfo>? children})
     : super(TasksTab.name, initialChildren: children);
 
   static const String name = 'TasksTab';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
       return const _i6.TasksPage();
@@ -182,13 +183,13 @@ class TasksTab extends _i9.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i7.VacanciesPage]
-class VacanciesTab extends _i9.PageRouteInfo<void> {
-  const VacanciesTab({List<_i9.PageRouteInfo>? children})
+class VacanciesTab extends _i10.PageRouteInfo<void> {
+  const VacanciesTab({List<_i10.PageRouteInfo>? children})
     : super(VacanciesTab.name, initialChildren: children);
 
   static const String name = 'VacanciesTab';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
       return const _i7.VacanciesPage();
@@ -198,12 +199,12 @@ class VacanciesTab extends _i9.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i8.VacancyFormPage]
-class VacancyFormRoute extends _i9.PageRouteInfo<VacancyFormRouteArgs> {
+class VacancyFormRoute extends _i10.PageRouteInfo<VacancyFormRouteArgs> {
   VacancyFormRoute({
-    _i10.Key? key,
+    _i11.Key? key,
     int? vacancyId,
     required int companyId,
-    List<_i9.PageRouteInfo>? children,
+    List<_i10.PageRouteInfo>? children,
   }) : super(
          VacancyFormRoute.name,
          args: VacancyFormRouteArgs(
@@ -216,7 +217,7 @@ class VacancyFormRoute extends _i9.PageRouteInfo<VacancyFormRouteArgs> {
 
   static const String name = 'VacancyFormRoute';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<VacancyFormRouteArgs>();
@@ -236,7 +237,7 @@ class VacancyFormRouteArgs {
     required this.companyId,
   });
 
-  final _i10.Key? key;
+  final _i11.Key? key;
 
   final int? vacancyId;
 
@@ -258,4 +259,51 @@ class VacancyFormRouteArgs {
 
   @override
   int get hashCode => key.hashCode ^ vacancyId.hashCode ^ companyId.hashCode;
+}
+
+/// generated route for
+/// [_i9.VacancyPage]
+class VacancyRoute extends _i10.PageRouteInfo<VacancyRouteArgs> {
+  VacancyRoute({
+    _i11.Key? key,
+    required int vacancyId,
+    List<_i10.PageRouteInfo>? children,
+  }) : super(
+         VacancyRoute.name,
+         args: VacancyRouteArgs(key: key, vacancyId: vacancyId),
+         initialChildren: children,
+       );
+
+  static const String name = 'VacancyRoute';
+
+  static _i10.PageInfo page = _i10.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<VacancyRouteArgs>();
+      return _i9.VacancyPage(key: args.key, vacancyId: args.vacancyId);
+    },
+  );
+}
+
+class VacancyRouteArgs {
+  const VacancyRouteArgs({this.key, required this.vacancyId});
+
+  final _i11.Key? key;
+
+  final int vacancyId;
+
+  @override
+  String toString() {
+    return 'VacancyRouteArgs{key: $key, vacancyId: $vacancyId}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! VacancyRouteArgs) return false;
+    return key == other.key && vacancyId == other.vacancyId;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ vacancyId.hashCode;
 }

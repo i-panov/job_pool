@@ -40,8 +40,8 @@ class JobDirections extends Table {
   };
 }
 
-enum JobGrades { intern, junior, middle, senior, lead }
+enum JobGrade { intern, junior, middle, senior, lead }
 
-enum InterviewTypes { hr, tech, director }
+enum InterviewType { hr, tech, director }
 
-enum ContactTypes { email, phone, telegram, }
+enum ContactType { email, phone, telegram, }

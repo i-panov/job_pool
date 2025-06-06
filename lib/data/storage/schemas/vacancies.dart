@@ -16,7 +16,7 @@ class Vacancies extends Table {
     initiallyDeferred: true,
   )();
 
-  late final grades = customType(const EnumSetType(JobGrades.values))();
+  late final grades = customType(const EnumSetType(JobGrade.values))();
 }
 
 @DataClassName('VacancyDirectionDto')
@@ -55,7 +55,7 @@ class Contacts extends Table {
     initiallyDeferred: true,
   )();
 
-  late final contactType = intEnum<ContactTypes>()();
+  late final contactType = intEnum<ContactType>()();
 
   late final contactValue = text()();
 

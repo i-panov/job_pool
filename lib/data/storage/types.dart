@@ -2,6 +2,8 @@ import 'package:drift/drift.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
 class StringSetType implements CustomSqlType<ISet<String>> {
+  static const instance = StringSetType();
+
   /// максимально уникальный разделитель, чтобы не конфликтовало с содержимым
   static const _separator = '||--###--||';
 
@@ -34,39 +36,41 @@ class StringSetType implements CustomSqlType<ISet<String>> {
 }
 
 class EnumSetType<T extends Enum> implements CustomSqlType<ISet<T>> {
-  static const _stringSetType = StringSetType(separator: ',');
-
   final List<T> _values;
 
   const EnumSetType(this._values);
 
   @override
   String mapToSqlLiteral(ISet<T> dartValue) {
-    return _stringSetType.mapToSqlLiteral(
+    return StringSetType.instance.mapToSqlLiteral(
       dartValue.map((e) => e.name).toISet(),
     );
   }
 
   @override
   Object mapToSqlParameter(ISet<T> dartValue) {
-    return _stringSetType.mapToSqlParameter(
+    return StringSetType.instance.mapToSqlParameter(
       dartValue.map((e) => e.name).toISet(),
     );
   }
 
   @override
   ISet<T> read(Object fromSql) {
-    return _stringSetType.read(fromSql).map((e) {
-      try {
-        return _values.byName(e);
-      } catch (_) {
-        return null;
-      }
-    }).whereType<T>().toISet();
+    return StringSetType.instance
+        .read(fromSql)
+        .map((e) {
+          try {
+            return _values.byName(e);
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<T>()
+        .toISet();
   }
 
   @override
   String sqlTypeName(GenerationContext context) {
-    return _stringSetType.sqlTypeName(context);
+    return StringSetType.instance.sqlTypeName(context);
   }
 }

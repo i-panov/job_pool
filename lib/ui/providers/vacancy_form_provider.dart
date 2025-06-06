@@ -9,16 +9,16 @@ import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 
 class ContactItem extends Equatable {
-  final ContactTypes type;
+  final ContactType type;
   final AppFormField<String> value;
 
   const ContactItem(this.type, this.value);
 
   List<AppValidator> get valueValidators {
     return switch (type) {
-      ContactTypes.phone => [AppValidator.required, AppValidator.phone],
-      ContactTypes.email => [AppValidator.required, AppValidator.email],
-      ContactTypes.telegram => [AppValidator.required],
+      ContactType.phone => [AppValidator.required, AppValidator.phone],
+      ContactType.email => [AppValidator.required, AppValidator.email],
+      ContactType.telegram => [AppValidator.required],
     };
   }
 
@@ -40,7 +40,7 @@ class ContactItem extends Equatable {
 
 class VacancyFormState extends Equatable {
   final AppFormField<String> link;
-  final ISet<JobGrades> grades;
+  final ISet<JobGrade> grades;
   final IList<int> directionIds;
   final IList<ContactItem> contacts;
   final String comment, error;
@@ -71,7 +71,7 @@ class VacancyFormState extends Equatable {
   VacancyFormState copyWith({
     AppFormField<String>? link,
     String? comment,
-    ISet<JobGrades>? grades,
+    ISet<JobGrade>? grades,
     IList<int>? directionIds,
     IList<ContactItem>? contacts,
     String? error,
@@ -173,7 +173,7 @@ class VacancyFormNotifier
     state = state.copyWith(comment: value);
   }
 
-  void toggleGrade(JobGrades grade) {
+  void toggleGrade(JobGrade grade) {
     if (state.grades.contains(grade)) {
       state = state.copyWith(grades: state.grades.remove(grade));
     } else {
@@ -212,7 +212,7 @@ class VacancyFormNotifier
   void addContact() {
     state = state.copyWith(
       contacts: state.contacts.add(
-        ContactItem(ContactTypes.phone, AppFormField(value: '')),
+        ContactItem(ContactType.phone, AppFormField(value: '')),
       ),
     );
   }
@@ -221,7 +221,7 @@ class VacancyFormNotifier
     state = state.copyWith(contacts: state.contacts.removeAt(index));
   }
 
-  void changeContactType(int index, ContactTypes type) {
+  void changeContactType(int index, ContactType type) {
     if (index < 0 || index >= state.contacts.length) {
       return;
     }

@@ -5,9 +5,9 @@ import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 class Vacancy extends Equatable {
   final int id;
   final String link, comment;
-  final ISet<JobGrades> grades;
-  final IMap<int, String> directions;
-  final IMap<ContactTypes, String> contacts;
+  final ISet<JobGrade> grades;
+  final IList<({int id, String name})> directions;
+  final IList<({ContactType type, String value})> contacts;
   final int companyId;
   final String companyName;
 

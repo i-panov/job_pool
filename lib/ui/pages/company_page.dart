@@ -55,7 +55,7 @@ class _CompanyPageState extends ConsumerState<CompanyPage> {
           floatingActionButton: IconButton(
             onPressed: () =>
                 context.router.push(VacancyFormRoute(companyId: company.id)),
-            icon: Icon(Icons.add),
+            icon: Icon(Icons.add_circle, color: Colors.green, size: 50),
           ),
           body: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -82,6 +82,7 @@ class _CompanyPageState extends ConsumerState<CompanyPage> {
                       ),
                     ],
                   ),
+                Text('Вакансии:'),
                 StreamBuilder(
                   stream: vacanciesQuery.watch(),
                   builder: (context, snapshot) {
@@ -98,8 +99,7 @@ class _CompanyPageState extends ConsumerState<CompanyPage> {
                         final vacancy = vacancies[index];
 
                         return ListTile(
-                          onTap: () => context.router.push(VacancyFormRoute(
-                            companyId: widget.companyId,
+                          onTap: () => context.router.push(VacancyRoute(
                             vacancyId: vacancy.id,
                           )),
                           title: Text(vacancy.link),

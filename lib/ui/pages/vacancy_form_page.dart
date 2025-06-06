@@ -92,8 +92,8 @@ class VacancyFormPage extends ConsumerWidget {
 }
 
 class _GradesSelect extends StatelessWidget {
-  final ISet<JobGrades> initialValue;
-  final void Function(JobGrades) toggle;
+  final ISet<JobGrade> initialValue;
+  final void Function(JobGrade) toggle;
 
   const _GradesSelect({required this.initialValue, required this.toggle});
 
@@ -107,7 +107,7 @@ class _GradesSelect extends StatelessWidget {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: JobGrades.values.map((grade) {
+          children: JobGrade.values.map((grade) {
             return FilterChip(
               label: Text(grade.name),
               selected: initialValue.contains(grade),
@@ -165,7 +165,7 @@ class _VacancyDirectionsSelect extends ConsumerWidget {
 
 class _Contacts extends StatelessWidget {
   final IList<ContactItem> contacts;
-  final void Function(int, ContactTypes) changeType;
+  final void Function(int, ContactType) changeType;
   final void Function(int, String) changeValue;
   final void Function() add;
   final void Function(int) remove;
@@ -195,7 +195,7 @@ class _Contacts extends StatelessWidget {
             leading: DropdownButton(
               value: contact.type,
               items: [
-                for (final type in ContactTypes.values)
+                for (final type in ContactType.values)
                   DropdownMenuItem(value: type, child: Text(type.name)),
               ],
               onChanged: (type) => changeType(index, type!),

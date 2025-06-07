@@ -50,10 +50,7 @@ dependencies:
 
   auto_route: *auto_route_version
 
-  provider: ^6.1.5
   url_launcher: ^6.3.1
-  flutter_bloc: ^9.1.1
-  rxdart: ^0.28.0
   flutter_riverpod: ^2.6.1
   validators: ^3.0.0
   date_field: ^6.0.3+1

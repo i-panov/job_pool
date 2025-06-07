@@ -2,7 +2,17 @@ import 'package:drift/drift.dart';
 import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 import 'package:job_pool/data/storage/schemas/vacancies.dart';
 
-enum StoryItemType { interview, waitingForFeedback, task, failure, offer }
+enum StoryItemType {
+  interview('Собеседование'),
+  waitingForFeedback('Ожидание фидбэка'),
+  task('ТЗ'),
+  failure('Провал'),
+  offer('Оффер');
+
+  final String label;
+  
+  const StoryItemType(this.label);
+}
 
 @DataClassName('StoryItemDto')
 class StoryItems extends Table {

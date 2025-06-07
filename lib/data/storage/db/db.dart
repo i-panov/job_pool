@@ -264,6 +264,26 @@ class AppDatabase extends _$AppDatabase {
     return query.get();
   }
 
+  Future<int> insertInterviewStoryItem({
+    required int vacancyId,
+    required DateTime time,
+    required bool isOnline,
+    required String target,
+    required InterviewType type,
+  }) {
+    final obj = StoryItemsCompanion.insert(
+      vacancy: vacancyId,
+      type: StoryItemType.interview,
+      createdAt: DateTime.now(),
+      commonTime: Value(time),
+      interviewIsOnline: Value(isOnline),
+      interviewTarget: Value(target),
+      interviewType: Value(type),
+    );
+
+    return into(storyItems).insert(obj);
+  }
+
   Selectable<StoryItem> selectVacancyStory(int vacancyId) {
     final query = select(storyItems)
       ..where((s) => s.vacancy.equals(vacancyId))

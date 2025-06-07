@@ -42,6 +42,14 @@ class JobDirections extends Table {
 
 enum JobGrade { intern, junior, middle, senior, lead }
 
-enum InterviewType { hr, tech, director }
+enum InterviewType {
+  hr('HR'),
+  tech('техническое'),
+  director('с руководителем');
 
-enum ContactType { email, phone, telegram, }
+  final String label;
+
+  const InterviewType(this.label);
+}
+
+enum ContactType { email, phone, telegram }

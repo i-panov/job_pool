@@ -57,6 +57,14 @@ sealed class StoryItem extends Equatable {
   @override
   List<Object?> get props => [id, vacancyId, createdAt];
 
+  StoryItemType get dtoType => switch (this) {
+    InterviewStoryItem() => StoryItemType.interview,
+    WaitingForFeedbackStoryItem() => StoryItemType.waitingForFeedback,
+    TaskStoryItem() => StoryItemType.task,
+    FailureStoryItem() => StoryItemType.failure,
+    OfferStoryItem() => StoryItemType.offer,
+  };
+
   IconData get icon {
     return switch (this) {
       InterviewStoryItem() => Icons.calendar_today,
@@ -89,37 +97,37 @@ sealed class StoryItem extends Equatable {
       OfferStoryItem() => StoryItemType.offer,
     },
     commonTime: switch (this) {
-      InterviewStoryItem(: final time) => time,
-      WaitingForFeedbackStoryItem(: final time) => time,
+      InterviewStoryItem(:final time) => time,
+      WaitingForFeedbackStoryItem(:final time) => time,
       _ => null,
     },
     commonComment: switch (this) {
       WaitingForFeedbackStoryItem(comment: final comment) => comment,
-      FailureStoryItem(: final comment) => comment,
+      FailureStoryItem(:final comment) => comment,
       _ => '',
     },
     interviewIsOnline: switch (this) {
-      InterviewStoryItem(: final isOnline) => isOnline,
+      InterviewStoryItem(:final isOnline) => isOnline,
       _ => null,
     },
     interviewTarget: switch (this) {
-      InterviewStoryItem(: final target) => target,
+      InterviewStoryItem(:final target) => target,
       _ => '',
     },
     interviewType: switch (this) {
-      InterviewStoryItem(: final type) => type,
+      InterviewStoryItem(:final type) => type,
       _ => null,
     },
     taskLink: switch (this) {
-      TaskStoryItem(: final link) => link,
+      TaskStoryItem(:final link) => link,
       _ => '',
     },
     taskDeadline: switch (this) {
-      TaskStoryItem(: final deadline) => deadline,
+      TaskStoryItem(:final deadline) => deadline,
       _ => null,
     },
     offerSalary: switch (this) {
-      OfferStoryItem(: final salary) => salary,
+      OfferStoryItem(:final salary) => salary,
       _ => null,
     },
   );

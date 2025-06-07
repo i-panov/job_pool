@@ -1,9 +1,13 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:job_pool/data/storage/schemas/dictionaries.dart';
+import 'package:job_pool/data/storage/schemas/story_items.dart';
+import 'package:job_pool/domain/models/story_item.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 import 'package:job_pool/ui/routing/app_router.gr.dart';
+import 'package:job_pool/ui/widgets/story_item_forms.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 @RoutePage()
@@ -53,7 +57,12 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
           ),
           floatingActionButton: IconButton(
             icon: Icon(Icons.add_circle, color: Colors.green, size: 50),
-            onPressed: () => context.router.push(CompanyFormRoute()),
+            onPressed: () => openStoryItemForm(
+              context: context,
+              dtoType: StoryItemType.interview,
+              vacancyId: widget.vacancyId,
+              db: db,
+            ),
           ),
           body: SingleChildScrollView(
             padding: EdgeInsets.all(20),
@@ -84,6 +93,9 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
                   spacing: 20,
                   runSpacing: 20,
                   children: [
+                    if (vacancy.contacts.isEmpty)
+                      Text('Список пуст'),
+
                     for (final contact in vacancy.contacts)
                       Chip(
                         avatar: Icon(switch (contact.type) {
@@ -103,11 +115,90 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
                       ),
                   ],
                 ),
+                StreamBuilder(
+                  stream: db.selectVacancyStory(widget.vacancyId).watch(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Center(child: Text(snapshot.error.toString()));
+                    }
+
+                    if (!snapshot.hasData) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+
+                    final story = snapshot.data!;
+
+                    if (story.isEmpty) {
+                      return Center(child: Text('История пуста'));
+                    }
+
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('История'),
+                        for (final item in story) _StoryItemCard(item: item),
+                      ],
+                    );
+                  },
+                ),
               ],
             ),
           ),
         );
       },
     );
+  }
+}
+
+class _StoryItemCard extends StatelessWidget {
+  final StoryItem item;
+
+  const _StoryItemCard({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: EdgeInsetsGeometry.all(20),
+        child: switch (item) {
+          InterviewStoryItem i => Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [Text(i.dtoType.label), Text(_formatDate(i.time))],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(i.type.label),
+                  Text(i.isOnline ? 'Онлайн' : 'Офлайн'),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(i.isOnline ? 'Ссылка: ' : 'Место: '),
+                  Text(i.target),
+                ],
+              ),
+              Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Добавлено: '),
+                  Text(_formatDate(i.createdAt)),
+                ],
+              ),
+            ],
+          ),
+          _ => Text('Неизвестный тип'),
+        },
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return DateFormat('EEE, dd.MM в hh:mm', 'ru_RU').format(date);
   }
 }

@@ -61,8 +61,6 @@ class _InterviewStoryItemForm extends StatefulWidget {
 
 class _InterviewStoryItemFormState extends State<_InterviewStoryItemForm> {
   var time = DateTime.now().add(const Duration(days: 1));
-  String? timeError;
-
   var isOnline = true;
 
   var target = '';
@@ -70,7 +68,13 @@ class _InterviewStoryItemFormState extends State<_InterviewStoryItemForm> {
 
   var type = InterviewType.hr;
 
-  bool get hasError => timeError != null || targetError != null;
+  bool get hasError => targetError != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _validateTarget();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,18 +87,11 @@ class _InterviewStoryItemFormState extends State<_InterviewStoryItemForm> {
           initialValue: time,
           firstDate: DateTime.now(),
           lastDate: DateTime.now().add(const Duration(days: 365)),
-          dateFormat: DateFormat('dd.MM.yyyy HH:mm'),
+          dateFormat: DateFormat('EEE, dd.MM HH:mm', 'ru_RU'),
           canClear: false,
-          decoration: InputDecoration(errorText: timeError),
+          decoration: InputDecoration(labelText: 'Дата и время'),
           onChanged: (value) => setState(() {
-            final error = _validateTime(value);
-
-            if (error != null) {
-              timeError = error;
-            } else {
-              timeError = null;
-              time = value!;
-            }
+            time = value ?? time;
           }),
         ),
         Row(
@@ -105,6 +102,7 @@ class _InterviewStoryItemFormState extends State<_InterviewStoryItemForm> {
               value: isOnline,
               onChanged: (value) => setState(() {
                 isOnline = value;
+                _validateTarget();
               }),
             ),
             Text('Онлайн'),
@@ -117,14 +115,8 @@ class _InterviewStoryItemFormState extends State<_InterviewStoryItemForm> {
             label: Text(isOnline ? 'Ссылка' : 'Место'),
           ),
           onChanged: (value) => setState(() {
-            final error = _validateTarget(value);
-
-            if (error != null) {
-              targetError = error;
-            } else {
-              targetError = null;
-              target = value;
-            }
+            target = value;
+            _validateTarget();
           }),
         ),
         DropdownButtonFormField<InterviewType>(
@@ -146,23 +138,8 @@ class _InterviewStoryItemFormState extends State<_InterviewStoryItemForm> {
   }
 
   void _submit() {
-    final newTimeError = _validateTime(time);
-
-    if (newTimeError != null) {
-      setState(() {
-        timeError = newTimeError;
-      });
-
-      return;
-    }
-
-    final newTargetError = _validateTarget(target);
-
-    if (newTargetError != null) {
-      setState(() {
-        targetError = newTargetError;
-      });
-
+    if (!_validateTarget()) {
+      setState(() {});
       return;
     }
 
@@ -179,27 +156,18 @@ class _InterviewStoryItemFormState extends State<_InterviewStoryItemForm> {
     );
   }
 
-  String? _validateTime(DateTime? value) {
-    if (value == null) {
-      return 'Обязательное поле';
+  bool _validateTarget() {
+    if (target.isEmpty) {
+      targetError = 'Обязательное поле';
+      return false;
     }
 
-    if (value.isBefore(DateTime.now())) {
-      return 'Дата не может быть в прошлом';
+    if (isOnline && !AppValidator.url.isValid(target)) {
+      targetError = 'Некорректный URL';
+      return false;
     }
 
-    return null;
-  }
-
-  String? _validateTarget(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Обязательное поле';
-    }
-
-    if (isOnline && !AppValidator.url.isValid(value)) {
-      return 'Некорректная ссылка';
-    }
-
-    return null;
+    targetError = null;
+    return true;
   }
 }

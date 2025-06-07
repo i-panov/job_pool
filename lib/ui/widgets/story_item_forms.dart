@@ -81,6 +81,24 @@ class _InterviewStoryItemFormState extends State<_InterviewStoryItemForm> {
     _validateTarget();
   }
 
+  void _submit() {
+    if (!_validateTarget()) {
+      if (mounted) {
+        setState(() {});
+      }
+      return;
+    }
+
+    context.router.pop(
+      InterviewStoryItemData(
+        time: time,
+        isOnline: isOnline,
+        target: target,
+        type: type,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -95,9 +113,13 @@ class _InterviewStoryItemFormState extends State<_InterviewStoryItemForm> {
           dateFormat: DateFormat('EEE, dd.MM HH:mm', 'ru_RU'),
           canClear: false,
           decoration: InputDecoration(labelText: 'Дата и время'),
-          onChanged: (value) => setState(() {
-            time = value ?? time;
-          }),
+          onChanged: (value) {
+            if (mounted) {
+              setState(() {
+                time = value ?? time;
+              });
+            }
+          },
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -105,10 +127,14 @@ class _InterviewStoryItemFormState extends State<_InterviewStoryItemForm> {
             Text('Офлайн'),
             Switch(
               value: isOnline,
-              onChanged: (value) => setState(() {
-                isOnline = value;
-                _validateTarget();
-              }),
+              onChanged: (value) {
+                if (mounted) {
+                  setState(() {
+                    isOnline = value;
+                    _validateTarget();
+                  });
+                }
+              },
             ),
             Text('Онлайн'),
           ],
@@ -119,10 +145,14 @@ class _InterviewStoryItemFormState extends State<_InterviewStoryItemForm> {
             errorText: targetError,
             label: Text(isOnline ? 'Ссылка' : 'Место'),
           ),
-          onChanged: (value) => setState(() {
-            target = value;
-            _validateTarget();
-          }),
+          onChanged: (value) {
+            if (mounted) {
+              setState(() {
+                target = value;
+                _validateTarget();
+              });
+            }
+          },
         ),
         DropdownButtonFormField<InterviewType>(
           value: type,
@@ -139,22 +169,6 @@ class _InterviewStoryItemFormState extends State<_InterviewStoryItemForm> {
           child: Text('Добавить'),
         ),
       ],
-    );
-  }
-
-  void _submit() {
-    if (!_validateTarget()) {
-      setState(() {});
-      return;
-    }
-
-    context.router.pop(
-      InterviewStoryItemData(
-        time: time,
-        isOnline: isOnline,
-        target: target,
-        type: type,
-      ),
     );
   }
 
@@ -198,9 +212,13 @@ class _WaitingForFeedbackStoryItemFormState extends State<_WaitingForFeedbackSto
           lastDate: DateTime.now().add(const Duration(days: 365)),
           dateFormat: DateFormat('EEE, dd.MM HH:mm', 'ru_RU'),
           decoration: InputDecoration(labelText: 'Дата и время'),
-          onChanged: (value) => setState(() {
-            time = value ?? time;
-          }),
+          onChanged: (value) {
+            if (mounted) {
+              setState(() {
+              time = value ?? time;
+            });
+            }
+          },
         ),
         TextFormField(
           initialValue: comment,
@@ -208,9 +226,13 @@ class _WaitingForFeedbackStoryItemFormState extends State<_WaitingForFeedbackSto
           decoration: InputDecoration(
             labelText: 'Комментарий',
           ),
-          onChanged: (value) => setState(() {
-            comment = value;
-          }),
+          onChanged: (value) {
+            if (mounted) {
+              setState(() {
+              comment = value;
+            });
+            }
+          },
         ),
         ElevatedButton(
           onPressed: () => context.router.pop(
@@ -259,9 +281,13 @@ class _TaskStoryItemFormState extends State<_TaskStoryItemForm> {
           lastDate: DateTime.now().add(const Duration(days: 365)),
           dateFormat: DateFormat('EEE, dd.MM HH:mm', 'ru_RU'),
           decoration: InputDecoration(labelText: 'Дедлайн'),
-          onChanged: (value) => setState(() {
-            deadline = value ?? deadline;
-          }),
+          onChanged: (value) {
+            if (mounted) {
+              setState(() {
+              deadline = value ?? deadline;
+            });
+            }
+          },
         ),
         TextFormField(
           initialValue: link,
@@ -269,10 +295,14 @@ class _TaskStoryItemFormState extends State<_TaskStoryItemForm> {
             labelText: 'Ссылка на задание',
             errorText: linkError,
           ),
-          onChanged: (value) => setState(() {
-            link = value;
-            _validateLink();
-          }),
+          onChanged: (value) {
+            if (mounted) {
+              setState(() {
+              link = value;
+              _validateLink();
+            });
+            }
+          },
         ),
         ElevatedButton(
           onPressed: hasError ? null : _submit,
@@ -284,7 +314,7 @@ class _TaskStoryItemFormState extends State<_TaskStoryItemForm> {
 
   void _submit() {
     if (!_validateLink()) {
-      setState(() {});
+      if (mounted) setState(() {});
       return;
     }
 
@@ -360,7 +390,9 @@ class _FailureStoryItemFormState extends State<_FailureStoryItemForm> {
 
   void _submit() {
     if (!_validateComment()) {
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
       return;
     }
 
@@ -412,10 +444,14 @@ class _OfferStoryItemFormState extends State<_OfferStoryItemForm> {
             labelText: 'Зарплата',
             errorText: salaryError,
           ),
-          onChanged: (value) => setState(() {
-            salary = int.tryParse(value) ?? 0;
-            _validateSalary();
-          }),
+          onChanged: (value) {
+            if (mounted) {
+              setState(() {
+              salary = int.tryParse(value) ?? 0;
+              _validateSalary();
+            });
+            }
+          },
         ),
         ElevatedButton(
           onPressed: hasError ? null : _submit,
@@ -427,7 +463,7 @@ class _OfferStoryItemFormState extends State<_OfferStoryItemForm> {
 
   void _submit() {
     if (!_validateSalary()) {
-      setState(() {});
+      if (mounted) setState(() {});
       return;
     }
 

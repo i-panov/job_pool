@@ -28,8 +28,12 @@ class _GradeChipState extends State<GradeChip> {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      onEnter: (_) => setState(() => isHovered = true),
-      onExit: (_) => setState(() => isHovered = false),
+      onEnter: (_) {
+        if (mounted) setState(() => isHovered = true);
+      },
+      onExit: (_) {
+        if (mounted) setState(() => isHovered = false);
+      },
       child: Tooltip(
         message: tooltipText,
         child: AnimatedContainer(
@@ -77,8 +81,12 @@ class _DirectionChipState extends State<DirectionChip> {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      onEnter: (_) => setState(() => isHovered = true),
-      onExit: (_) => setState(() => isHovered = false),
+      onEnter: (_) {
+        if (mounted) setState(() => isHovered = true);
+      },
+      onExit: (_) {
+        if (mounted) setState(() => isHovered = false);
+      },
       child: AnimatedContainer(
         duration: Duration(milliseconds: 200),
         child: Chip(

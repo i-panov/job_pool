@@ -91,12 +91,17 @@ class VacancyFormPage extends ConsumerWidget {
   }
 }
 
-class _GradesSelect extends StatelessWidget {
+class _GradesSelect extends StatefulWidget {
   final ISet<JobGrade> initialValue;
   final void Function(JobGrade) toggle;
 
   const _GradesSelect({required this.initialValue, required this.toggle});
 
+  @override
+  State<_GradesSelect> createState() => _GradesSelectState();
+}
+
+class _GradesSelectState extends State<_GradesSelect> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -110,8 +115,8 @@ class _GradesSelect extends StatelessWidget {
           children: JobGrade.values.map((grade) {
             return FilterChip(
               label: Text(grade.name),
-              selected: initialValue.contains(grade),
-              onSelected: (selected) => toggle(grade),
+              selected: widget.initialValue.contains(grade),
+              onSelected: (selected) => widget.toggle(grade),
               showCheckmark: true,
             );
           }).toList(),
@@ -121,7 +126,7 @@ class _GradesSelect extends StatelessWidget {
   }
 }
 
-class _VacancyDirectionsSelect extends ConsumerWidget {
+class _VacancyDirectionsSelect extends ConsumerStatefulWidget {
   final IList<int> initialValue;
   final void Function(int) toggle;
 
@@ -131,7 +136,12 @@ class _VacancyDirectionsSelect extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_VacancyDirectionsSelect> createState() => _VacancyDirectionsSelectState();
+}
+
+class _VacancyDirectionsSelectState extends ConsumerState<_VacancyDirectionsSelect> {
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(jobDirectionsProvider);
 
     return state.when(
@@ -151,8 +161,8 @@ class _VacancyDirectionsSelect extends ConsumerWidget {
             children: directions.map((direction) {
               return FilterChip(
                 label: Text(direction.name),
-                selected: initialValue.contains(direction.id),
-                onSelected: (selected) => toggle(direction.id),
+                selected: widget.initialValue.contains(direction.id),
+                onSelected: (selected) => widget.toggle(direction.id),
                 showCheckmark: true,
               );
             }).toList(),

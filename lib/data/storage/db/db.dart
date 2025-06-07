@@ -264,21 +264,79 @@ class AppDatabase extends _$AppDatabase {
     return query.get();
   }
 
-  Future<int> insertInterviewStoryItem({
+  Future<void> insertInterviewStoryItem({
     required int vacancyId,
     required InterviewStoryItemData data,
-  }) {
-    final obj = StoryItemsCompanion.insert(
-      vacancy: vacancyId,
-      type: StoryItemType.interview,
-      createdAt: DateTime.now(),
-      commonTime: Value(data.time),
-      interviewIsOnline: Value(data.isOnline),
-      interviewTarget: Value(data.target),
-      interviewType: Value(data.type),
+  }) async {
+    await into(storyItems).insert(
+      StoryItemsCompanion.insert(
+        createdAt: DateTime.now(),
+        type: StoryItemType.interview,
+        vacancy: vacancyId,
+        commonTime: Value(data.time),
+        interviewIsOnline: Value(data.isOnline),
+        interviewTarget: Value(data.target),
+        interviewType: Value(data.type),
+      ),
     );
+  }
 
-    return into(storyItems).insert(obj);
+  Future<void> insertWaitingForFeedbackStoryItem({
+    required int vacancyId,
+    required WaitingForFeedbackStoryItemData data,
+  }) async {
+    await into(storyItems).insert(
+      StoryItemsCompanion.insert(
+        createdAt: DateTime.now(),
+        type: StoryItemType.waitingForFeedback,
+        vacancy: vacancyId,
+        commonTime: Value(data.time),
+        commonComment: Value(data.comment),
+      ),
+    );
+  }
+
+  Future<void> insertTaskStoryItem({
+    required int vacancyId,
+    required TaskStoryItemData data,
+  }) async {
+    await into(storyItems).insert(
+      StoryItemsCompanion.insert(
+        createdAt: DateTime.now(),
+        type: StoryItemType.task,
+        vacancy: vacancyId,
+        taskDeadline: Value(data.deadline),
+        taskLink: Value(data.link),
+      ),
+    );
+  }
+
+  Future<void> insertFailureStoryItem({
+    required int vacancyId,
+    required FailureStoryItemData data,
+  }) async {
+    await into(storyItems).insert(
+      StoryItemsCompanion.insert(
+        createdAt: DateTime.now(),
+        type: StoryItemType.failure,
+        vacancy: vacancyId,
+        commonComment: Value(data.comment),
+      ),
+    );
+  }
+
+  Future<void> insertOfferStoryItem({
+    required int vacancyId,
+    required OfferStoryItemData data,
+  }) async {
+    await into(storyItems).insert(
+      StoryItemsCompanion.insert(
+        createdAt: DateTime.now(),
+        type: StoryItemType.offer,
+        vacancy: vacancyId,
+        offerSalary: Value(data.salary),
+      ),
+    );
   }
 
   Selectable<StoryItem> selectVacancyStory(int vacancyId) {

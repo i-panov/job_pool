@@ -266,19 +266,16 @@ class AppDatabase extends _$AppDatabase {
 
   Future<int> insertInterviewStoryItem({
     required int vacancyId,
-    required DateTime time,
-    required bool isOnline,
-    required String target,
-    required InterviewType type,
+    required InterviewStoryItemData data,
   }) {
     final obj = StoryItemsCompanion.insert(
       vacancy: vacancyId,
       type: StoryItemType.interview,
       createdAt: DateTime.now(),
-      commonTime: Value(time),
-      interviewIsOnline: Value(isOnline),
-      interviewTarget: Value(target),
-      interviewType: Value(type),
+      commonTime: Value(data.time),
+      interviewIsOnline: Value(data.isOnline),
+      interviewTarget: Value(data.target),
+      interviewType: Value(data.type),
     );
 
     return into(storyItems).insert(obj);

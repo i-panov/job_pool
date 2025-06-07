@@ -160,26 +160,26 @@ class _StoryItemCard extends StatelessWidget {
     return Card(
       child: Padding(
         padding: EdgeInsetsGeometry.all(20),
-        child: switch (item) {
-          InterviewStoryItem i => Column(
+        child: switch (item.data) {
+          InterviewStoryItemData d => Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [Text(i.dtoType.label), Text(_formatDate(i.time))],
+                children: [Text(item.dtoType.label), Text(_formatDate(d.time))],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(i.type.label),
-                  Text(i.isOnline ? 'Онлайн' : 'Офлайн'),
+                  Text(d.type.label),
+                  Text(d.isOnline ? 'Онлайн' : 'Офлайн'),
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(i.isOnline ? 'Ссылка: ' : 'Место: '),
-                  Text(i.target),
+                  Text(d.isOnline ? 'Ссылка: ' : 'Место: '),
+                  Text(d.target),
                 ],
               ),
               Divider(),
@@ -187,7 +187,7 @@ class _StoryItemCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Добавлено: '),
-                  Text(_formatDate(i.createdAt)),
+                  Text(_formatDate(item.createdAt)),
                 ],
               ),
             ],

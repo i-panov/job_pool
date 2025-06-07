@@ -5,83 +5,75 @@ import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 import 'package:job_pool/data/storage/schemas/story_items.dart';
 
 extension StoryItemDtoExtension on StoryItemDto {
-  StoryItem toDomain() => switch (type) {
-    StoryItemType.interview => InterviewStoryItem(
+  StoryItem toDomain() {
+    final data = switch (type) {
+      StoryItemType.interview => InterviewStoryItemData(
+        time: commonTime!,
+        isOnline: interviewIsOnline!,
+        target: interviewTarget,
+        type: interviewType!,
+      ),
+      StoryItemType.waitingForFeedback => WaitingForFeedbackStoryItemData(
+        time: commonTime!,
+        comment: commonComment,
+      ),
+      StoryItemType.task => TaskStoryItemData(
+        link: taskLink,
+        deadline: taskDeadline!,
+      ),
+      StoryItemType.failure => FailureStoryItemData(comment: commonComment),
+      StoryItemType.offer => OfferStoryItemData(salary: offerSalary!),
+    };
+
+    return StoryItem(
       id: id,
       vacancyId: vacancy,
       createdAt: createdAt,
-      time: commonTime!,
-      isOnline: interviewIsOnline!,
-      target: interviewTarget,
-      type: interviewType!,
-    ),
-    StoryItemType.waitingForFeedback => WaitingForFeedbackStoryItem(
-      id: id,
-      vacancyId: vacancy,
-      createdAt: createdAt,
-      time: commonTime!,
-      comment: commonComment,
-    ),
-    StoryItemType.task => TaskStoryItem(
-      id: id,
-      vacancyId: vacancy,
-      createdAt: createdAt,
-      link: taskLink,
-      deadline: taskDeadline!,
-    ),
-    StoryItemType.failure => FailureStoryItem(
-      id: id,
-      vacancyId: vacancy,
-      createdAt: createdAt,
-      comment: commonComment,
-    ),
-    StoryItemType.offer => OfferStoryItem(
-      id: id,
-      vacancyId: vacancy,
-      createdAt: createdAt,
-      salary: offerSalary!,
-    ),
-  };
+      data: data,
+    );
+  }
 }
 
-sealed class StoryItem extends Equatable {
+class StoryItem extends Equatable {
   final int id, vacancyId;
   final DateTime createdAt;
+  final StoryItemData data;
 
   const StoryItem({
-    required this.id,
-    required this.vacancyId,
+    this.id = -1,
+    this.vacancyId = -1,
     required this.createdAt,
+    required this.data,
   });
 
   @override
-  List<Object?> get props => [id, vacancyId, createdAt];
+  List<Object?> get props => [id, vacancyId, createdAt, data];
 
-  StoryItemType get dtoType => switch (this) {
-    InterviewStoryItem() => StoryItemType.interview,
-    WaitingForFeedbackStoryItem() => StoryItemType.waitingForFeedback,
-    TaskStoryItem() => StoryItemType.task,
-    FailureStoryItem() => StoryItemType.failure,
-    OfferStoryItem() => StoryItemType.offer,
+  StoryItemType get dtoType => switch (data) {
+    InterviewStoryItemData() => StoryItemType.interview,
+    WaitingForFeedbackStoryItemData() => StoryItemType.waitingForFeedback,
+    TaskStoryItemData() => StoryItemType.task,
+    FailureStoryItemData() => StoryItemType.failure,
+    OfferStoryItemData() => StoryItemType.offer,
   };
 
   IconData get icon {
-    return switch (this) {
-      InterviewStoryItem() => Icons.calendar_today,
-      WaitingForFeedbackStoryItem() => Icons.hourglass_top,
-      TaskStoryItem() => Icons.assignment,
-      FailureStoryItem() => Icons.cancel,
-      OfferStoryItem() => Icons.work,
+    return switch (data) {
+      InterviewStoryItemData() => Icons.calendar_today,
+      WaitingForFeedbackStoryItemData() => Icons.hourglass_top,
+      TaskStoryItemData() => Icons.assignment,
+      FailureStoryItemData() => Icons.cancel,
+      OfferStoryItemData() => Icons.work,
     };
   }
 
   Color get color {
-    return switch (this) {
-      InterviewStoryItem() => Colors.blue,
-      WaitingForFeedbackStoryItem() => Colors.orange,
-      TaskStoryItem() => Colors.purple,
-      FailureStoryItem() => Colors.red,
-      OfferStoryItem() => Colors.green,
+    return switch (data) {
+      InterviewStoryItemData() => Colors.blue,
+      WaitingForFeedbackStoryItemData() => Colors.orange,
+      TaskStoryItemData() => Colors.purple,
+      FailureStoryItemData() => Colors.red,
+      OfferStoryItemData() => Colors.green,
     };
   }
 
@@ -89,60 +81,55 @@ sealed class StoryItem extends Equatable {
     id: id,
     vacancy: vacancyId,
     createdAt: createdAt,
-    type: switch (this) {
-      InterviewStoryItem() => StoryItemType.interview,
-      WaitingForFeedbackStoryItem() => StoryItemType.waitingForFeedback,
-      TaskStoryItem() => StoryItemType.task,
-      FailureStoryItem() => StoryItemType.failure,
-      OfferStoryItem() => StoryItemType.offer,
-    },
-    commonTime: switch (this) {
-      InterviewStoryItem(:final time) => time,
-      WaitingForFeedbackStoryItem(:final time) => time,
+    type: dtoType,
+    commonTime: switch (data) {
+      InterviewStoryItemData(:final time) => time,
+      WaitingForFeedbackStoryItemData(:final time) => time,
       _ => null,
     },
-    commonComment: switch (this) {
-      WaitingForFeedbackStoryItem(comment: final comment) => comment,
-      FailureStoryItem(:final comment) => comment,
+    commonComment: switch (data) {
+      WaitingForFeedbackStoryItemData(comment: final comment) => comment,
+      FailureStoryItemData(:final comment) => comment,
       _ => '',
     },
-    interviewIsOnline: switch (this) {
-      InterviewStoryItem(:final isOnline) => isOnline,
+    interviewIsOnline: switch (data) {
+      InterviewStoryItemData(:final isOnline) => isOnline,
       _ => null,
     },
-    interviewTarget: switch (this) {
-      InterviewStoryItem(:final target) => target,
+    interviewTarget: switch (data) {
+      InterviewStoryItemData(:final target) => target,
       _ => '',
     },
-    interviewType: switch (this) {
-      InterviewStoryItem(:final type) => type,
+    interviewType: switch (data) {
+      InterviewStoryItemData(:final type) => type,
       _ => null,
     },
-    taskLink: switch (this) {
-      TaskStoryItem(:final link) => link,
+    taskLink: switch (data) {
+      TaskStoryItemData(:final link) => link,
       _ => '',
     },
-    taskDeadline: switch (this) {
-      TaskStoryItem(:final deadline) => deadline,
+    taskDeadline: switch (data) {
+      TaskStoryItemData(:final deadline) => deadline,
       _ => null,
     },
-    offerSalary: switch (this) {
-      OfferStoryItem(:final salary) => salary,
+    offerSalary: switch (data) {
+      OfferStoryItemData(:final salary) => salary,
       _ => null,
     },
   );
 }
 
-class InterviewStoryItem extends StoryItem {
+sealed class StoryItemData extends Equatable {
+  const StoryItemData();
+}
+
+class InterviewStoryItemData extends StoryItemData {
   final DateTime time;
   final bool isOnline;
   final String target;
   final InterviewType type;
 
-  const InterviewStoryItem({
-    required super.id,
-    required super.vacancyId,
-    required super.createdAt,
+  const InterviewStoryItemData({
     required this.time,
     required this.isOnline,
     required this.target,
@@ -150,65 +137,46 @@ class InterviewStoryItem extends StoryItem {
   });
 
   @override
-  List<Object?> get props => [...super.props, time, isOnline, target, type];
+  List<Object?> get props => [time, isOnline, target, type];
 }
 
-class WaitingForFeedbackStoryItem extends StoryItem {
+class WaitingForFeedbackStoryItemData extends StoryItemData {
   final DateTime time;
   final String comment;
 
-  const WaitingForFeedbackStoryItem({
-    required super.id,
-    required super.vacancyId,
-    required super.createdAt,
+  const WaitingForFeedbackStoryItemData({
     required this.time,
     required this.comment,
   });
 
   @override
-  List<Object?> get props => [...super.props, time, comment];
+  List<Object?> get props => [time, comment];
 }
 
-class TaskStoryItem extends StoryItem {
+class TaskStoryItemData extends StoryItemData {
   final DateTime deadline;
   final String link;
 
-  const TaskStoryItem({
-    required super.id,
-    required super.vacancyId,
-    required super.createdAt,
-    required this.deadline,
-    required this.link,
-  });
+  const TaskStoryItemData({required this.deadline, required this.link});
 
   @override
-  List<Object?> get props => [...super.props, deadline, link];
+  List<Object?> get props => [deadline, link];
 }
 
-class FailureStoryItem extends StoryItem {
+class FailureStoryItemData extends StoryItemData {
   final String comment;
 
-  const FailureStoryItem({
-    required super.id,
-    required super.vacancyId,
-    required super.createdAt,
-    required this.comment,
-  });
+  const FailureStoryItemData({required this.comment});
 
   @override
-  List<Object?> get props => [...super.props, comment];
+  List<Object?> get props => [comment];
 }
 
-class OfferStoryItem extends StoryItem {
+class OfferStoryItemData extends StoryItemData {
   final int salary;
 
-  const OfferStoryItem({
-    required super.id,
-    required super.vacancyId,
-    required super.createdAt,
-    required this.salary,
-  });
+  const OfferStoryItemData({required this.salary});
 
   @override
-  List<Object?> get props => [...super.props, salary];
+  List<Object?> get props => [salary];
 }

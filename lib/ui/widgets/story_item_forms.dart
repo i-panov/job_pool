@@ -14,7 +14,7 @@ Future<void> openStoryItemForm({
   required int vacancyId,
   required AppDatabase db,
 }) async {
-  final item = await showAdaptiveDialog<StoryItem?>(
+  final data = await showAdaptiveDialog<StoryItemData?>(
     context: context,
     builder: (context) {
       return AlertDialog.adaptive(
@@ -40,13 +40,12 @@ Future<void> openStoryItemForm({
     },
   );
 
-  if (item != null && item is InterviewStoryItem) {
+  if (data == null) return;
+
+  if (data is InterviewStoryItemData) {
     db.insertInterviewStoryItem(
       vacancyId: vacancyId,
-      time: item.time,
-      isOnline: item.isOnline,
-      target: item.target,
-      type: item.type,
+      data: data,
     );
   }
 }
@@ -144,10 +143,7 @@ class _InterviewStoryItemFormState extends State<_InterviewStoryItemForm> {
     }
 
     context.router.pop(
-      InterviewStoryItem(
-        id: 0,
-        vacancyId: 0,
-        createdAt: DateTime.now(),
+      InterviewStoryItemData(
         time: time,
         isOnline: isOnline,
         target: target,

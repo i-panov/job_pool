@@ -43,7 +43,7 @@ class JobDirections extends Table {
 enum JobGrade { intern, junior, middle, senior, lead }
 
 enum InterviewType {
-  hr('HR'),
+  hr('с HR'),
   tech('техническое'),
   director('с руководителем');
 

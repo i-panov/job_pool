@@ -34,10 +34,10 @@ extension StoryItemDtoExtension on StoryItemDto {
   }
 }
 
-class StoryItem extends Equatable {
+class StoryItem<T extends StoryItemData> extends Equatable {
   final int id, vacancyId;
   final DateTime createdAt;
-  final StoryItemData data;
+  final T data;
 
   const StoryItem({
     this.id = -1,

@@ -2198,7 +2198,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $JobDirectionsTable jobDirections = $JobDirectionsTable(this);
   late final $VacancyDirectionsTable vacancyDirections =
       $VacancyDirectionsTable(this);
-  Selectable<SelectVacancyFullInfoResult> _selectVacancyFullInfo(int var1) {
+  Selectable<SelectVacancyFullInfoInternalResult> selectVacancyFullInfoInternal(
+    int var1,
+  ) {
     return customSelect(
       'SELECT v.id, v.link, v.comment, v.grades, c.id AS company_id, c.name AS company_name, (SELECT GROUP_CONCAT(d.id, \'#___SEPARATOR___#\') FROM vacancy_directions AS vd JOIN job_directions AS d ON d.id = vd.direction WHERE vd.vacancy = v.id ORDER BY vd."order") AS direction_ids, (SELECT GROUP_CONCAT(d.name, \'#___SEPARATOR___#\') FROM vacancy_directions AS vd JOIN job_directions AS d ON d.id = vd.direction WHERE vd.vacancy = v.id ORDER BY vd."order") AS direction_names, (SELECT GROUP_CONCAT(ct.contact_type, \'#___SEPARATOR___#\') FROM contacts AS ct WHERE ct.vacancy = v.id ORDER BY ct.contact_type) AS contact_types, (SELECT GROUP_CONCAT(ct.contact_value, \'#___SEPARATOR___#\') FROM contacts AS ct WHERE ct.vacancy = v.id ORDER BY ct.contact_type) AS contact_values FROM vacancies AS v JOIN companies AS c ON c.id = v.company WHERE v.id = ?1',
       variables: [Variable<int>(var1)],
@@ -2210,7 +2212,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         contacts,
       },
     ).map(
-      (QueryRow row) => SelectVacancyFullInfoResult(
+      (QueryRow row) => SelectVacancyFullInfoInternalResult(
         id: row.read<int>('id'),
         link: row.read<String>('link'),
         comment: row.read<String>('comment'),
@@ -4578,7 +4580,7 @@ class $AppDatabaseManager {
       $$VacancyDirectionsTableTableManager(_db, _db.vacancyDirections);
 }
 
-class SelectVacancyFullInfoResult {
+class SelectVacancyFullInfoInternalResult {
   final int id;
   final String link;
   final String comment;
@@ -4589,7 +4591,7 @@ class SelectVacancyFullInfoResult {
   final String? directionNames;
   final String? contactTypes;
   final String? contactValues;
-  SelectVacancyFullInfoResult({
+  SelectVacancyFullInfoInternalResult({
     required this.id,
     required this.link,
     required this.comment,

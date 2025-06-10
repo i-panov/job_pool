@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 
-class Vacancy extends Equatable {
+class VacancyFullInfo extends Equatable {
   final int id;
   final String link, comment;
   final ISet<JobGrade> grades;
@@ -11,7 +11,7 @@ class Vacancy extends Equatable {
   final int companyId;
   final String companyName;
 
-  const Vacancy({
+  const VacancyFullInfo({
     required this.id,
     required this.link,
     required this.comment,

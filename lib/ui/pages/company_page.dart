@@ -3,6 +3,7 @@ import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:job_pool/data/storage/db/db.dart';
+import 'package:job_pool/domain/models/vacancy_short_info.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 import 'package:job_pool/ui/routing/app_router.gr.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -197,7 +198,7 @@ class CompanyPage extends ConsumerWidget {
 }
 
 class VacancyListItem extends StatelessWidget {
-  final VacancyDto vacancy;
+  final VacancyShortInfo vacancy;
 
   const VacancyListItem({super.key, required this.vacancy});
 
@@ -208,36 +209,51 @@ class VacancyListItem extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Левая колонка: направления (flex: 2)
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    vacancy.link,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  if (vacancy.comment.isNotEmpty) ...[
-                    SizedBox(height: 4),
-                    Text(
-                      vacancy.comment,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 14,
+              flex: 2,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Wrap(
+                  alignment: WrapAlignment.start,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final direction in vacancy.directions)
+                      Chip(
+                        label: Text(direction),
+                        backgroundColor: Colors.blue.shade50,
+                        labelStyle: TextStyle(color: Colors.blue.shade800),
                       ),
-                    ),
                   ],
-                ],
+                ),
               ),
             ),
-            IconButton(
-              icon: Icon(
-                Icons.open_in_new,
-                size: 16,
-                color: Colors.blue.shade700,
+            SizedBox(width: 16),
+            // Правая колонка: грейды (flex: 1), выравнивание по правому краю
+            Expanded(
+              flex: 1,
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    for (final grade in vacancy.grades)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Chip(
+                          label: Text(grade.name),
+                          backgroundColor: Colors.grey.shade200,
+                          labelStyle: TextStyle(color: Colors.grey.shade800),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-              onPressed: () => launchUrlString(vacancy.link),
             ),
           ],
         ),
@@ -256,9 +272,7 @@ final companyProvider = StreamProvider.autoDispose.family<CompanyDto, int>((
 });
 
 final vacanciesProvider = StreamProvider.autoDispose
-    .family<List<VacancyDto>, int>((ref, companyId) {
+    .family<List<VacancyShortInfo>, int>((ref, companyId) {
       final db = ref.watch(dbProvider);
-      final query = db.vacancies.select()
-        ..where((v) => v.company.equals(companyId));
-      return query.watch().map((vacancies) => vacancies);
+      return db.watchVacanciesShortInfo(companyId);
     });

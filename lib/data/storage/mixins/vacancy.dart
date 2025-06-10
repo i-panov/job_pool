@@ -4,6 +4,7 @@ import 'package:job_pool/core/extensions.dart';
 import 'package:job_pool/data/storage/db/db.dart';
 import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 import 'package:job_pool/domain/models/vacancy_full_info.dart';
+import 'package:job_pool/domain/models/vacancy_short_info.dart';
 
 mixin VacancyDbMixin on AppDatabaseBase {
   static const _separator = AppDatabase.separator;
@@ -19,6 +20,44 @@ mixin VacancyDbMixin on AppDatabaseBase {
   Future<List<ContactDto>> getVacancyContacts(int vacancyId) {
     final query = select(contacts)..where((f) => f.vacancy.equals(vacancyId));
     return query.get();
+  }
+
+  Stream<List<VacancyShortInfo>> watchVacanciesShortInfo(int companyId) {
+    final directionNames = jobDirections.name.groupConcat(
+      distinct: true,
+      orderBy: OrderBy([OrderingTerm.asc(vacancyDirections.order)]),
+    );
+
+    final query = selectOnly(vacancies)
+      ..where(vacancies.company.equals(companyId))
+      ..join([
+        leftOuterJoin(
+          vacancyDirections,
+          vacancyDirections.vacancy.equalsExp(vacancies.id),
+        ),
+        innerJoin(
+          jobDirections,
+          jobDirections.id.equalsExp(vacancyDirections.direction),
+        ),
+        leftOuterJoin(storyItems, storyItems.vacancy.equalsExp(vacancies.id)),
+      ])
+      ..groupBy([vacancies.id])
+      ..orderBy([OrderingTerm.desc(storyItems.createdAt)])
+      ..addColumns([
+        vacancies.id,
+        vacancies.grades,
+        directionNames,
+      ]);
+
+    return query.map((row) {
+      final directionNamesList = row.read(directionNames)?.split(',') ?? [];
+
+      return VacancyShortInfo(
+        id: row.read(vacancies.id)!,
+        grades: row.read(vacancies.grades)!.toIList(),
+        directions: directionNamesList.toIList(),
+      );
+    }).watch();
   }
 
   Stream<VacancyFullInfo> watchVacancyFullInfo(int vacancyId) {

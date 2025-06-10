@@ -4,7 +4,7 @@ import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 
 class VacancyShortInfo extends Equatable {
   final int id;
-  final ISet<JobGrade> grades;
+  final IList<JobGrade> grades;
   final IList<String> directions;
 
   const VacancyShortInfo({

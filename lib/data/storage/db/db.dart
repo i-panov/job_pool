@@ -14,6 +14,12 @@ import 'package:path_provider/path_provider.dart';
 
 part 'db.g.dart';
 
+typedef AppDatabaseBase = _$AppDatabase;
+
+mixin AppDatabaseMixin on AppDatabaseBase {
+  Future<void> foo() async {}
+}
+
 @DriftDatabase(
   tables: [
     Companies,
@@ -23,8 +29,45 @@ part 'db.g.dart';
     VacancyDirections,
     JobDirections,
   ],
+  queries: {
+    '_selectVacancyFullInfo':
+        '''
+    SELECT
+      v.id, v.link, v.comment, v.grades,
+      c.id AS company_id, c.name AS company_name,
+      (
+        SELECT GROUP_CONCAT(d.id, '${AppDatabase._separator}')
+        FROM vacancy_directions vd
+        JOIN job_directions d ON d.id = vd.direction
+        WHERE vd.vacancy = v.id
+        ORDER BY vd."order"
+      ) AS direction_ids,
+      (
+        SELECT GROUP_CONCAT(d.name, '${AppDatabase._separator}')
+        FROM vacancy_directions vd
+        JOIN job_directions d ON d.id = vd.direction
+        WHERE vd.vacancy = v.id
+        ORDER BY vd."order"
+      ) AS direction_names,
+      (
+        SELECT GROUP_CONCAT(ct.contact_type, '${AppDatabase._separator}')
+        FROM contacts ct
+        WHERE ct.vacancy = v.id
+        ORDER BY ct.contact_type
+      ) AS contact_types,
+      (
+        SELECT GROUP_CONCAT(ct.contact_value, '${AppDatabase._separator}')
+        FROM contacts ct
+        WHERE ct.vacancy = v.id
+        ORDER BY ct.contact_type
+      ) AS contact_values
+    FROM vacancies v
+    JOIN companies c ON c.id = v.company
+    WHERE v.id = ?
+  ''',
+  },
 )
-class AppDatabase extends _$AppDatabase {
+class AppDatabase extends AppDatabaseBase with AppDatabaseMixin {
   static const _separator = '#___SEPARATOR___#';
 
   static QueryExecutor _openConnection() {
@@ -70,93 +113,36 @@ class AppDatabase extends _$AppDatabase {
     return query.get();
   }
 
-  Stream<Vacancy> watchFullVacancyInfo(int vacancyId) {
-    const query =
-        '''
-    SELECT
-      v.id, v.link, v.comment, v.grades,
-      c.id AS company_id, c.name AS company_name,
-      (
-        SELECT GROUP_CONCAT(d.id, '$_separator')
-        FROM vacancy_directions vd
-        JOIN job_directions d ON d.id = vd.direction
-        WHERE vd.vacancy = v.id
-        ORDER BY vd."order"
-      ) AS direction_ids,
-      (
-        SELECT GROUP_CONCAT(d.name, '$_separator')
-        FROM vacancy_directions vd
-        JOIN job_directions d ON d.id = vd.direction
-        WHERE vd.vacancy = v.id
-        ORDER BY vd."order"
-      ) AS direction_names,
-      (
-        SELECT GROUP_CONCAT(ct.contact_type, '$_separator')
-        FROM contacts ct
-        WHERE ct.vacancy = v.id
-        ORDER BY ct.contact_type
-      ) AS contact_types,
-      (
-        SELECT GROUP_CONCAT(ct.contact_value, '$_separator')
-        FROM contacts ct
-        WHERE ct.vacancy = v.id
-        ORDER BY ct.contact_type
-      ) AS contact_values
-    FROM vacancies v
-    JOIN companies c ON c.id = v.company
-    WHERE v.id = ?
-  ''';
-
-    return customSelect(
-      query,
-      variables: [Variable.withInt(vacancyId)],
-      readsFrom: {
-        vacancies,
-        companies,
-        vacancyDirections,
-        jobDirections,
-        contacts,
-      },
-    ).asyncMap((row) async {
-      final directionIds = (row.read<String?>('direction_ids') ?? '').split(
-        _separator,
-      );
-      final directionNames = (row.read<String?>('direction_names') ?? '').split(
-        _separator,
-      );
-      final contactTypes = (row.read<String?>('contact_types') ?? '').split(
-        _separator,
-      );
-      final contactValues = (row.read<String?>('contact_values') ?? '').split(
-        _separator,
+  Stream<Vacancy> watchVacancyFullInfo(int vacancyId) {
+    return _selectVacancyFullInfo(vacancyId).map((row) {
+      final directionIds = (row.directionIds?.split(_separator) ?? []).map(
+        int.tryParse,
       );
 
-      const converter = EnumSetType(JobGrade.values);
-      final grades = converter.read(row.read<String>('grades'));
+      final directionNames = row.directionNames?.split(_separator) ?? [];
+
+      final contactTypes = (row.contactTypes?.split(_separator) ?? []).map(
+        int.tryParse,
+      );
+
+      final contactValues = row.contactValues?.split(_separator) ?? [];
 
       return Vacancy(
-        id: row.read<int>('id'),
-        link: row.read<String>('link'),
-        comment: row.read<String>('comment'),
-        grades: grades,
-        companyId: row.read<int>('company_id'),
-        companyName: row.read<String>('company_name'),
+        id: row.id,
+        link: row.link,
+        comment: row.comment,
+        grades: row.grades,
+        companyId: row.companyId,
+        companyName: row.companyName,
         directions: directionNames
-            .zip(
-              directionIds,
-              (name, id) => (id: int.tryParse(id) ?? -1, name: name),
-            )
-            .where((e) => e.id > 0)
+            .zip(directionIds)
+            .where((p) => p.right != null)
+            .map((p) => (id: p.right!, name: p.left))
             .toIList(),
         contacts: contactValues
-            .zip(
-              contactTypes,
-              (value, type) => (
-                type: ContactType.values[int.tryParse(type) ?? 0],
-                value: value,
-              ),
-            )
-            .where((e) => e.value.isNotEmpty)
+            .zip(contactTypes)
+            .where((p) => p.right != null && p.left.isNotEmpty)
+            .map((e) => (type: ContactType.values[e.right!], value: e.left))
             .toIList(),
       );
     }).watchSingle();
@@ -235,10 +221,12 @@ class AppDatabase extends _$AppDatabase {
         companyId: row.read(companies.id)!,
         companyName: row.read(companies.name)!,
         directions: valueDirectionNames
-            .zip(valueDirectionIds, (name, id) => (id: id, name: name))
+            .zip(valueDirectionIds)
+            .map((p) => (id: p.right, name: p.left))
             .toIList(),
         contacts: valueContactValues
-            .zip(valueContactTypes, (value, type) => (type: type, value: value))
+            .zip(valueContactTypes)
+            .map((p) => (type: p.right, value: p.left))
             .toIList(),
       );
     });

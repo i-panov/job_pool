@@ -1,17 +1,17 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
 extension AppIListExtension<T> on IList<T> {
-  Iterable<R> zip<O, R>(Iterable<O> other, R Function(T, O) mapper) sync* {
+  Iterable<({T left, O right})> zip<O>(Iterable<O> other) sync* {
     for (final (i, item) in other.indexed) {
-      yield mapper(this[i], item);
+      yield (left: this[i], right: item);
     }
   }
 }
 
 extension AppListExtension<T> on List<T> {
-  Iterable<R> zip<O, R>(Iterable<O> other, R Function(T, O) mapper) sync* {
+  Iterable<({T left, O right})> zip<O>(Iterable<O> other) sync* {
     for (final (i, item) in other.indexed) {
-      yield mapper(this[i], item);
+      yield (left: this[i], right: item);
     }
   }
 }

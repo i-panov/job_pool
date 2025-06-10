@@ -28,7 +28,7 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: db.watchFullVacancyInfo(widget.vacancyId),
+      stream: db.watchVacancyFullInfo(widget.vacancyId),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(child: Text(snapshot.error.toString()));

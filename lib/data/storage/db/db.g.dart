@@ -2198,6 +2198,36 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $JobDirectionsTable jobDirections = $JobDirectionsTable(this);
   late final $VacancyDirectionsTable vacancyDirections =
       $VacancyDirectionsTable(this);
+  Selectable<SelectVacancyFullInfoResult> _selectVacancyFullInfo(int var1) {
+    return customSelect(
+      'SELECT v.id, v.link, v.comment, v.grades, c.id AS company_id, c.name AS company_name, (SELECT GROUP_CONCAT(d.id, \'#___SEPARATOR___#\') FROM vacancy_directions AS vd JOIN job_directions AS d ON d.id = vd.direction WHERE vd.vacancy = v.id ORDER BY vd."order") AS direction_ids, (SELECT GROUP_CONCAT(d.name, \'#___SEPARATOR___#\') FROM vacancy_directions AS vd JOIN job_directions AS d ON d.id = vd.direction WHERE vd.vacancy = v.id ORDER BY vd."order") AS direction_names, (SELECT GROUP_CONCAT(ct.contact_type, \'#___SEPARATOR___#\') FROM contacts AS ct WHERE ct.vacancy = v.id ORDER BY ct.contact_type) AS contact_types, (SELECT GROUP_CONCAT(ct.contact_value, \'#___SEPARATOR___#\') FROM contacts AS ct WHERE ct.vacancy = v.id ORDER BY ct.contact_type) AS contact_values FROM vacancies AS v JOIN companies AS c ON c.id = v.company WHERE v.id = ?1',
+      variables: [Variable<int>(var1)],
+      readsFrom: {
+        vacancies,
+        companies,
+        jobDirections,
+        vacancyDirections,
+        contacts,
+      },
+    ).map(
+      (QueryRow row) => SelectVacancyFullInfoResult(
+        id: row.read<int>('id'),
+        link: row.read<String>('link'),
+        comment: row.read<String>('comment'),
+        grades: row.readWithType<ISet<JobGrade>>(
+          const EnumSetType(JobGrade.values),
+          'grades',
+        ),
+        companyId: row.read<int>('company_id'),
+        companyName: row.read<String>('company_name'),
+        directionIds: row.readNullable<String>('direction_ids'),
+        directionNames: row.readNullable<String>('direction_names'),
+        contactTypes: row.readNullable<String>('contact_types'),
+        contactValues: row.readNullable<String>('contact_values'),
+      ),
+    );
+  }
+
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4546,4 +4576,29 @@ class $AppDatabaseManager {
       $$JobDirectionsTableTableManager(_db, _db.jobDirections);
   $$VacancyDirectionsTableTableManager get vacancyDirections =>
       $$VacancyDirectionsTableTableManager(_db, _db.vacancyDirections);
+}
+
+class SelectVacancyFullInfoResult {
+  final int id;
+  final String link;
+  final String comment;
+  final ISet<JobGrade> grades;
+  final int companyId;
+  final String companyName;
+  final String? directionIds;
+  final String? directionNames;
+  final String? contactTypes;
+  final String? contactValues;
+  SelectVacancyFullInfoResult({
+    required this.id,
+    required this.link,
+    required this.comment,
+    required this.grades,
+    required this.companyId,
+    required this.companyName,
+    this.directionIds,
+    this.directionNames,
+    this.contactTypes,
+    this.contactValues,
+  });
 }

@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
@@ -19,7 +18,7 @@ class CompaniesPage extends ConsumerWidget {
         alignment: Alignment.topCenter,
         children: [
           StreamBuilder(
-            stream: db.companies.select().watch(),
+            stream: db.selectCompanies().watch(),
             builder: (context, snapshot) {
               final companies = snapshot.data ?? [];
 

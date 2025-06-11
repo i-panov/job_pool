@@ -21,4 +21,35 @@ mixin CompanyDbMixin on AppDatabaseBase {
     final query = delete(companies)..where((f) => f.id.equals(id));
     return query.go();
   }
+
+  Selectable<CompanyDto> selectCompanies() {
+    final query = selectOnly(companies)
+      ..join([
+        leftOuterJoin(vacancies, vacancies.company.equalsExp(companies.id)),
+        leftOuterJoin(storyItems, storyItems.vacancy.equalsExp(vacancies.id)),
+      ])
+      ..orderBy([
+        OrderingTerm.desc(storyItems.createdAt),
+        OrderingTerm.desc(vacancies.id),
+        OrderingTerm.desc(companies.id),
+      ])
+      ..groupBy([companies.id])
+      ..addColumns([
+        companies.id,
+        companies.name,
+        companies.isIT,
+        companies.comment,
+        companies.links,
+      ]);
+
+    return query.map((row) {
+      return CompanyDto(
+        id: row.read(companies.id)!,
+        name: row.read(companies.name)!,
+        isIT: row.read(companies.isIT)!,
+        comment: row.read(companies.comment)!,
+        links: row.read(companies.links)!,
+      );
+    });
+  }
 }

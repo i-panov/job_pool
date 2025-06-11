@@ -19,6 +19,7 @@ class ContactItem extends Equatable {
       ContactType.phone => [AppValidator.required, AppValidator.phone],
       ContactType.email => [AppValidator.required, AppValidator.email],
       ContactType.telegram => [AppValidator.required],
+      ContactType.whatsapp => [AppValidator.required, AppValidator.phone],
     };
   }
 

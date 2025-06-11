@@ -52,4 +52,4 @@ enum InterviewType {
   const InterviewType(this.label);
 }
 
-enum ContactType { email, phone, telegram }
+enum ContactType { email, phone, telegram, whatsapp, }

@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:job_pool/core/theme_utils.dart';
 import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 import 'package:job_pool/data/storage/schemas/story_items.dart';
@@ -208,6 +209,7 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
                           ContactType.email => Icons.email,
                           ContactType.phone => Icons.phone,
                           ContactType.telegram => Icons.telegram,
+                          ContactType.whatsapp => Ionicons.logo_whatsapp,
                         }),
                         label: InkWell(
                           onTap: () => launchUrlString(switch (contact.type) {
@@ -215,6 +217,8 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
                             ContactType.phone => 'tel:${contact.value}',
                             ContactType.telegram =>
                               'https://t.me/${contact.value}',
+                            ContactType.whatsapp =>
+                              'https://wa.me/${contact.value}',
                           }),
                           child: Text(contact.value),
                         ),

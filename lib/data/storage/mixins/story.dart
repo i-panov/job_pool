@@ -5,6 +5,7 @@ import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 import 'package:job_pool/data/storage/schemas/story_items.dart';
 import 'package:job_pool/domain/models/interview.dart';
 import 'package:job_pool/domain/models/story_item.dart';
+import 'package:job_pool/domain/models/task.dart';
 
 mixin StoryDbMixin on AppDatabaseBase {
   static const _separator = AppDatabase.separator;
@@ -136,6 +137,48 @@ mixin StoryDbMixin on AppDatabaseBase {
         companyName: row.read(companies.name)!,
         jobDirections: row.read(directions)!.split(_separator).toISet(),
         jobGrades: row.read(vacancies.grades)!,
+      );
+    });
+  }
+
+  Selectable<Task> selectTasks() {
+    final directions = jobDirections.name.groupConcat(separator: _separator);
+
+    final query = selectOnly(storyItems)
+      ..where(storyItems.type.equalsValue(StoryItemType.task))
+      ..join([
+        innerJoin(vacancies, vacancies.id.equalsExp(storyItems.vacancy)),
+        innerJoin(companies, companies.id.equalsExp(vacancies.company)),
+        leftOuterJoin(
+          vacancyDirections,
+          vacancyDirections.vacancy.equalsExp(vacancies.id),
+        ),
+        innerJoin(
+          jobDirections,
+          jobDirections.id.equalsExp(vacancyDirections.direction),
+        ),
+      ])
+      ..orderBy([OrderingTerm.desc(storyItems.createdAt)])
+      ..groupBy([storyItems.id])
+      ..addColumns([
+        storyItems.taskLink,
+        storyItems.taskDeadline,
+        storyItems.createdAt,
+        vacancies.id,
+        companies.name,
+        directions,
+      ]);
+
+    return query.map((row) {
+      return Task(
+        link: row.read(storyItems.taskLink)!,
+        companyName: row.read(companies.name)!,
+        deadline: row.read(storyItems.taskDeadline)!,
+        createdAt: row.read(storyItems.createdAt)!,
+        directions:
+            row.read(directions)?.split(_separator).toIList() ??
+            const IList.empty(),
+        vacancyId: row.read(vacancies.id)!,
       );
     });
   }

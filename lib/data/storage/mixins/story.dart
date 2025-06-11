@@ -9,6 +9,10 @@ import 'package:job_pool/domain/models/story_item.dart';
 mixin StoryDbMixin on AppDatabaseBase {
   static const _separator = AppDatabase.separator;
 
+  Future<void> removeStoryItem(int id) async {
+    await (delete(storyItems)..where((s) => s.id.equals(id))).go();
+  }
+
   Future<void> insertInterviewStoryItem({
     required int vacancyId,
     required InterviewStoryItemData data,

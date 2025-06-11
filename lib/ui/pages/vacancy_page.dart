@@ -58,6 +58,33 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
                   ),
                 ),
               ),
+              IconButton(
+                icon: Icon(Icons.delete_outline, color: Colors.red),
+                tooltip: 'Удалить вакансию',
+                onPressed: () async {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: Text('Удалить вакансию?'),
+                      content: Text('Вы уверены, что хотите удалить эту вакансию?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(false),
+                          child: Text('Отмена'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(true),
+                          child: Text('Удалить', style: TextStyle(color: Colors.red)),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirmed == true) {
+                    await db.removeVacancy(vacancy.id);
+                    if (context.mounted) context.router.pop();
+                  }
+                },
+              ),
             ],
           ),
           floatingActionButton: Theme(
@@ -251,7 +278,10 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
                               ?.copyWith(color: Colors.grey.shade700),
                         ),
                         SizedBox(height: 12),
-                        for (final item in story) _StoryItemCard(item: item),
+                        for (final item in story) _StoryItemCard(
+                          item: item,
+                          onDelete: db.removeStoryItem,
+                        ),
                       ],
                     );
                   },
@@ -267,8 +297,9 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
 
 class _StoryItemCard extends StatelessWidget {
   final StoryItem item;
+  final void Function(int)? onDelete;
 
-  const _StoryItemCard({required this.item});
+  const _StoryItemCard({required this.item, this.onDelete});
 
   TextStyle get _labelStyle =>
       TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.w500);
@@ -305,22 +336,62 @@ class _StoryItemCard extends StatelessWidget {
       ),
       color: StoryItemStyle.backgroundColor(item.dtoType),
       margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTitle(context),
-            if (_hasDate) ...[
-              const SizedBox(height: 8),
-              _buildDateInfo(context),
-            ],
-            const SizedBox(height: 12),
-            _buildContent(context),
-            const Divider(height: 24),
-            _buildFooter(context),
-          ],
-        ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTitle(context),
+                if (_hasDate) ...[
+                  const SizedBox(height: 8),
+                  _buildDateInfo(context),
+                ],
+                const SizedBox(height: 12),
+                _buildContent(context),
+                const Divider(height: 24),
+                _buildFooter(context),
+              ],
+            ),
+          ),
+          if (onDelete != null)
+            Positioned(
+              top: 4,
+              right: 4,
+              child: IconButton(
+                icon: Icon(Icons.close, size: 20, color: Colors.grey.shade500),
+                tooltip: 'Удалить',
+                onPressed: () async {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: Text('Удалить событие?'),
+                      content: Text(
+                        'Вы уверены, что хотите удалить это событие?',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(false),
+                          child: Text('Отмена'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(true),
+                          child: Text(
+                            'Удалить',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirmed == true) {
+                    onDelete?.call(item.id);
+                  }
+                },
+              ),
+            ),
+        ],
       ),
     );
   }

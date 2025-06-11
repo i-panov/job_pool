@@ -31,6 +31,34 @@ class CompanyPage extends ConsumerWidget {
               onPressed: () =>
                   context.router.push(CompanyFormRoute(companyId: company.id)),
             ),
+            IconButton(
+              icon: Icon(Icons.delete_outline, color: Colors.red),
+              tooltip: 'Удалить компанию',
+              onPressed: () async {
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text('Удалить компанию?'),
+                    content: Text('Вы уверены, что хотите удалить эту компанию?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(false),
+                        child: Text('Отмена'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(true),
+                        child: Text('Удалить', style: TextStyle(color: Colors.red)),
+                      ),
+                    ],
+                  ),
+                );
+                if (confirmed == true) {
+                  final db = ref.read(dbProvider);
+                  await db.removeCompany(company.id);
+                  if (context.mounted) context.router.pop();
+                }
+              },
+            ),
           ],
         ),
         floatingActionButton: FloatingActionButton(

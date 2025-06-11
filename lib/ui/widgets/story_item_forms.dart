@@ -31,7 +31,8 @@ Future<void> openStoryItemForm({
         ),
         content: switch (dtoType) {
           StoryItemType.interview => _InterviewStoryItemForm(),
-          StoryItemType.waitingForFeedback => _WaitingForFeedbackStoryItemForm(),
+          StoryItemType.waitingForFeedback =>
+            _WaitingForFeedbackStoryItemForm(),
           StoryItemType.task => _TaskStoryItemForm(),
           StoryItemType.failure => _FailureStoryItemForm(),
           StoryItemType.offer => _OfferStoryItemForm(),
@@ -173,12 +174,12 @@ class _InterviewStoryItemFormState extends State<_InterviewStoryItemForm> {
   }
 
   bool _validateTarget() {
-    if (target.isEmpty) {
-      targetError = 'Обязательное поле';
-      return false;
-    }
+    // if (target.isEmpty) {
+    //   targetError = 'Обязательное поле';
+    //   return false;
+    // }
 
-    if (isOnline && !AppValidator.url.isValid(target)) {
+    if (isOnline && target.isNotEmpty && !AppValidator.url.isValid(target)) {
       targetError = 'Некорректный URL';
       return false;
     }
@@ -192,10 +193,12 @@ class _WaitingForFeedbackStoryItemForm extends StatefulWidget {
   const _WaitingForFeedbackStoryItemForm();
 
   @override
-  State<_WaitingForFeedbackStoryItemForm> createState() => _WaitingForFeedbackStoryItemFormState();
+  State<_WaitingForFeedbackStoryItemForm> createState() =>
+      _WaitingForFeedbackStoryItemFormState();
 }
 
-class _WaitingForFeedbackStoryItemFormState extends State<_WaitingForFeedbackStoryItemForm> {
+class _WaitingForFeedbackStoryItemFormState
+    extends State<_WaitingForFeedbackStoryItemForm> {
   var time = DateTime.now().add(const Duration(days: 1));
   var comment = '';
 
@@ -215,31 +218,26 @@ class _WaitingForFeedbackStoryItemFormState extends State<_WaitingForFeedbackSto
           onChanged: (value) {
             if (mounted) {
               setState(() {
-              time = value ?? time;
-            });
+                time = value ?? time;
+              });
             }
           },
         ),
         TextFormField(
           initialValue: comment,
           maxLines: 3,
-          decoration: InputDecoration(
-            labelText: 'Комментарий',
-          ),
+          decoration: InputDecoration(labelText: 'Комментарий'),
           onChanged: (value) {
             if (mounted) {
               setState(() {
-              comment = value;
-            });
+                comment = value;
+              });
             }
           },
         ),
         ElevatedButton(
           onPressed: () => context.router.pop(
-            WaitingForFeedbackStoryItemData(
-              time: time,
-              comment: comment,
-            ),
+            WaitingForFeedbackStoryItemData(time: time, comment: comment),
           ),
           child: Text('Добавить'),
         ),
@@ -284,8 +282,8 @@ class _TaskStoryItemFormState extends State<_TaskStoryItemForm> {
           onChanged: (value) {
             if (mounted) {
               setState(() {
-              deadline = value ?? deadline;
-            });
+                deadline = value ?? deadline;
+              });
             }
           },
         ),
@@ -298,9 +296,9 @@ class _TaskStoryItemFormState extends State<_TaskStoryItemForm> {
           onChanged: (value) {
             if (mounted) {
               setState(() {
-              link = value;
-              _validateLink();
-            });
+                link = value;
+                _validateLink();
+              });
             }
           },
         ),
@@ -318,12 +316,7 @@ class _TaskStoryItemFormState extends State<_TaskStoryItemForm> {
       return;
     }
 
-    context.router.pop(
-      TaskStoryItemData(
-        deadline: deadline,
-        link: link,
-      ),
-    );
+    context.router.pop(TaskStoryItemData(deadline: deadline, link: link));
   }
 
   bool _validateLink() {
@@ -396,11 +389,7 @@ class _FailureStoryItemFormState extends State<_FailureStoryItemForm> {
       return;
     }
 
-    context.router.pop(
-      FailureStoryItemData(
-        comment: comment,
-      ),
-    );
+    context.router.pop(FailureStoryItemData(comment: comment));
   }
 
   bool _validateComment() {
@@ -437,9 +426,7 @@ class _OfferStoryItemFormState extends State<_OfferStoryItemForm> {
         TextFormField(
           initialValue: salary > 0 ? salary.toString() : '',
           keyboardType: TextInputType.number,
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-          ],
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           decoration: InputDecoration(
             labelText: 'Зарплата',
             errorText: salaryError,
@@ -447,9 +434,9 @@ class _OfferStoryItemFormState extends State<_OfferStoryItemForm> {
           onChanged: (value) {
             if (mounted) {
               setState(() {
-              salary = int.tryParse(value) ?? 0;
-              _validateSalary();
-            });
+                salary = int.tryParse(value) ?? 0;
+                _validateSalary();
+              });
             }
           },
         ),
@@ -467,11 +454,7 @@ class _OfferStoryItemFormState extends State<_OfferStoryItemForm> {
       return;
     }
 
-    context.router.pop(
-      OfferStoryItemData(
-        salary: salary,
-      ),
-    );
+    context.router.pop(OfferStoryItemData(salary: salary));
   }
 
   bool _validateSalary() {

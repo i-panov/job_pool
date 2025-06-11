@@ -16,4 +16,9 @@ mixin CompanyDbMixin on AppDatabaseBase {
     final query = select(companies)..where((f) => f.name.like('%$name%'));
     return query.get();
   }
+
+  Future<void> removeCompany(int id) {
+    final query = delete(companies)..where((f) => f.id.equals(id));
+    return query.go();
+  }
 }

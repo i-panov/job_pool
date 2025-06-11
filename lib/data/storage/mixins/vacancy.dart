@@ -9,6 +9,10 @@ import 'package:job_pool/domain/models/vacancy_short_info.dart';
 mixin VacancyDbMixin on AppDatabaseBase {
   static const _separator = AppDatabase.separator;
 
+  Future<void> removeVacancy(int id) async {
+    await (delete(vacancies)..where((f) => f.id.equals(id))).go();
+  }
+
   Future<List<int>> getVacancyDirectionIds(int vacancyId) {
     final query = select(vacancyDirections)
       ..where((f) => f.vacancy.equals(vacancyId))

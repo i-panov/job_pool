@@ -40,9 +40,9 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
 
         final vacancy = snapshot.data!;
 
-        final title = vacancy.directions.isEmpty 
-          ? vacancy.companyName
-          : '${vacancy.companyName} (${vacancy.directions.first.name}${vacancy.directions.length > 2 ? ' +${vacancy.directions.length - 1}' : ''})';
+        final title = vacancy.directions.isEmpty
+            ? vacancy.companyName
+            : '${vacancy.companyName} (${vacancy.directions.first.name}${vacancy.directions.length > 2 ? ' +${vacancy.directions.length - 1}' : ''})';
 
         return Scaffold(
           appBar: AppBar(
@@ -60,9 +60,7 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
             ],
           ),
           floatingActionButton: Theme(
-            data: Theme.of(context).copyWith(
-              cardColor: Colors.white,
-            ),
+            data: Theme.of(context).copyWith(cardColor: Colors.white),
             child: PopupMenuButton<StoryItemType>(
               icon: Icon(Icons.add_circle, color: Colors.green, size: 50),
               position: PopupMenuPosition.over,
@@ -112,10 +110,15 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
                     color: Colors.grey.shade700,
                   ),
                 ),
-                Text(
-                  vacancy.companyName,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
+                InkWell(
+                  onTap: () => context.router.push(
+                    CompanyRoute(companyId: vacancy.companyId),
+                  ),
+                  child: Text(
+                    vacancy.companyName,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 Text(
@@ -197,8 +200,7 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
                   spacing: 20,
                   runSpacing: 20,
                   children: [
-                    if (vacancy.contacts.isEmpty)
-                      Text('Список пуст'),
+                    if (vacancy.contacts.isEmpty) Text('Список пуст'),
 
                     for (final contact in vacancy.contacts)
                       Chip(
@@ -241,9 +243,8 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
                       children: [
                         Text(
                           'История',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Colors.grey.shade700,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(color: Colors.grey.shade700),
                         ),
                         SizedBox(height: 12),
                         for (final item in story) _StoryItemCard(item: item),
@@ -265,24 +266,18 @@ class _StoryItemCard extends StatelessWidget {
 
   const _StoryItemCard({required this.item});
 
-  TextStyle get _labelStyle => TextStyle(
-    color: Colors.grey.shade700,
-    fontWeight: FontWeight.w500,
-  );
+  TextStyle get _labelStyle =>
+      TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.w500);
 
-  TextStyle get _valueStyle => TextStyle(
-    color: Colors.grey.shade900,
-  );
+  TextStyle get _valueStyle => TextStyle(color: Colors.grey.shade900);
 
   TextStyle get _linkStyle => TextStyle(
     color: Colors.blue.shade700,
     decoration: TextDecoration.underline,
   );
 
-  TextStyle get _metaStyle => TextStyle(
-    color: Colors.grey.shade400,
-    fontSize: 12,
-  );
+  TextStyle get _metaStyle =>
+      TextStyle(color: Colors.grey.shade400, fontSize: 12);
 
   TextStyle get _titleStyle => TextStyle(
     color: StoryItemStyle.textColor(item.dtoType),
@@ -290,15 +285,11 @@ class _StoryItemCard extends StatelessWidget {
     fontWeight: FontWeight.bold,
   );
 
-  TextStyle get _dateStyle => TextStyle(
-    color: Colors.grey.shade900,
-    fontWeight: FontWeight.w500,
-  );
+  TextStyle get _dateStyle =>
+      TextStyle(color: Colors.grey.shade900, fontWeight: FontWeight.w500);
 
-  TextStyle get _dateSecondaryStyle => TextStyle(
-    color: Colors.grey.shade600,
-    fontWeight: FontWeight.w500,
-  );
+  TextStyle get _dateSecondaryStyle =>
+      TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500);
 
   @override
   Widget build(BuildContext context) {
@@ -330,10 +321,10 @@ class _StoryItemCard extends StatelessWidget {
     );
   }
 
-  bool get _hasDate => 
-    item.data is InterviewStoryItemData ||
-    item.data is WaitingForFeedbackStoryItemData ||
-    item.data is TaskStoryItemData;
+  bool get _hasDate =>
+      item.data is InterviewStoryItemData ||
+      item.data is WaitingForFeedbackStoryItemData ||
+      item.data is TaskStoryItemData;
 
   Widget _buildTitle(BuildContext context) => Row(
     children: [
@@ -342,10 +333,7 @@ class _StoryItemCard extends StatelessWidget {
         color: StoryItemStyle.textColor(item.dtoType),
       ),
       const SizedBox(width: 8),
-      Text(
-        item.dtoType.label,
-        style: _titleStyle,
-      ),
+      Text(item.dtoType.label, style: _titleStyle),
     ],
   );
 
@@ -392,15 +380,9 @@ class _StoryItemCard extends StatelessWidget {
     children: [
       Icon(icon, size: 16, color: Colors.grey.shade600),
       const SizedBox(width: 4),
-      Text(
-        label,
-        style: _dateSecondaryStyle,
-      ),
+      Text(label, style: _dateSecondaryStyle),
       const SizedBox(width: 4),
-      Text(
-        _formatDate(date),
-        style: _dateStyle,
-      ),
+      Text(_formatDate(date), style: _dateStyle),
     ],
   );
 
@@ -412,15 +394,20 @@ class _StoryItemCard extends StatelessWidget {
     OfferStoryItemData data => _buildOfferContent(data, context),
   };
 
-  Widget _buildInterviewContent(InterviewStoryItemData data, BuildContext context) {
+  Widget _buildInterviewContent(
+    InterviewStoryItemData data,
+    BuildContext context,
+  ) {
     final typeRow = _buildInfoRow(
-      context: context, 
+      context: context,
       label: 'Тип:',
       value: data.type.label,
     );
 
     final formatValue = data.isOnline ? 'Онлайн' : 'Офлайн';
-    final formatColor = data.isOnline ? Colors.green.shade700 : Colors.blue.shade700;
+    final formatColor = data.isOnline
+        ? Colors.green.shade700
+        : Colors.blue.shade700;
     final formatRow = _buildInfoRow(
       context: context,
       label: 'Формат:',
@@ -439,11 +426,7 @@ class _StoryItemCard extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        typeRow,
-        formatRow,
-        locationRow,
-      ],
+      children: [typeRow, formatRow, locationRow],
     );
   }
 
@@ -511,21 +494,20 @@ class _StoryItemCard extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          flex: 2,
-          child: Text(label, style: _labelStyle),
-        ),
+        Expanded(flex: 2, child: Text(label, style: _labelStyle)),
         Expanded(
           flex: 5,
           child: isLink
-            ? InkWell(
-                onTap: onTap,
-                child: Text(value, style: _linkStyle),
-              )
-            : Text(
-                value,
-                style: style ?? TextStyle(color: valueColor ?? Colors.grey.shade900),
-              ),
+              ? InkWell(
+                  onTap: onTap,
+                  child: Text(value, style: _linkStyle),
+                )
+              : Text(
+                  value,
+                  style:
+                      style ??
+                      TextStyle(color: valueColor ?? Colors.grey.shade900),
+                ),
         ),
       ],
     ),
@@ -536,10 +518,7 @@ class _StoryItemCard extends StatelessWidget {
     children: [
       Icon(Icons.access_time, size: 16, color: Colors.grey.shade400),
       const SizedBox(width: 4),
-      Text(
-        'Добавлено: ${_formatDate(item.createdAt)}',
-        style: _metaStyle,
-      ),
+      Text('Добавлено: ${_formatDate(item.createdAt)}', style: _metaStyle),
     ],
   );
 

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 import 'package:intl/intl.dart';
 import 'package:collection/collection.dart';
+import 'package:job_pool/ui/routing/app_router.gr.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:flutter/services.dart';
@@ -72,8 +73,8 @@ class HomePage extends ConsumerWidget {
                     ),
                   ),
                 ),
-                ...dayInterviews.map(
-                  (interview) => Padding(
+                for (final interview in dayInterviews)
+                  Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Card(
                       elevation: 2,
@@ -82,45 +83,60 @@ class HomePage extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    interview.companyName,
-                                    style: Theme.of(context).textTheme.titleMedium,
+                            InkWell(
+                              onTap: () => context.pushRoute(
+                                VacancyRoute(vacancyId: interview.vacancyId),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      interview.companyName,
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleMedium,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 12),
-                                const Icon(Icons.access_time, size: 16),
-                                const SizedBox(width: 4),
-                                Text(
-                                  DateFormat.Hm().format(interview.time),
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                const SizedBox(width: 12),
-                                if (interview.isOnline)
-                                  const Chip(
-                                    label: Text('Онлайн'),
-                                    backgroundColor: Colors.blue,
-                                    labelStyle: TextStyle(color: Colors.white),
-                                  )
-                                else
-                                  const Chip(
-                                    label: Text('Оффлайн'),
-                                    backgroundColor: Colors.green,
-                                    labelStyle: TextStyle(color: Colors.white),
+                                  const SizedBox(width: 12),
+                                  const Icon(Icons.access_time, size: 16),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    DateFormat.Hm().format(interview.time),
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium,
                                   ),
-                              ],
+                                  const SizedBox(width: 12),
+                                  if (interview.isOnline)
+                                    const Chip(
+                                      label: Text('Онлайн'),
+                                      backgroundColor: Colors.blue,
+                                      labelStyle: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  else
+                                    const Chip(
+                                      label: Text('Оффлайн'),
+                                      backgroundColor: Colors.green,
+                                      labelStyle: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                             const SizedBox(height: 8),
-                            if (interview.isOnline && interview.target.isNotEmpty) ...[
+                            if (interview.isOnline &&
+                                interview.target.isNotEmpty) ...[
                               Row(
                                 children: [
                                   const Icon(Icons.link, size: 16),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: InkWell(
-                                      onTap: () => launchUrlString(interview.target),
+                                      onTap: () =>
+                                          launchUrlString(interview.target),
                                       child: Text(
                                         interview.target,
                                         style: TextStyle(
@@ -134,16 +150,25 @@ class HomePage extends ConsumerWidget {
                                     icon: const Icon(Icons.copy, size: 16),
                                     tooltip: 'Скопировать ссылку',
                                     onPressed: () async {
-                                      await Clipboard.setData(ClipboardData(text: interview.target));
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Ссылка скопирована в буфер обмена')),
+                                      await Clipboard.setData(
+                                        ClipboardData(text: interview.target),
+                                      );
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Ссылка скопирована в буфер обмена',
+                                          ),
+                                        ),
                                       );
                                     },
                                   ),
                                 ],
                               ),
                             ],
-                            if (!interview.isOnline && interview.target.isNotEmpty) ...[
+                            if (!interview.isOnline &&
+                                interview.target.isNotEmpty) ...[
                               const SizedBox(height: 8),
                               Row(
                                 children: [
@@ -152,12 +177,16 @@ class HomePage extends ConsumerWidget {
                                   Expanded(
                                     child: Text(
                                       interview.target,
-                                      style: Theme.of(context).textTheme.bodyMedium,
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium,
                                     ),
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.map),
-                                    onPressed: () => MapsLauncher.launchQuery(interview.target),
+                                    onPressed: () => MapsLauncher.launchQuery(
+                                      interview.target,
+                                    ),
                                     tooltip: 'Открыть на карте',
                                   ),
                                 ],
@@ -168,7 +197,6 @@ class HomePage extends ConsumerWidget {
                       ),
                     ),
                   ),
-                ),
               ],
             );
           },

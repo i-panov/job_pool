@@ -113,32 +113,26 @@ class VacancyFormNotifier
     extends AutoDisposeFamilyNotifier<VacancyFormState, VacancyFormParams> {
   static const _linkValidators = [AppValidator.required, AppValidator.url];
 
-  late final AppDatabase db;
-  late final int? vacancyId;
-  late final int companyId;
+  late final db = ref.read(dbProvider);
 
   VacancyFormNotifier();
 
   @override
   VacancyFormState build(VacancyFormParams params) {
-    db = ref.read(dbProvider);
-    vacancyId = params.vacancyId;
-    companyId = params.companyId;
-
-    if (vacancyId != null) {
+    if (params.vacancyId != null) {
       Future.microtask(_init);
     }
 
-    return VacancyFormState(isLoading: vacancyId != null);
+    return VacancyFormState(isLoading: params.vacancyId != null);
   }
 
   Future<void> _init() async {
-    if (vacancyId != null) {
-      final vacancy = await db.getVacancy(vacancyId!);
+    if (arg.vacancyId != null) {
+      final vacancy = await db.getVacancy(arg.vacancyId!);
 
       if (vacancy != null) {
-        final directionIds = await db.getVacancyDirectionIds(vacancyId!);
-        final contacts = await db.getVacancyContacts(vacancyId!);
+        final directionIds = await db.getVacancyDirectionIds(arg.vacancyId!);
+        final contacts = await db.getVacancyContacts(arg.vacancyId!);
 
         state = state.copyWith(
           link: AppFormField(value: vacancy.link),
@@ -291,12 +285,12 @@ class VacancyFormNotifier
 
     state = state.copyWith(isLoading: true);
 
-    if (vacancyId == null) {
+    if (arg.vacancyId == null) {
       final newVacancyId = await db
           .into(db.vacancies)
           .insert(
             VacanciesCompanion.insert(
-              company: companyId,
+              company: arg.companyId,
               link: state.link.value,
               comment: Value(state.comment),
               grades: state.grades,
@@ -331,29 +325,29 @@ class VacancyFormNotifier
             comment: Value(state.comment),
             grades: Value(state.grades),
           ),
-          where: (v) => v.id.equals(vacancyId!),
+          where: (v) => v.id.equals(arg.vacancyId!),
         );
 
         batch.deleteWhere(
           db.vacancyDirections,
-          (v) => v.vacancy.equals(vacancyId!),
+          (v) => v.vacancy.equals(arg.vacancyId!),
         );
 
         batch.insertAll(db.vacancyDirections, [
           for (final (index, id) in state.directionIds.indexed)
             VacancyDirectionsCompanion.insert(
-              vacancy: vacancyId!,
+              vacancy: arg.vacancyId!,
               direction: id,
               order: index,
             ),
         ]);
 
-        batch.deleteWhere(db.contacts, (c) => c.vacancy.equals(vacancyId!));
+        batch.deleteWhere(db.contacts, (c) => c.vacancy.equals(arg.vacancyId!));
 
         batch.insertAll(db.contacts, [
           for (final contact in state.contacts)
             ContactsCompanion.insert(
-              vacancy: vacancyId!,
+              vacancy: arg.vacancyId!,
               contactType: contact.type,
               contactValue: contact.value.value,
             ),

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -239,7 +238,7 @@ class CompanyFormNotifier
   Future<void> submit() async {
     final current = state.requireValue;
 
-    if (!current.canSubmit) {
+    if (!current.canSubmit || current.isSubmitted) {
       return;
     }
 

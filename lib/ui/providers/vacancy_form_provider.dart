@@ -1,10 +1,8 @@
-import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:job_pool/core/app_form_field.dart';
 import 'package:job_pool/core/validators.dart';
-import 'package:job_pool/data/storage/db/db.dart';
 import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 
@@ -285,6 +283,10 @@ class VacancyFormNotifier
 
     state = state.copyWith(isLoading: true);
 
+    final contacts = state.contacts
+        .map((c) => (type: c.type, value: c.value.value))
+        .toIList();
+
     if (arg.vacancyId == null) {
       await db.insertVacancy(
         companyId: arg.companyId,
@@ -292,9 +294,7 @@ class VacancyFormNotifier
         comment: state.comment,
         grades: state.grades,
         directionIds: state.directionIds,
-        contactsList: state.contacts
-            .map((c) => (type: c.type, value: c.value.value))
-            .toIList(),
+        contactsList: contacts,
       );
     } else {
       await db.updateVacancy(
@@ -303,9 +303,7 @@ class VacancyFormNotifier
         comment: state.comment,
         grades: state.grades,
         directionIds: state.directionIds,
-        contactsList: state.contacts
-            .map((c) => (type: c.type, value: c.value.value))
-            .toIList(),
+        contactsList: contacts,
       );
     }
 

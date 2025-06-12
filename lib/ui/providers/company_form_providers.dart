@@ -253,33 +253,21 @@ class CompanyFormNotifier
 
     state = const AsyncValue.loading();
 
-    final commentValue = current.comment.isEmpty
-        ? Value<String>.absent()
-        : Value(current.comment);
-
     if (arg != null) {
-      final stmt = db.update(db.companies)
-        ..where((c) => c.id.equals(arg!));
-
-      await stmt.write(
-        CompaniesCompanion(
-          name: Value(current.name.value),
-          isIT: Value(current.isIT),
-          links: Value(current.links.map((l) => l.value).toISet()),
-          comment: commentValue,
-        ),
+      await db.updateCompany(
+        id: arg!,
+        name: current.name.value,
+        isIT: current.isIT,
+        links: current.links.map((l) => l.value).toISet(),
+        comment: current.comment,
       );
     } else {
-      await db
-          .into(db.companies)
-          .insert(
-            CompaniesCompanion.insert(
-              name: current.name.value,
-              isIT: current.isIT,
-              links: current.links.map((l) => l.value).toISet(),
-              comment: commentValue,
-            ),
-          );
+      await db.insertCompany(
+        name: current.name.value,
+        isIT: current.isIT,
+        links: current.links.map((l) => l.value).toISet(),
+        comment: current.comment,
+      );
     }
 
     state = AsyncValue.data(current.copyWith(isSubmitted: true));

@@ -286,73 +286,27 @@ class VacancyFormNotifier
     state = state.copyWith(isLoading: true);
 
     if (arg.vacancyId == null) {
-      final newVacancyId = await db
-          .into(db.vacancies)
-          .insert(
-            VacanciesCompanion.insert(
-              company: arg.companyId,
-              link: state.link.value,
-              comment: Value(state.comment),
-              grades: state.grades,
-            ),
-          );
-
-      await db.batch((batch) {
-        batch.insertAll(db.vacancyDirections, [
-          for (final (index, id) in state.directionIds.indexed)
-            VacancyDirectionsCompanion.insert(
-              vacancy: newVacancyId,
-              direction: id,
-              order: index,
-            ),
-        ]);
-
-        batch.insertAll(db.contacts, [
-          for (final contact in state.contacts)
-            ContactsCompanion.insert(
-              vacancy: newVacancyId,
-              contactType: contact.type,
-              contactValue: contact.value.value,
-            ),
-        ]);
-      });
+      await db.insertVacancy(
+        companyId: arg.companyId,
+        link: state.link.value,
+        comment: state.comment,
+        grades: state.grades,
+        directionIds: state.directionIds,
+        contactsList: state.contacts
+            .map((c) => (type: c.type, value: c.value.value))
+            .toIList(),
+      );
     } else {
-      await db.batch((batch) {
-        batch.update(
-          db.vacancies,
-          VacanciesCompanion(
-            link: Value(state.link.value),
-            comment: Value(state.comment),
-            grades: Value(state.grades),
-          ),
-          where: (v) => v.id.equals(arg.vacancyId!),
-        );
-
-        batch.deleteWhere(
-          db.vacancyDirections,
-          (v) => v.vacancy.equals(arg.vacancyId!),
-        );
-
-        batch.insertAll(db.vacancyDirections, [
-          for (final (index, id) in state.directionIds.indexed)
-            VacancyDirectionsCompanion.insert(
-              vacancy: arg.vacancyId!,
-              direction: id,
-              order: index,
-            ),
-        ]);
-
-        batch.deleteWhere(db.contacts, (c) => c.vacancy.equals(arg.vacancyId!));
-
-        batch.insertAll(db.contacts, [
-          for (final contact in state.contacts)
-            ContactsCompanion.insert(
-              vacancy: arg.vacancyId!,
-              contactType: contact.type,
-              contactValue: contact.value.value,
-            ),
-        ]);
-      });
+      await db.updateVacancy(
+        id: arg.vacancyId!,
+        link: state.link.value,
+        comment: state.comment,
+        grades: state.grades,
+        directionIds: state.directionIds,
+        contactsList: state.contacts
+            .map((c) => (type: c.type, value: c.value.value))
+            .toIList(),
+      );
     }
 
     state = state.copyWith(isLoading: false, isSubmitted: true);

@@ -1,7 +1,42 @@
 import 'package:drift/drift.dart';
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:job_pool/data/storage/db/db.dart';
 
 mixin CompanyDbMixin on AppDatabaseBase {
+  Future<int> insertCompany({
+    required String name,
+    String comment = '',
+    bool isIT = false,
+    ISet<String> links = const ISet.empty(),
+  }) {
+    final company = CompaniesCompanion.insert(
+      name: name,
+      comment: Value(comment),
+      isIT: isIT,
+      links: links,
+    );
+
+    return into(companies).insert(company);
+  }
+
+  Future<void> updateCompany({
+    required int id,
+    required String name,
+    String comment = '',
+    bool isIT = false,
+    ISet<String> links = const ISet.empty(),
+  }) {
+    final company = CompaniesCompanion(
+      id: Value(id),
+      name: Value(name),
+      comment: Value(comment),
+      isIT: Value(isIT),
+      links: Value(links),
+    );
+
+    return update(companies).replace(company);
+  }
+
   Future<CompanyDto?> getCompany(int id) {
     final query = select(companies)..where((f) => f.id.equals(id));
     return query.getSingleOrNull();

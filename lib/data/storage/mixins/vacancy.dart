@@ -9,6 +9,91 @@ import 'package:job_pool/domain/models/vacancy_short_info.dart';
 mixin VacancyDbMixin on AppDatabaseBase {
   static const _separator = AppDatabase.separator;
 
+  Future<int> insertVacancy({
+    required int companyId,
+    required String link,
+    required String comment,
+    required ISet<JobGrade> grades,
+    required IList<int> directionIds,
+    required IList<({ContactType type, String value})> contactsList,
+  }) async {
+    return await transaction(() async {
+      final vacancyId = await into(vacancies).insert(
+        VacanciesCompanion.insert(
+          company: companyId,
+          link: link,
+          comment: Value(comment),
+          grades: grades,
+        ),
+      );
+
+      await batch((batch) {
+        batch.insertAll(vacancyDirections, [
+          for (final (index, id) in directionIds.indexed)
+            VacancyDirectionsCompanion.insert(
+              vacancy: vacancyId,
+              direction: id,
+              order: index,
+            ),
+        ]);
+
+        batch.insertAll(contacts, [
+          for (final contact in contactsList)
+            ContactsCompanion.insert(
+              vacancy: vacancyId,
+              contactType: contact.type,
+              contactValue: contact.value,
+            ),
+        ]);
+      });
+
+      return vacancyId;
+    });
+  }
+
+  Future<void> updateVacancy({
+    required int id,
+    required String link,
+    required String comment,
+    required ISet<JobGrade> grades,
+    required IList<int> directionIds,
+    required IList<({ContactType type, String value})> contactsList,
+  }) {
+    return batch((batch) {
+      batch.replace(
+        vacancies,
+        VacanciesCompanion(
+          id: Value(id),
+          link: Value(link),
+          comment: Value(comment),
+          grades: Value(grades),
+        ),
+      );
+
+      batch.deleteWhere(vacancyDirections, (v) => v.vacancy.equals(id));
+
+      batch.insertAll(vacancyDirections, [
+        for (final (index, id) in directionIds.indexed)
+          VacancyDirectionsCompanion.insert(
+            vacancy: id,
+            direction: id,
+            order: index,
+          ),
+      ]);
+
+      batch.deleteWhere(contacts, (c) => c.vacancy.equals(id));
+
+      batch.insertAll(contacts, [
+        for (final contact in contactsList)
+          ContactsCompanion.insert(
+            vacancy: id,
+            contactType: contact.type,
+            contactValue: contact.value,
+          ),
+      ]);
+    });
+  }
+
   Future<void> removeVacancy(int id) async {
     await (delete(vacancies)..where((f) => f.id.equals(id))).go();
   }
@@ -47,11 +132,7 @@ mixin VacancyDbMixin on AppDatabaseBase {
       ])
       ..groupBy([vacancies.id])
       ..orderBy([OrderingTerm.desc(storyItems.createdAt)])
-      ..addColumns([
-        vacancies.id,
-        vacancies.grades,
-        directionNames,
-      ]);
+      ..addColumns([vacancies.id, vacancies.grades, directionNames]);
 
     return query.map((row) {
       final directionNamesList = row.read(directionNames)?.split(',') ?? [];

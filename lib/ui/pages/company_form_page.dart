@@ -16,13 +16,13 @@ class CompanyFormPage extends ConsumerWidget {
     final form = ref.read(provider.notifier);
 
     ref.listen(provider, (prev, next) {
-      if (next.error.isNotEmpty) {
+      if (next.hasError) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(next.error)));
+        ).showSnackBar(SnackBar(content: Text(next.error!.toString())));
 
         context.router.pop();
-      } else if (next.isSubmitted) {
+      } else if (next.valueOrNull?.isSubmitted ?? false) {
         context.router.pop();
       }
     });
@@ -33,9 +33,12 @@ class CompanyFormPage extends ConsumerWidget {
           companyId == null ? 'Новая компания' : 'Редактирование компании',
         ),
       ),
-      body: state.isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Padding(
+      body: state.when(
+        error: (error, stackTrace) => Center(
+          child: Text('Ошибка: $error'),
+        ),
+        loading: () => Center(child: CircularProgressIndicator()),
+        data: (state) => Padding(
               padding: const EdgeInsets.all(20),
               child: SingleChildScrollView(
                 child: Column(
@@ -71,9 +74,7 @@ class CompanyFormPage extends ConsumerWidget {
                     TextFormField(
                       initialValue: state.comment,
                       maxLines: 5,
-                      decoration: InputDecoration(
-                        labelText: 'Комментарий',
-                      ),
+                      decoration: InputDecoration(labelText: 'Комментарий'),
                       onChanged: form.changeComment,
                     ),
                     Row(
@@ -123,6 +124,7 @@ class CompanyFormPage extends ConsumerWidget {
                 ),
               ),
             ),
+      ),
     );
   }
 }

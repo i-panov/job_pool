@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
@@ -12,16 +14,13 @@ class CompanyFormState extends Equatable {
   final bool isIT;
   final IList<AppFormField<String>> links;
   final String comment;
-  final String error;
-  final bool isLoading, isSubmitted;
+  final bool isSubmitted;
 
   CompanyFormState({
     String name = '',
     this.isIT = false,
     Iterable<String> links = const [],
     this.comment = '',
-    this.error = '',
-    this.isLoading = false,
   }) : name = AppFormField(value: name),
        links = links.map((link) => AppFormField(value: link)).toIList(),
        isSubmitted = false;
@@ -31,8 +30,6 @@ class CompanyFormState extends Equatable {
     this.isIT = false,
     this.links = const IList.empty(),
     this.comment = '',
-    this.error = '',
-    this.isLoading = false,
     this.isSubmitted = false,
   });
 
@@ -41,89 +38,81 @@ class CompanyFormState extends Equatable {
     bool? isIT,
     IList<AppFormField<String>>? links,
     String? comment,
-    String? error,
-    bool? isLoading,
     bool? isSubmitted,
   }) => CompanyFormState._(
     name: name ?? this.name,
     isIT: isIT ?? this.isIT,
     links: links ?? this.links,
     comment: comment ?? this.comment,
-    error: error ?? this.error,
-    isLoading: isLoading ?? this.isLoading,
     isSubmitted: isSubmitted ?? this.isSubmitted,
   );
 
   @override
-  List<Object?> get props => [
-    name,
-    isIT,
-    links,
-    comment,
-    error,
-    isLoading,
-    isSubmitted,
-  ];
+  List<Object?> get props => [name, isIT, links, comment, isSubmitted];
 
   bool get canSubmit =>
-      name.canSubmit &&
-      links.every((l) => l.canSubmit) &&
-      error.isEmpty &&
-      !isLoading &&
-      !isSubmitted;
+      name.canSubmit && links.every((l) => l.canSubmit) && !isSubmitted;
 }
 
-class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
+class CompanyFormNotifier
+    extends AutoDisposeFamilyAsyncNotifier<CompanyFormState, int?> {
   static const _nameValidators = [AppValidator.required];
 
   static const _urlValidators = [AppValidator.required, AppValidator.url];
 
-  final AppDatabase db;
-  final int? companyId;
+  late final AppDatabase db = ref.watch(dbProvider);
 
-  CompanyFormNotifier({required this.db, this.companyId})
-    : super(CompanyFormState(isLoading: companyId != null)) {
-    _init();
-  }
+  CompanyFormNotifier();
 
-  Future<void> _init() async {
+  @override
+  FutureOr<CompanyFormState> build(int? companyId) async {
     if (companyId != null) {
-      final company = await db.getCompany(companyId!);
+      final company = await db.getCompany(companyId);
 
       if (company != null) {
-        state = state.copyWith(
-          name: state.name.copyWith(value: company.name),
+        return CompanyFormState(
+          name: company.name,
           isIT: company.isIT,
-          links: company.links
-              .map((link) => AppFormField(value: link))
-              .toIList(),
-          isLoading: false,
+          links: company.links,
+          comment: company.comment,
         );
       } else {
-        state = state.copyWith(error: 'Компания не найдена', isLoading: false);
+        throw Exception('Компания не найдена');
       }
     }
+
+    return CompanyFormState();
   }
 
   void changeName(String value) {
-    state = state.copyWith(
-      name: state.name.copyWith(
-        value: value,
-        error: _nameValidators.validate(value) ?? '',
+    final current = state.requireValue;
+
+    state = AsyncValue.data(
+      current.copyWith(
+        name: current.name.copyWith(
+          value: value,
+          error: _nameValidators.validate(value) ?? '',
+        ),
       ),
     );
   }
 
   void changeComment(String value) {
-    state = state.copyWith(comment: value);
+    state = AsyncValue.data(state.requireValue.copyWith(comment: value));
   }
 
   void changeIsIT(bool value) {
-    state = state.copyWith(isIT: value);
+    state = AsyncValue.data(state.requireValue.copyWith(isIT: value));
   }
 
   void addLink() {
-    state = state.copyWith(links: state.links.add(AppFormField(value: '')));
+    final current = state.requireValue;
+
+    state = AsyncValue.data(
+      current.copyWith(
+        links: current.links.add(AppFormField(value: '', error: '')),
+      ),
+    );
   }
 
   void removeLink(int index) {
@@ -131,7 +120,11 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
       return;
     }
 
-    state = state.copyWith(links: state.links.removeAt(index));
+    final current = state.requireValue;
+
+    state = AsyncValue.data(
+      current.copyWith(links: current.links.removeAt(index)),
+    );
   }
 
   void changeLink(int index, String value) {
@@ -139,12 +132,16 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
       return;
     }
 
-    final link = state.links[index].copyWith(
+    final current = state.requireValue;
+
+    final link = current.links[index].copyWith(
       value: value,
       error: _urlValidators.validate(value) ?? '',
     );
 
-    state = state.copyWith(links: state.links.replace(index, link));
+    state = AsyncValue.data(
+      current.copyWith(links: current.links.replace(index, link)),
+    );
   }
 
   void moveLink(int from, int to) {
@@ -152,45 +149,61 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
       return;
     }
 
-    final value = state.links[from];
+    final current = state.requireValue;
+    final value = current.links[from];
     to = to > from ? to - 1 : to;
-    state = state.copyWith(links: state.links.removeAt(from).insert(to, value));
+
+    state = AsyncValue.data(
+      current.copyWith(links: current.links.removeAt(from).insert(to, value)),
+    );
   }
 
   Future<bool> _validateNameAsync() async {
-    state = state.copyWith(name: state.name.copyWith(isValidating: true));
+    final current = state.requireValue;
+    state = AsyncValue.data(
+      current.copyWith(name: current.name.copyWith(isValidating: true)),
+    );
 
     try {
-      final company = await db.findCompanyByName(state.name.value);
+      final company = await db.findCompanyByName(current.name.value);
 
-      if (company != null && (companyId == null || company.id != companyId)) {
-        state = state.copyWith(
-          name: state.name.copyWith(
-            error: 'Название занято',
-            isValidating: false,
+      if (company != null && (arg == null || company.id != arg)) {
+        state = AsyncValue.data(
+          current.copyWith(
+            name: current.name.copyWith(
+              error: 'Название занято',
+              isValidating: false,
+            ),
           ),
         );
 
         return false;
       }
     } catch (e) {
-      state = state.copyWith(
-        name: state.name.copyWith(error: e.toString(), isValidating: false),
+      state = AsyncValue.data(
+        current.copyWith(
+          name: current.name.copyWith(error: e.toString(), isValidating: false),
+        ),
       );
 
       return false;
     } finally {
-      state = state.copyWith(name: state.name.copyWith(isValidating: false));
+      state = AsyncValue.data(
+        current.copyWith(name: current.name.copyWith(isValidating: false)),
+      );
     }
 
     return true;
   }
 
   Future<bool> _validateName() async {
-    final nameError = _nameValidators.validate(state.name.value) ?? '';
+    final current = state.requireValue;
+    final nameError = _nameValidators.validate(current.name.value) ?? '';
 
     if (nameError.isNotEmpty) {
-      state = state.copyWith(name: state.name.copyWith(error: nameError));
+      state = AsyncValue.data(
+        current.copyWith(name: current.name.copyWith(error: nameError)),
+      );
       return false;
     }
 
@@ -202,10 +215,11 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
   }
 
   bool _validateLinks() {
-    final links = state.links.unlock;
+    final current = state.requireValue;
+    final links = current.links.unlock;
     var errorsCount = 0;
 
-    for (final (index, link) in state.links.indexed) {
+    for (final (index, link) in current.links.indexed) {
       final error = _urlValidators.validate(link.value) ?? '';
 
       if (error.isNotEmpty) {
@@ -215,7 +229,7 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
     }
 
     if (errorsCount > 0) {
-      state = state.copyWith(links: links.lock);
+      state = AsyncValue.data(current.copyWith(links: links.lock));
       return false;
     }
 
@@ -223,7 +237,9 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
   }
 
   Future<void> submit() async {
-    if (!state.canSubmit) {
+    final current = state.requireValue;
+
+    if (!current.canSubmit) {
       return;
     }
 
@@ -235,21 +251,21 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
       return;
     }
 
-    state = state.copyWith(isLoading: true);
+    state = const AsyncValue.loading();
 
-    final commentValue = state.comment.isEmpty
+    final commentValue = current.comment.isEmpty
         ? Value<String>.absent()
-        : Value(state.comment);
+        : Value(current.comment);
 
-    if (companyId != null) {
+    if (arg != null) {
       final stmt = db.update(db.companies)
-        ..where((c) => c.id.equals(companyId!));
+        ..where((c) => c.id.equals(arg!));
 
       await stmt.write(
         CompaniesCompanion(
-          name: Value(state.name.value),
-          isIT: Value(state.isIT),
-          links: Value(state.links.map((l) => l.value).toISet()),
+          name: Value(current.name.value),
+          isIT: Value(current.isIT),
+          links: Value(current.links.map((l) => l.value).toISet()),
           comment: commentValue,
         ),
       );
@@ -258,28 +274,26 @@ class CompanyFormNotifier extends StateNotifier<CompanyFormState> {
           .into(db.companies)
           .insert(
             CompaniesCompanion.insert(
-              name: state.name.value,
-              isIT: state.isIT,
-              links: state.links.map((l) => l.value).toISet(),
+              name: current.name.value,
+              isIT: current.isIT,
+              links: current.links.map((l) => l.value).toISet(),
               comment: commentValue,
             ),
           );
     }
 
-    state = state.copyWith(isLoading: false, isSubmitted: true);
+    state = AsyncValue.data(current.copyWith(isSubmitted: true));
   }
 
-  bool _checkLinksIndex(int index) => index >= 0 && index < state.links.length;
+  bool _checkLinksIndex(int index) {
+    final links = state.valueOrNull?.links;
+    return index >= 0 && links != null && index < links.length;
+  }
 }
 
 final companyFormProvider =
-    AutoDisposeStateNotifierProvider.family<
+    AutoDisposeAsyncNotifierProviderFamily<
       CompanyFormNotifier,
       CompanyFormState,
       int?
-    >((ref, companyId) {
-      return CompanyFormNotifier(
-        db: ref.watch(dbProvider),
-        companyId: companyId,
-      );
-    });
+    >(() => CompanyFormNotifier());

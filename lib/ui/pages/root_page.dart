@@ -55,7 +55,7 @@ enum RootTabs {
     route: HomeTab(),
   ),
   tasks(iconData: Icons.task, label: 'ТЗ', route: TasksTab()),
-  vacancies(iconData: Icons.work, label: 'Вакансии', route: VacanciesTab()),
+  //vacancies(iconData: Icons.work, label: 'Вакансии', route: VacanciesTab()),
   companies(iconData: Icons.business, label: 'Компании', route: CompaniesTab());
 
   final IconData iconData;

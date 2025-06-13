@@ -2,11 +2,24 @@ import 'package:auto_route/auto_route.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:job_pool/data/storage/db/db.dart';
 import 'package:job_pool/domain/models/vacancy_short_info.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 import 'package:job_pool/ui/routing/app_router.gr.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+
+final companyProvider = StreamProvider.autoDispose.family((ref, int companyId) {
+  final db = ref.watch(dbProvider);
+  final query = db.companies.select()..where((c) => c.id.equals(companyId));
+  return query.watchSingle();
+});
+
+final vacanciesProvider = StreamProvider.autoDispose.family((
+  ref,
+  int companyId,
+) {
+  final db = ref.watch(dbProvider);
+  return db.watchVacanciesShortInfo(companyId);
+});
 
 @RoutePage()
 class CompanyPage extends ConsumerWidget {
@@ -16,6 +29,7 @@ class CompanyPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final db = ref.read(dbProvider);
     final companiesState = ref.watch(companyProvider(companyId));
     final vacanciesState = ref.watch(vacanciesProvider(companyId));
 
@@ -39,7 +53,9 @@ class CompanyPage extends ConsumerWidget {
                   context: context,
                   builder: (ctx) => AlertDialog(
                     title: Text('Удалить компанию?'),
-                    content: Text('Вы уверены, что хотите удалить эту компанию?'),
+                    content: Text(
+                      'Вы уверены, что хотите удалить эту компанию?',
+                    ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(ctx).pop(false),
@@ -47,13 +63,15 @@ class CompanyPage extends ConsumerWidget {
                       ),
                       TextButton(
                         onPressed: () => Navigator.of(ctx).pop(true),
-                        child: Text('Удалить', style: TextStyle(color: Colors.red)),
+                        child: Text(
+                          'Удалить',
+                          style: TextStyle(color: Colors.red),
+                        ),
                       ),
                     ],
                   ),
                 );
                 if (confirmed == true) {
-                  final db = ref.read(dbProvider);
                   await db.removeCompany(company.id);
                   if (context.mounted) context.router.pop();
                 }
@@ -289,18 +307,3 @@ class VacancyListItem extends StatelessWidget {
     );
   }
 }
-
-final companyProvider = StreamProvider.autoDispose.family<CompanyDto, int>((
-  ref,
-  companyId,
-) {
-  final db = ref.watch(dbProvider);
-  final query = db.companies.select()..where((c) => c.id.equals(companyId));
-  return query.watchSingle();
-});
-
-final vacanciesProvider = StreamProvider.autoDispose
-    .family<List<VacancyShortInfo>, int>((ref, companyId) {
-      final db = ref.watch(dbProvider);
-      return db.watchVacanciesShortInfo(companyId);
-    });

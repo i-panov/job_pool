@@ -15,3 +15,15 @@ extension AppListExtension<T> on List<T> {
     }
   }
 }
+
+extension AppIterableExtension<T> on Iterable<T> {
+  int get len => switch (this) {
+    List<T> list => list.length,
+    IList<T> iList => iList.length,
+    Set<T> set => set.length,
+    ISet<T> iSet => iSet.length,
+    _ => length,
+  };
+
+  bool isValidIndex(int index) => index >= 0 && index < len;
+}

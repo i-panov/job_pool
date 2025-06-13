@@ -68,16 +68,16 @@ class CompanyFormNotifier
     if (companyId != null) {
       final company = await db.getCompany(companyId);
 
-      if (company != null) {
-        return CompanyFormState(
-          name: company.name,
-          isIT: company.isIT,
-          links: company.links,
-          comment: company.comment,
-        );
-      } else {
+      if (company == null) {
         throw Exception('Компания не найдена');
       }
+
+      return CompanyFormState(
+        name: company.name,
+        isIT: company.isIT,
+        links: company.links,
+        comment: company.comment,
+      );
     }
 
     return CompanyFormState();
@@ -238,7 +238,7 @@ class CompanyFormNotifier
   Future<void> submit() async {
     final current = state.requireValue;
 
-    if (!current.canSubmit || current.isSubmitted) {
+    if (!current.canSubmit) {
       return;
     }
 

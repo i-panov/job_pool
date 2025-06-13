@@ -53,6 +53,7 @@ mixin VacancyDbMixin on AppDatabaseBase {
 
   Future<void> updateVacancy({
     required int id,
+    required int companyId,
     required String link,
     required String comment,
     required ISet<JobGrade> grades,
@@ -64,31 +65,28 @@ mixin VacancyDbMixin on AppDatabaseBase {
         vacancies,
         VacanciesCompanion(
           id: Value(id),
+          company: Value(companyId),
           link: Value(link),
           comment: Value(comment),
           grades: Value(grades),
         ),
       );
 
-      batch.deleteWhere(vacancyDirections, (v) => v.vacancy.equals(id));
-
-      batch.insertAll(vacancyDirections, [
-        for (final (index, id) in directionIds.indexed)
-          VacancyDirectionsCompanion.insert(
-            vacancy: id,
-            direction: id,
-            order: index,
+      batch.replaceAll(vacancyDirections, [
+        for (final (index, directionId) in directionIds.indexed)
+          VacancyDirectionsCompanion(
+            vacancy: Value(id),
+            direction: Value(directionId),
+            order: Value(index),
           ),
       ]);
 
-      batch.deleteWhere(contacts, (c) => c.vacancy.equals(id));
-
-      batch.insertAll(contacts, [
+      batch.replaceAll(contacts, [
         for (final contact in contactsList)
-          ContactsCompanion.insert(
-            vacancy: id,
-            contactType: contact.type,
-            contactValue: contact.value,
+          ContactsCompanion(
+            vacancy: Value(id),
+            contactType: Value(contact.type),
+            contactValue: Value(contact.value),
           ),
       ]);
     });

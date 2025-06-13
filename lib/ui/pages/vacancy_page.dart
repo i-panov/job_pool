@@ -13,34 +13,31 @@ import 'package:job_pool/ui/widgets/story_item_forms.dart';
 import 'package:job_pool/ui/widgets/grade_direction_chips.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+final vacancyFullInfoProvider = StreamProvider.autoDispose.family(
+  (ref, int id) => ref.watch(dbProvider).watchVacancyFullInfo(id),
+);
+
+final vacancyStoryProvider = StreamProvider.autoDispose.family(
+  (ref, int vacancyId) =>
+      ref.watch(dbProvider).selectVacancyStory(vacancyId).watch(),
+);
+
 @RoutePage()
-class VacancyPage extends ConsumerStatefulWidget {
+class VacancyPage extends ConsumerWidget {
   final int vacancyId;
 
   const VacancyPage({super.key, required this.vacancyId});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _VacancyPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final db = ref.watch(dbProvider);
+    final vacancyState = ref.watch(vacancyFullInfoProvider(vacancyId));
+    final storyState = ref.watch(vacancyStoryProvider(vacancyId));
 
-class _VacancyPageState extends ConsumerState<VacancyPage> {
-  late final db = ref.watch(dbProvider);
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: db.watchVacancyFullInfo(widget.vacancyId),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(child: Text(snapshot.error.toString()));
-        }
-
-        if (!snapshot.hasData) {
-          return Center(child: CircularProgressIndicator());
-        }
-
-        final vacancy = snapshot.data!;
-
+    return vacancyState.when(
+      error: (error, _) => Center(child: Text(error.toString())),
+      loading: () => Center(child: CircularProgressIndicator()),
+      data: (vacancy) {
         final title = vacancy.directions.isEmpty
             ? vacancy.companyName
             : '${vacancy.companyName} (${vacancy.directions.first.name}${vacancy.directions.length > 2 ? ' +${vacancy.directions.length - 1}' : ''})';
@@ -66,7 +63,9 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
                     context: context,
                     builder: (ctx) => AlertDialog(
                       title: Text('Удалить вакансию?'),
-                      content: Text('Вы уверены, что хотите удалить эту вакансию?'),
+                      content: Text(
+                        'Вы уверены, что хотите удалить эту вакансию?',
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(ctx).pop(false),
@@ -74,7 +73,10 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
                         ),
                         TextButton(
                           onPressed: () => Navigator.of(ctx).pop(true),
-                          child: Text('Удалить', style: TextStyle(color: Colors.red)),
+                          child: Text(
+                            'Удалить',
+                            style: TextStyle(color: Colors.red),
+                          ),
                         ),
                       ],
                     ),
@@ -121,7 +123,7 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
               onSelected: (type) => openStoryItemForm(
                 context: context,
                 dtoType: type,
-                vacancyId: widget.vacancyId,
+                vacancyId: vacancyId,
                 db: db,
               ),
             ),
@@ -252,19 +254,10 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
                       ),
                   ],
                 ),
-                StreamBuilder(
-                  stream: db.selectVacancyStory(widget.vacancyId).watch(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Center(child: Text(snapshot.error.toString()));
-                    }
-
-                    if (!snapshot.hasData) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-
-                    final story = snapshot.data!;
-
+                storyState.when(
+                  error: (error, _) => Center(child: Text(error.toString())),
+                  loading: () => Center(child: CircularProgressIndicator()),
+                  data: (story) {
                     if (story.isEmpty) {
                       return Center(child: Text('История пуста'));
                     }
@@ -278,10 +271,11 @@ class _VacancyPageState extends ConsumerState<VacancyPage> {
                               ?.copyWith(color: Colors.grey.shade700),
                         ),
                         SizedBox(height: 12),
-                        for (final item in story) _StoryItemCard(
-                          item: item,
-                          onDelete: db.removeStoryItem,
-                        ),
+                        for (final item in story)
+                          _StoryItemCard(
+                            item: item,
+                            onDelete: db.removeStoryItem,
+                          ),
                       ],
                     );
                   },

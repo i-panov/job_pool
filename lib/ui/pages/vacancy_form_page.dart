@@ -14,21 +14,19 @@ class VacancyFormPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final params = VacancyFormParams(
-      companyId: companyId,
-      vacancyId: vacancyId,
-    );
+    final params = VacancyFormArgs(companyId: companyId, vacancyId: vacancyId);
 
     final state = ref.watch(vacancyFormProvider(params));
     final form = ref.read(vacancyFormProvider(params).notifier);
 
     ref.listen(vacancyFormProvider(params), (prev, next) {
-      if (next.error.isNotEmpty) {
+      if (next.hasError) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(next.error)));
+        ).showSnackBar(SnackBar(content: Text(next.error!.toString())));
+
         context.router.pop();
-      } else if (next.isSubmitted) {
+      } else if (next.valueOrNull?.isSubmitted ?? false) {
         context.router.pop();
       }
     });
@@ -43,65 +41,67 @@ class VacancyFormPage extends ConsumerWidget {
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 20,
-                children: [
-                  TextFormField(
-                    key: const ValueKey('link_field'),
-                    initialValue: state.link.value,
-                    onChanged: form.changeLink,
-                    decoration: InputDecoration(
-                      labelText: 'Ссылка на вакансию',
-                      errorText: state.link.errorOrNull,
+              child: state.when(
+                error: (error, stackTrace) =>
+                    Center(child: Text('Ошибка: $error')),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                data: (state) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 20,
+                  children: [
+                    TextFormField(
+                      key: const ValueKey('link_field'),
+                      initialValue: state.link.value,
+                      onChanged: form.changeLink,
+                      decoration: InputDecoration(
+                        labelText: 'Ссылка на вакансию',
+                        errorText: state.link.errorOrNull,
+                      ),
                     ),
-                  ),
-                  TextFormField(
-                    key: const ValueKey('comment_field'),
-                    initialValue: state.comment,
-                    maxLines: 5,
-                    decoration: const InputDecoration(labelText: 'Комментарий'),
-                    onChanged: form.changeComment,
-                  ),
-                  _GradesSelect(
-                    initialValue: state.grades,
-                    toggle: form.toggleGrade,
-                  ),
-                  _VacancyDirectionsSelect(
-                    initialValue: state.directionIds,
-                    toggle: form.toggleDirection,
-                  ),
-                  _Contacts(
-                    contacts: state.contacts,
-                    changeType: form.changeContactType,
-                    changeValue: form.changeContactValue,
-                    add: form.addContact,
-                    remove: form.removeContact,
-                  ),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: state.canSubmit ? form.submit : null,
-                      child: const Text('Сохранить'),
+                    TextFormField(
+                      key: const ValueKey('comment_field'),
+                      initialValue: state.comment,
+                      maxLines: 5,
+                      decoration: const InputDecoration(
+                        labelText: 'Комментарий',
+                      ),
+                      onChanged: form.changeComment,
                     ),
-                  ),
-                ],
+                    _GradesSelect(
+                      initialValue: state.grades,
+                      toggle: form.toggleGrade,
+                    ),
+                    _VacancyDirectionsSelect(
+                      initialValue: state.directionIds,
+                      toggle: form.toggleDirection,
+                    ),
+                    _Contacts(
+                      contacts: state.contacts,
+                      changeType: form.changeContactType,
+                      changeValue: form.changeContactValue,
+                      add: form.addContact,
+                      remove: form.removeContact,
+                    ),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: state.canSubmit ? form.submit : null,
+                        child: const Text('Сохранить'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
     );
   }
 }
 
-class _GradesSelect extends StatefulWidget {
+class _GradesSelect extends StatelessWidget {
   final ISet<JobGrade> initialValue;
   final void Function(JobGrade) toggle;
 
   const _GradesSelect({required this.initialValue, required this.toggle});
 
-  @override
-  State<_GradesSelect> createState() => _GradesSelectState();
-}
-
-class _GradesSelectState extends State<_GradesSelect> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -115,8 +115,8 @@ class _GradesSelectState extends State<_GradesSelect> {
           children: JobGrade.values.map((grade) {
             return FilterChip(
               label: Text(grade.name),
-              selected: widget.initialValue.contains(grade),
-              onSelected: (selected) => widget.toggle(grade),
+              selected: initialValue.contains(grade),
+              onSelected: (selected) => toggle(grade),
               showCheckmark: true,
             );
           }).toList(),
@@ -126,7 +126,7 @@ class _GradesSelectState extends State<_GradesSelect> {
   }
 }
 
-class _VacancyDirectionsSelect extends ConsumerStatefulWidget {
+class _VacancyDirectionsSelect extends ConsumerWidget {
   final IList<int> initialValue;
   final void Function(int) toggle;
 
@@ -136,12 +136,7 @@ class _VacancyDirectionsSelect extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<_VacancyDirectionsSelect> createState() => _VacancyDirectionsSelectState();
-}
-
-class _VacancyDirectionsSelectState extends ConsumerState<_VacancyDirectionsSelect> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(jobDirectionsProvider);
 
     return state.when(
@@ -161,8 +156,8 @@ class _VacancyDirectionsSelectState extends ConsumerState<_VacancyDirectionsSele
             children: directions.map((direction) {
               return FilterChip(
                 label: Text(direction.name),
-                selected: widget.initialValue.contains(direction.id),
-                onSelected: (selected) => widget.toggle(direction.id),
+                selected: initialValue.contains(direction.id),
+                onSelected: (selected) => toggle(direction.id),
                 showCheckmark: true,
               );
             }).toList(),

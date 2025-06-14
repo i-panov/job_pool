@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:job_pool/core/enums.dart';
 import 'package:job_pool/data/storage/mixins/company.dart';
 import 'package:job_pool/data/storage/mixins/story.dart';
 import 'package:job_pool/data/storage/mixins/vacancy.dart';

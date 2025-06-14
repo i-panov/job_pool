@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:html/dom.dart';
+import 'package:job_pool/core/enums.dart';
 import 'package:job_pool/core/parse.dart';
-import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 import 'package:test/test.dart';
 
 Future<void> main() async {

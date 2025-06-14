@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:job_pool/core/enums.dart';
 import 'package:job_pool/data/storage/schemas/companies.dart';
 import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 import 'package:job_pool/data/storage/types.dart';

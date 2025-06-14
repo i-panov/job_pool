@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:job_pool/data/storage/schemas/dictionaries.dart';
-import 'package:job_pool/data/storage/schemas/story_items.dart';
+import 'package:job_pool/core/enums.dart';
 
 class GradeColors {
   static const Map<JobGrade, Color> primary = {

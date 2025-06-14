@@ -17,7 +17,6 @@ class CompaniesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.read(dbProvider);
     final companiesValue = ref.watch(companiesProvider);
 
     return Scaffold(

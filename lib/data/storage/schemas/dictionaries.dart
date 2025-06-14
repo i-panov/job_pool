@@ -39,17 +39,3 @@ class JobDirections extends Table {
     'SQL',
   };
 }
-
-enum JobGrade { intern, junior, middle, senior, lead }
-
-enum InterviewType {
-  hr('с HR'),
-  tech('техническое'),
-  director('с руководителем');
-
-  final String label;
-
-  const InterviewType(this.label);
-}
-
-enum ContactType { email, phone, telegram, whatsapp, }

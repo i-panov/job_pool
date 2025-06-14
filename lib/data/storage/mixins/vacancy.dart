@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:job_pool/core/enums.dart';
 import 'package:job_pool/core/extensions.dart';
 import 'package:job_pool/data/storage/db/db.dart';
-import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 import 'package:job_pool/domain/models/vacancy_full_info.dart';
 import 'package:job_pool/domain/models/vacancy_short_info.dart';
 

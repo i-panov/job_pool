@@ -3,10 +3,9 @@ import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:job_pool/core/enums.dart';
 import 'package:job_pool/core/validators.dart';
 import 'package:job_pool/data/storage/db/db.dart';
-import 'package:job_pool/data/storage/schemas/dictionaries.dart';
-import 'package:job_pool/data/storage/schemas/story_items.dart';
 import 'package:job_pool/domain/models/story_item.dart';
 
 Future<void> openStoryItemForm({

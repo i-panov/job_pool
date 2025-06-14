@@ -6,7 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
-import 'package:job_pool/data/storage/schemas/dictionaries.dart';
+import 'package:job_pool/core/enums.dart';
 
 abstract interface class HtmlDocumentLoader {
   Future<Document> loadHtmlDocument(Uri uri);

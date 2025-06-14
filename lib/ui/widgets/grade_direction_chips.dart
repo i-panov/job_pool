@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:job_pool/core/enums.dart';
 import 'package:job_pool/core/theme_utils.dart';
-import 'package:job_pool/data/storage/schemas/dictionaries.dart';
 
 class GradeChip extends StatefulWidget {
   final JobGrade grade;

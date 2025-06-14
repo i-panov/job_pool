@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
-import 'package:job_pool/data/storage/schemas/dictionaries.dart';
+import 'package:job_pool/core/enums.dart';
 
 class Interview extends Equatable {
   final DateTime time;

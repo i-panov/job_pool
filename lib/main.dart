@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:job_pool/ui/routing/app_router.dart';
 import 'package:intl/intl_standalone.dart';
+import 'package:job_pool/ui/routing/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

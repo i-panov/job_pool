@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:job_pool/core/enums.dart';
 import 'package:job_pool/core/theme_utils.dart';
-import 'package:job_pool/data/storage/schemas/dictionaries.dart';
-import 'package:job_pool/data/storage/schemas/story_items.dart';
 import 'package:job_pool/domain/models/story_item.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 import 'package:job_pool/ui/routing/app_router.gr.dart';
-import 'package:job_pool/ui/widgets/story_item_forms.dart';
 import 'package:job_pool/ui/widgets/grade_direction_chips.dart';
+import 'package:job_pool/ui/widgets/story_item_forms.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 final vacancyFullInfoProvider = StreamProvider.autoDispose.family(

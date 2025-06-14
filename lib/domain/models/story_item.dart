@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:job_pool/core/enums.dart';
-import 'package:job_pool/data/storage/db/db.dart';
+import 'package:job_pool/data/db/db.dart';
 
 extension StoryItemDtoExtension on StoryItemDto {
   StoryItem toDomain() {

@@ -5,7 +5,7 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:job_pool/core/app_form_field.dart';
 import 'package:job_pool/core/validators.dart';
-import 'package:job_pool/data/storage/db/db.dart';
+import 'package:job_pool/data/db/db.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 
 class CompanyFormState extends Equatable {

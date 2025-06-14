@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:job_pool/core/enums.dart';
-import 'package:job_pool/data/storage/db/db.dart';
+import 'package:job_pool/data/db/db.dart';
 import 'package:job_pool/domain/models/interview.dart';
 import 'package:job_pool/domain/models/story_item.dart';
 import 'package:job_pool/domain/models/task.dart';

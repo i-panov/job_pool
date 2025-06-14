@@ -5,11 +5,8 @@ import 'package:job_pool/core/enums.dart';
 import 'package:job_pool/data/storage/mixins/company.dart';
 import 'package:job_pool/data/storage/mixins/story.dart';
 import 'package:job_pool/data/storage/mixins/vacancy.dart';
-import 'package:job_pool/data/storage/schemas/companies.dart';
-import 'package:job_pool/data/storage/schemas/dictionaries.dart';
-import 'package:job_pool/data/storage/schemas/story_items.dart';
-import 'package:job_pool/data/storage/schemas/vacancies.dart';
-import 'package:job_pool/data/storage/types.dart';
+import 'package:job_pool/data/tables.dart';
+import 'package:job_pool/data/types.dart';
 import 'package:path_provider/path_provider.dart';
 
 part 'db.g.dart';

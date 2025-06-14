@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
-import 'package:job_pool/data/storage/db/db.dart';
+import 'package:job_pool/data/db/db.dart';
 
 mixin CompanyDbMixin on AppDatabaseBase {
   Future<int> insertCompany({

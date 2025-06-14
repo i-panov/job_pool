@@ -7,7 +7,7 @@ import 'package:job_pool/core/app_form_field.dart';
 import 'package:job_pool/core/enums.dart';
 import 'package:job_pool/core/extensions.dart';
 import 'package:job_pool/core/validators.dart';
-import 'package:job_pool/data/storage/db/db.dart';
+import 'package:job_pool/data/db/db.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 
 class ContactItem extends Equatable {

@@ -3,6 +3,7 @@ import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:job_pool/domain/models/vacancy_short_info.dart';
+import 'package:job_pool/domain/use_cases/remove_company_use_case.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 import 'package:job_pool/ui/routing/app_router.gr.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -20,6 +21,10 @@ final vacanciesProvider = StreamProvider.autoDispose.family((
   return ref.read(vacanciesRepository).filterByCompany(companyId).watch();
 });
 
+final removeCompanyUseCaseProvider = Provider.autoDispose(
+  (ref) => RemoveCompanyUseCase(ref.read(companiesRepository)),
+);
+
 @RoutePage()
 class CompanyPage extends ConsumerWidget {
   final int companyId;
@@ -28,9 +33,9 @@ class CompanyPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.read(dbProvider);
     final companiesState = ref.watch(companyProvider(companyId));
     final vacanciesState = ref.watch(vacanciesProvider(companyId));
+    final removeCompanyUseCase = ref.read(removeCompanyUseCaseProvider);
 
     return companiesState.when(
       loading: () => Center(child: CircularProgressIndicator()),
@@ -71,7 +76,7 @@ class CompanyPage extends ConsumerWidget {
                   ),
                 );
                 if (confirmed == true) {
-                  await db.removeCompany(company.id);
+                  await removeCompanyUseCase(company.id);
                   if (context.mounted) context.router.pop();
                 }
               },

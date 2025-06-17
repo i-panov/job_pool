@@ -2,7 +2,6 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:job_pool/core/enums.dart';
-import 'package:job_pool/data/mixins/company.dart';
 import 'package:job_pool/data/tables.dart';
 import 'package:job_pool/data/types.dart';
 import 'package:path_provider/path_provider.dart';
@@ -58,8 +57,7 @@ typedef AppDatabaseBase = _$AppDatabase;
   ''',
   },
 )
-class AppDatabase extends AppDatabaseBase
-    with CompanyDbMixin {
+class AppDatabase extends AppDatabaseBase {
   static const separator = '#___SEPARATOR___#';
 
   static QueryExecutor _openConnection() {

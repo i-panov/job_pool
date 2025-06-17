@@ -7,8 +7,7 @@ import 'package:job_pool/ui/routing/app_router.gr.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 final companiesProvider = StreamProvider.autoDispose((ref) {
-  final db = ref.watch(dbProvider);
-  return db.selectCompanies().watch();
+  return ref.read(companiesRepository).selectAll().watch();
 });
 
 @RoutePage(name: 'CompaniesTab')

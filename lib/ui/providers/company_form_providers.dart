@@ -5,7 +5,8 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:job_pool/core/app_form_field.dart';
 import 'package:job_pool/core/validators.dart';
-import 'package:job_pool/data/db/db.dart';
+import 'package:job_pool/data/dto/company_save_args.dart';
+import 'package:job_pool/domain/use_cases/save_company_use_case.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 
 class CompanyFormState extends Equatable {
@@ -59,14 +60,15 @@ class CompanyFormNotifier
 
   static const _urlValidators = [AppValidator.required, AppValidator.url];
 
-  late final AppDatabase db = ref.watch(dbProvider);
+  late final _repo = ref.read(companiesRepository);
+  late final _saveCompanyUseCase = SaveCompanyUseCase(_repo);
 
   CompanyFormNotifier();
 
   @override
   FutureOr<CompanyFormState> build(int? companyId) async {
     if (companyId != null) {
-      final company = await db.getCompany(companyId);
+      final company = await _repo.get(companyId);
 
       if (company == null) {
         throw Exception('Компания не найдена');
@@ -164,7 +166,7 @@ class CompanyFormNotifier
     );
 
     try {
-      final company = await db.findCompanyByName(current.name.value);
+      final company = await _repo.findByName(current.name.value);
 
       if (company != null && (arg == null || company.id != arg)) {
         state = AsyncValue.data(
@@ -252,22 +254,13 @@ class CompanyFormNotifier
 
     state = const AsyncValue.loading();
 
-    if (arg != null) {
-      await db.updateCompany(
-        id: arg!,
-        name: current.name.value,
-        isIT: current.isIT,
-        links: current.links.map((l) => l.value).toISet(),
-        comment: current.comment,
-      );
-    } else {
-      await db.insertCompany(
-        name: current.name.value,
-        isIT: current.isIT,
-        links: current.links.map((l) => l.value).toISet(),
-        comment: current.comment,
-      );
-    }
+    await _saveCompanyUseCase.execute(CompanySaveArgs(
+      id: arg ?? -1,
+      name: current.name.value,
+      isIT: current.isIT,
+      links: current.links.map((l) => l.value).toISet(),
+      comment: current.comment,
+    ));
 
     state = AsyncValue.data(current.copyWith(isSubmitted: true));
   }

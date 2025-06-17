@@ -5,14 +5,14 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:job_pool/core/enums.dart';
 import 'package:job_pool/core/validators.dart';
-import 'package:job_pool/data/db/db.dart';
 import 'package:job_pool/domain/models/story_item.dart';
+import 'package:job_pool/domain/use_cases/insert_story_item_use_case.dart';
 
 Future<void> openStoryItemForm({
   required BuildContext context,
   required StoryItemType dtoType,
   required int vacancyId,
-  required AppDatabase db,
+  required InsertStoryItemUseCase useCase,
 }) async {
   final data = await showAdaptiveDialog<StoryItemData?>(
     context: context,
@@ -42,7 +42,7 @@ Future<void> openStoryItemForm({
 
   if (data == null) return;
 
-  await db.insertStoryItem(vacancyId, data);
+  await useCase.execute(vacancyId, data);
 }
 
 class _InterviewStoryItemForm extends StatefulWidget {

@@ -9,27 +9,22 @@ import 'package:job_pool/ui/routing/app_router.gr.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+final interviewsProvider = StreamProvider.autoDispose((ref) {
+  return ref.read(storyItemsRepository).selectInterviews().watch();
+});
+
 @RoutePage(name: 'HomeTab')
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.watch(dbProvider);
+    final interviewsValue = ref.watch(interviewsProvider);
 
-    return StreamBuilder(
-      stream: db.selectInterviews().watch(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(child: Text('Ошибка: ${snapshot.error}'));
-        }
-
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        final interviews = snapshot.data!;
-
+    return interviewsValue.when(
+      error: (error, _) => Center(child: Text('Error: $error')),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      data: (interviews) {
         if (interviews.isEmpty) {
           return Center(
             child: Column(

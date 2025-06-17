@@ -136,6 +136,5 @@ class TasksPage extends ConsumerWidget {
 }
 
 final tasksProvider = StreamProvider.autoDispose((ref) {
-  final db = ref.watch(dbProvider);
-  return db.selectTasks().watch();
+  return ref.read(storyItemsRepository).selectTasks().watch();
 });

@@ -6,6 +6,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:job_pool/core/enums.dart';
 import 'package:job_pool/core/theme_utils.dart';
 import 'package:job_pool/domain/models/story_item.dart';
+import 'package:job_pool/domain/use_cases/insert_story_item_use_case.dart';
 import 'package:job_pool/domain/use_cases/remove_story_item_use_case.dart';
 import 'package:job_pool/domain/use_cases/remove_vacancy_use_case.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
@@ -20,7 +21,7 @@ final vacancyFullInfoProvider = StreamProvider.autoDispose.family(
 
 final vacancyStoryProvider = StreamProvider.autoDispose.family(
   (ref, int vacancyId) =>
-      ref.read(dbProvider).selectVacancyStory(vacancyId).watch(),
+      ref.read(storyItemsRepository).selectVacancyStory(vacancyId).watch(),
 );
 
 final removeVacancyUseCaseProvider = Provider.autoDispose(
@@ -28,7 +29,11 @@ final removeVacancyUseCaseProvider = Provider.autoDispose(
 );
 
 final removeStoryItemUseCaseProvider = Provider.autoDispose(
-  (ref) => RemoveStoryItemUseCase(),
+  (ref) => RemoveStoryItemUseCase(ref.read(storyItemsRepository)),
+);
+
+final insertStoryItemUseCaseProvider = Provider.autoDispose(
+  (ref) => InsertStoryItemUseCase(ref.read(storyItemsRepository)),
 );
 
 @RoutePage()
@@ -39,11 +44,11 @@ class VacancyPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.watch(dbProvider);
     final vacancyState = ref.watch(vacancyFullInfoProvider(vacancyId));
     final storyState = ref.watch(vacancyStoryProvider(vacancyId));
     final removeVacancyUseCase = ref.read(removeVacancyUseCaseProvider);
     final removeStoryItemUseCase = ref.read(removeStoryItemUseCaseProvider);
+    final insertStoryItemUseCase = ref.read(insertStoryItemUseCaseProvider);
 
     return vacancyState.when(
       error: (error, _) => Center(child: Text(error.toString())),
@@ -135,7 +140,7 @@ class VacancyPage extends ConsumerWidget {
                 context: context,
                 dtoType: type,
                 vacancyId: vacancyId,
-                db: db,
+                useCase: insertStoryItemUseCase,
               ),
             ),
           ),

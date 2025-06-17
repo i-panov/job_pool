@@ -13,79 +13,34 @@ mixin StoryDbMixin on AppDatabaseBase {
     await (delete(storyItems)..where((s) => s.id.equals(id))).go();
   }
 
-  Future<void> insertInterviewStoryItem({
-    required int vacancyId,
-    required InterviewStoryItemData data,
-  }) async {
-    await into(storyItems).insert(
-      StoryItemsCompanion.insert(
-        createdAt: DateTime.now(),
-        type: StoryItemType.interview,
-        vacancy: vacancyId,
-        commonTime: Value(data.time),
-        interviewIsOnline: Value(data.isOnline),
-        interviewTarget: Value(data.target),
-        interviewType: Value(data.type),
-      ),
-    );
-  }
-
-  Future<void> insertWaitingForFeedbackStoryItem({
-    required int vacancyId,
-    required WaitingForFeedbackStoryItemData data,
-  }) async {
-    await into(storyItems).insert(
-      StoryItemsCompanion.insert(
-        createdAt: DateTime.now(),
-        type: StoryItemType.waitingForFeedback,
-        vacancy: vacancyId,
-        commonTime: Value(data.time),
-        commonComment: Value(data.comment),
-      ),
-    );
-  }
-
-  Future<void> insertTaskStoryItem({
-    required int vacancyId,
-    required TaskStoryItemData data,
-  }) async {
-    await into(storyItems).insert(
-      StoryItemsCompanion.insert(
-        createdAt: DateTime.now(),
-        type: StoryItemType.task,
-        vacancy: vacancyId,
-        taskDeadline: Value(data.deadline),
-        taskLink: Value(data.link),
-      ),
-    );
-  }
-
-  Future<void> insertFailureStoryItem({
-    required int vacancyId,
-    required FailureStoryItemData data,
-  }) async {
-    await into(storyItems).insert(
-      StoryItemsCompanion.insert(
-        createdAt: DateTime.now(),
-        type: StoryItemType.failure,
-        vacancy: vacancyId,
-        commonComment: Value(data.comment),
-      ),
-    );
-  }
-
-  Future<void> insertOfferStoryItem({
-    required int vacancyId,
-    required OfferStoryItemData data,
-  }) async {
-    await into(storyItems).insert(
-      StoryItemsCompanion.insert(
-        createdAt: DateTime.now(),
-        type: StoryItemType.offer,
-        vacancy: vacancyId,
-        offerSalary: Value(data.salary),
-      ),
-    );
+  Future<void> insertStoryItem(int vacancyId, StoryItemData data) {
+    return into(storyItems).insert(StoryItemsCompanion.insert(
+      createdAt: DateTime.now(),
+      vacancy: vacancyId,
+      type: data.dtoType,
+      commonTime: Value.absentIfNull(switch (data) {
+        InterviewStoryItemData d => d.time,
+        WaitingForFeedbackStoryItemData d => d.time,
+        _ => null,
+      }),
+      commonComment: Value.absentIfNull(switch (data) {
+        WaitingForFeedbackStoryItemData d => d.comment,
+        FailureStoryItemData d => d.comment,
+        _ => null,
+      }),
+      taskLink: Value.absentIfNull(switch (data) {
+        TaskStoryItemData d => d.link,
+        _ => null,
+      }),
+      taskDeadline: Value.absentIfNull(switch (data) {
+        TaskStoryItemData d => d.deadline,
+        _ => null,
+      }),
+      offerSalary: Value.absentIfNull(switch (data) {
+        OfferStoryItemData d => d.salary,
+        _ => null,
+      }),
+    ));
   }
 
   Selectable<StoryItem> selectVacancyStory(int vacancyId) {

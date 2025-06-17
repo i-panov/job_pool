@@ -48,13 +48,7 @@ class StoryItem<T extends StoryItemData> extends Equatable {
   @override
   List<Object?> get props => [id, vacancyId, createdAt, data];
 
-  StoryItemType get dtoType => switch (data) {
-    InterviewStoryItemData() => StoryItemType.interview,
-    WaitingForFeedbackStoryItemData() => StoryItemType.waitingForFeedback,
-    TaskStoryItemData() => StoryItemType.task,
-    FailureStoryItemData() => StoryItemType.failure,
-    OfferStoryItemData() => StoryItemType.offer,
-  };
+  StoryItemType get dtoType => data.dtoType;
 
   IconData get icon {
     return switch (data) {
@@ -120,6 +114,14 @@ class StoryItem<T extends StoryItemData> extends Equatable {
 
 sealed class StoryItemData extends Equatable {
   const StoryItemData();
+
+  StoryItemType get dtoType => switch (this) {
+    InterviewStoryItemData() => StoryItemType.interview,
+    WaitingForFeedbackStoryItemData() => StoryItemType.waitingForFeedback,
+    TaskStoryItemData() => StoryItemType.task,
+    FailureStoryItemData() => StoryItemType.failure,
+    OfferStoryItemData() => StoryItemType.offer,
+  };
 }
 
 class InterviewStoryItemData extends StoryItemData {

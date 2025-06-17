@@ -42,18 +42,7 @@ Future<void> openStoryItemForm({
 
   if (data == null) return;
 
-  switch (data) {
-    case InterviewStoryItemData():
-      db.insertInterviewStoryItem(vacancyId: vacancyId, data: data);
-    case WaitingForFeedbackStoryItemData():
-      db.insertWaitingForFeedbackStoryItem(vacancyId: vacancyId, data: data);
-    case TaskStoryItemData():
-      db.insertTaskStoryItem(vacancyId: vacancyId, data: data);
-    case FailureStoryItemData():
-      db.insertFailureStoryItem(vacancyId: vacancyId, data: data);
-    case OfferStoryItemData():
-      db.insertOfferStoryItem(vacancyId: vacancyId, data: data);
-  }
+  await db.insertStoryItem(vacancyId, data);
 }
 
 class _InterviewStoryItemForm extends StatefulWidget {

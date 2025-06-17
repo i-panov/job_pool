@@ -1,13 +1,14 @@
 import 'package:equatable/equatable.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:job_pool/core/enums.dart';
+import 'package:job_pool/domain/models/contact.dart';
 
 class VacancyFullInfo extends Equatable {
   final int id;
   final String link, comment;
   final ISet<JobGrade> grades;
   final IList<({int id, String name})> directions;
-  final IList<({ContactType type, String value})> contacts;
+  final IList<Contact> contacts;
   final int companyId;
   final String companyName;
 

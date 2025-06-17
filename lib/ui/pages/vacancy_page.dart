@@ -6,6 +6,8 @@ import 'package:ionicons/ionicons.dart';
 import 'package:job_pool/core/enums.dart';
 import 'package:job_pool/core/theme_utils.dart';
 import 'package:job_pool/domain/models/story_item.dart';
+import 'package:job_pool/domain/use_cases/remove_story_item_use_case.dart';
+import 'package:job_pool/domain/use_cases/remove_vacancy_use_case.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 import 'package:job_pool/ui/routing/app_router.gr.dart';
 import 'package:job_pool/ui/widgets/grade_direction_chips.dart';
@@ -13,12 +15,20 @@ import 'package:job_pool/ui/widgets/story_item_forms.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 final vacancyFullInfoProvider = StreamProvider.autoDispose.family(
-  (ref, int id) => ref.watch(dbProvider).watchVacancyFullInfo(id),
+  (ref, int id) => ref.read(vacanciesRepository).select(id).watchSingle(),
 );
 
 final vacancyStoryProvider = StreamProvider.autoDispose.family(
   (ref, int vacancyId) =>
-      ref.watch(dbProvider).selectVacancyStory(vacancyId).watch(),
+      ref.read(dbProvider).selectVacancyStory(vacancyId).watch(),
+);
+
+final removeVacancyUseCaseProvider = Provider.autoDispose(
+  (ref) => RemoveVacancyUseCase(ref.read(vacanciesRepository)),
+);
+
+final removeStoryItemUseCaseProvider = Provider.autoDispose(
+  (ref) => RemoveStoryItemUseCase(),
 );
 
 @RoutePage()
@@ -32,6 +42,8 @@ class VacancyPage extends ConsumerWidget {
     final db = ref.watch(dbProvider);
     final vacancyState = ref.watch(vacancyFullInfoProvider(vacancyId));
     final storyState = ref.watch(vacancyStoryProvider(vacancyId));
+    final removeVacancyUseCase = ref.read(removeVacancyUseCaseProvider);
+    final removeStoryItemUseCase = ref.read(removeStoryItemUseCaseProvider);
 
     return vacancyState.when(
       error: (error, _) => Center(child: Text(error.toString())),
@@ -81,7 +93,7 @@ class VacancyPage extends ConsumerWidget {
                     ),
                   );
                   if (confirmed == true) {
-                    await db.removeVacancy(vacancy.id);
+                    await removeVacancyUseCase.execute(vacancy.id);
                     if (context.mounted) context.router.pop();
                   }
                 },
@@ -273,7 +285,7 @@ class VacancyPage extends ConsumerWidget {
                         for (final item in story)
                           _StoryItemCard(
                             item: item,
-                            onDelete: db.removeStoryItem,
+                            onDelete: removeStoryItemUseCase.execute,
                           ),
                       ],
                     );

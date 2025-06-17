@@ -17,8 +17,7 @@ final vacanciesProvider = StreamProvider.autoDispose.family((
   ref,
   int companyId,
 ) {
-  final db = ref.watch(dbProvider);
-  return db.watchVacanciesShortInfo(companyId);
+  return ref.read(vacanciesRepository).filterByCompany(companyId).watch();
 });
 
 @RoutePage()

@@ -8,6 +8,8 @@ import 'package:job_pool/core/enums.dart';
 import 'package:job_pool/core/extensions.dart';
 import 'package:job_pool/core/validators.dart';
 import 'package:job_pool/data/db/db.dart';
+import 'package:job_pool/data/dto/vacancy_save_args.dart';
+import 'package:job_pool/domain/models/contact.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 
 class ContactItem extends Equatable {
@@ -107,28 +109,28 @@ class VacancyFormNotifier
     extends AutoDisposeFamilyAsyncNotifier<VacancyFormState, VacancyFormArgs> {
   static const _linkValidators = [AppValidator.required, AppValidator.url];
 
-  late final db = ref.read(dbProvider);
+  late final repository = ref.read(vacanciesRepository);
 
   VacancyFormNotifier();
 
   @override
   FutureOr<VacancyFormState> build(VacancyFormArgs args) async {
     if (args.vacancyId != null) {
-      final vacancy = await db.getVacancy(arg.vacancyId!);
+      final vacancy = await repository.select(arg.vacancyId!).getSingleOrNull();
 
       if (vacancy == null) {
         throw Exception('Вакансия не найдена');
       }
 
-      final directionIds = await db.getVacancyDirectionIds(arg.vacancyId!);
-      final contacts = await db.getVacancyContacts(arg.vacancyId!);
-
       return VacancyFormState(
         link: vacancy.link,
         comment: vacancy.comment,
         grades: vacancy.grades,
-        directionIds: directionIds.toIList(),
-        contacts: contacts.map(ContactItem.fromDto).toIList(),
+        directionIds: vacancy.directions.map((d) => d.id).toIList(),
+        contacts: [
+          for (final c in vacancy.contacts)
+            ContactItem(c.type, AppFormField(value: c.value)),
+        ].lock,
       );
     }
 
@@ -291,28 +293,28 @@ class VacancyFormNotifier
     state = const AsyncValue.loading();
 
     final contacts = current.contacts
-        .map((c) => (type: c.type, value: c.value.value))
+        .map((c) => Contact(type: c.type, value: c.value.value))
         .toIList();
 
     if (arg.vacancyId == null) {
-      await db.insertVacancy(
+      await repository.insert(VacancySaveArgs(
         companyId: arg.companyId,
         link: current.link.value,
         comment: current.comment,
         grades: current.grades,
-        directionIds: current.directionIds,
-        contactsList: contacts,
-      );
+        directionIds: current.directionIds.toISet(),
+        contacts: contacts,
+      ));
     } else {
-      await db.updateVacancy(
+      await repository.update(VacancySaveArgs(
         id: arg.vacancyId!,
         companyId: arg.companyId,
         link: current.link.value,
         comment: current.comment,
         grades: current.grades,
-        directionIds: current.directionIds,
-        contactsList: contacts,
-      );
+        directionIds: current.directionIds.toISet(),
+        contacts: contacts,
+      ));
     }
 
     state = AsyncValue.data(current.copyWith(isSubmitted: true));

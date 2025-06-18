@@ -1,8 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:job_pool/core/parse.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
+import 'package:job_pool/ui/providers/parsing_provider.dart';
 import 'package:job_pool/ui/routing/app_router.gr.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -17,6 +17,17 @@ class CompaniesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final companiesValue = ref.watch(companiesProvider);
+    final parsingState = ref.watch(parsingProvider);
+
+    ref.listen(parsingProvider, (previous, next) {
+      if (next is ParsingSuccess) {
+        context.router.push(VacancyRoute(vacancyId: next.vacancyId));
+      } else if (next is ParsingFailure) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.error)));
+      }
+    });
 
     return Scaffold(
       body: Stack(
@@ -120,27 +131,30 @@ class CompaniesPage extends ConsumerWidget {
             child: Column(
               spacing: 10,
               children: [
-                FloatingActionButton(
-                  onPressed: () async {
-                    final url = await showDialog<String>(
-                      context: context,
-                      builder: (context) => _LinkDialog(),
-                    );
+                IconButton(
+                  onPressed: parsingState is ParsingInitial
+                      ? () async {
+                          final url = await showDialog<String>(
+                            context: context,
+                            builder: (context) => _LinkDialog(),
+                          );
 
-                    if (url != null && url.isNotEmpty) {
-                      final parsedVacancy = await parseHeadHunterVacancy(url);
-                      print(parsedVacancy);
-                    }
-                  },
-                  backgroundColor: Colors.blue,
+                          if (url != null && url.isNotEmpty) {
+                            await ref.read(parsingProvider.notifier).parse(url);
+                          }
+                        }
+                      : null,
+                  color: Colors.blue,
                   tooltip: 'Добавить вакансию (по ссылке)',
-                  child: Icon(Icons.link, size: 32),
+                  icon: parsingState is ParsingInitial
+                      ? Icon(Icons.link, size: 32)
+                      : CircularProgressIndicator(strokeWidth: 32),
                 ),
-                FloatingActionButton(
+                IconButton(
                   onPressed: () => context.router.push(CompanyFormRoute()),
-                  backgroundColor: Colors.green,
+                  color: Colors.green,
                   tooltip: 'Добавить компанию (вручную)',
-                  child: Icon(Icons.add, size: 32),
+                  icon: Icon(Icons.add, size: 32),
                 ),
               ],
             ),

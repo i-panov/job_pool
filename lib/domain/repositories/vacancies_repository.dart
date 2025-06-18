@@ -9,4 +9,5 @@ abstract interface class VacanciesRepository {
   Future<void> remove(int id);
   Selectable<VacancyFullInfo> select(int id);
   Selectable<VacancyShortInfo> filterByCompany(int companyId);
+  Future<int?> findByCompanyAndLink(int companyId, String link);
 }

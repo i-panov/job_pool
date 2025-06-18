@@ -73,6 +73,9 @@ class HomePage extends ConsumerWidget {
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Card(
                       elevation: 2,
+                      color: interview.time.isBefore(DateTime.now())
+                          ? null
+                          : Colors.yellow,
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(

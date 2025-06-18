@@ -145,7 +145,7 @@ class VacanciesRepositoryImpl implements VacanciesRepository {
           _db.vacancyDirections,
           _db.vacancyDirections.vacancy.equalsExp(_db.vacancies.id),
         ),
-        innerJoin(
+        leftOuterJoin(
           _db.jobDirections,
           _db.jobDirections.id.equalsExp(_db.vacancyDirections.direction),
         ),
@@ -167,5 +167,15 @@ class VacanciesRepositoryImpl implements VacanciesRepository {
         directions: directionNamesList.toIList(),
       );
     });
+  }
+
+  @override
+  Future<int?> findByCompanyAndLink(int companyId, String link) {
+    final query = _db.selectOnly(_db.vacancies)
+      ..where(_db.vacancies.company.equals(companyId))
+      ..where(_db.vacancies.link.equals(link))
+      ..addColumns([_db.vacancies.id]);
+
+    return query.map((row) => row.read(_db.vacancies.id)!).getSingleOrNull();
   }
 }

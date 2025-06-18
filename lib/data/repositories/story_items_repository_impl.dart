@@ -9,7 +9,7 @@ import 'package:job_pool/domain/repositories/story_items_repository.dart';
 
 class StoryItemsRepositoryImpl implements StoryItemsRepository {
   static const _separator = AppDatabase.separator;
-  
+
   final AppDatabase _db;
 
   const StoryItemsRepositoryImpl(this._db);
@@ -21,53 +21,77 @@ class StoryItemsRepositoryImpl implements StoryItemsRepository {
 
   @override
   Future<void> insert(int vacancyId, StoryItemData data) {
-    return _db.into(_db.storyItems).insert(StoryItemsCompanion.insert(
-      createdAt: DateTime.now(),
-      vacancy: vacancyId,
-      type: data.dtoType,
-      commonTime: Value.absentIfNull(switch (data) {
-        InterviewStoryItemData d => d.time,
-        WaitingForFeedbackStoryItemData d => d.time,
-        _ => null,
-      }),
-      commonComment: Value.absentIfNull(switch (data) {
-        WaitingForFeedbackStoryItemData d => d.comment,
-        FailureStoryItemData d => d.comment,
-        _ => null,
-      }),
-      taskLink: Value.absentIfNull(switch (data) {
-        TaskStoryItemData d => d.link,
-        _ => null,
-      }),
-      taskDeadline: Value.absentIfNull(switch (data) {
-        TaskStoryItemData d => d.deadline,
-        _ => null,
-      }),
-      offerSalary: Value.absentIfNull(switch (data) {
-        OfferStoryItemData d => d.salary,
-        _ => null,
-      }),
-    ));
+    return _db
+        .into(_db.storyItems)
+        .insert(
+          StoryItemsCompanion.insert(
+            createdAt: DateTime.now(),
+            vacancy: vacancyId,
+            type: data.dtoType,
+            commonTime: Value.absentIfNull(switch (data) {
+              InterviewStoryItemData d => d.time,
+              WaitingForFeedbackStoryItemData d => d.time,
+              _ => null,
+            }),
+            commonComment: Value.absentIfNull(switch (data) {
+              WaitingForFeedbackStoryItemData d => d.comment,
+              FailureStoryItemData d => d.comment,
+              _ => null,
+            }),
+            taskLink: Value.absentIfNull(switch (data) {
+              TaskStoryItemData d => d.link,
+              _ => null,
+            }),
+            taskDeadline: Value.absentIfNull(switch (data) {
+              TaskStoryItemData d => d.deadline,
+              _ => null,
+            }),
+            offerSalary: Value.absentIfNull(switch (data) {
+              OfferStoryItemData d => d.salary,
+              _ => null,
+            }),
+            interviewIsOnline: Value.absentIfNull(switch (data) {
+              InterviewStoryItemData d => d.isOnline,
+              _ => null,
+            }),
+            interviewTarget: Value.absentIfNull(switch (data) {
+              InterviewStoryItemData d => d.target,
+              _ => null,
+            }),
+            interviewType: Value.absentIfNull(switch (data) {
+              InterviewStoryItemData d => d.type,
+              _ => null,
+            }),
+          ),
+        );
   }
 
   @override
   Selectable<StoryItem> selectVacancyStory(int vacancyId) {
     final query = _db.select(_db.storyItems)
       ..where((s) => s.vacancy.equals(vacancyId))
-      ..orderBy([(s) => OrderingTerm.asc(s.createdAt)]);
+      ..orderBy([(s) => OrderingTerm.desc(s.createdAt)]);
 
     return query.map((item) => item.toDomain());
   }
 
   @override
   Selectable<Interview> selectInterviews() {
-    final directions = _db.jobDirections.name.groupConcat(separator: _separator);
+    final directions = _db.jobDirections.name.groupConcat(
+      separator: _separator,
+    );
 
     final query = _db.selectOnly(_db.storyItems)
       ..where(_db.storyItems.type.equalsValue(StoryItemType.interview))
       ..join([
-        innerJoin(_db.vacancies, _db.vacancies.id.equalsExp(_db.storyItems.vacancy)),
-        innerJoin(_db.companies, _db.companies.id.equalsExp(_db.vacancies.company)),
+        innerJoin(
+          _db.vacancies,
+          _db.vacancies.id.equalsExp(_db.storyItems.vacancy),
+        ),
+        innerJoin(
+          _db.companies,
+          _db.companies.id.equalsExp(_db.vacancies.company),
+        ),
         leftOuterJoin(
           _db.vacancyDirections,
           _db.vacancyDirections.vacancy.equalsExp(_db.vacancies.id),
@@ -95,7 +119,9 @@ class StoryItemsRepositoryImpl implements StoryItemsRepository {
         time: row.read(_db.storyItems.commonTime)!,
         isOnline: row.read(_db.storyItems.interviewIsOnline)!,
         target: row.read(_db.storyItems.interviewTarget)!,
-        type: row.readWithConverter(_db.storyItems.interviewType) as InterviewType,
+        type:
+            row.readWithConverter(_db.storyItems.interviewType)
+                as InterviewType,
         vacancyId: row.read(_db.vacancies.id)!,
         companyName: row.read(_db.companies.name)!,
         jobDirections: row.read(directions)!.split(_separator).toISet(),
@@ -106,13 +132,21 @@ class StoryItemsRepositoryImpl implements StoryItemsRepository {
 
   @override
   Selectable<Task> selectTasks() {
-    final directions = _db.jobDirections.name.groupConcat(separator: _separator);
+    final directions = _db.jobDirections.name.groupConcat(
+      separator: _separator,
+    );
 
     final query = _db.selectOnly(_db.storyItems)
       ..where(_db.storyItems.type.equalsValue(StoryItemType.task))
       ..join([
-        innerJoin(_db.vacancies, _db.vacancies.id.equalsExp(_db.storyItems.vacancy)),
-        innerJoin(_db.companies, _db.companies.id.equalsExp(_db.vacancies.company)),
+        innerJoin(
+          _db.vacancies,
+          _db.vacancies.id.equalsExp(_db.storyItems.vacancy),
+        ),
+        innerJoin(
+          _db.companies,
+          _db.companies.id.equalsExp(_db.vacancies.company),
+        ),
         leftOuterJoin(
           _db.vacancyDirections,
           _db.vacancyDirections.vacancy.equalsExp(_db.vacancies.id),

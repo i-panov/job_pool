@@ -6,7 +6,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:job_pool/core/parse.dart';
-import 'package:job_pool/ui/providers/app_providers.dart';
 import 'package:job_pool/ui/providers/parsing_provider.dart';
 import 'package:job_pool/ui/routing/app_router.dart';
 import 'package:job_pool/ui/routing/app_router.gr.dart';
@@ -18,18 +17,17 @@ void main() async {
   runApp(ProviderScope(child: const JobPoolApp()));
 }
 
-class JobPoolApp extends StatefulWidget {
+class JobPoolApp extends ConsumerStatefulWidget {
   const JobPoolApp({super.key});
 
   @override
-  State<JobPoolApp> createState() => JobPoolAppState();
+  ConsumerState createState() => JobPoolAppState();
 }
 
-class JobPoolAppState extends State<JobPoolApp> {
+class JobPoolAppState extends ConsumerState<JobPoolApp> {
   final router = AppRouter();
 
   late final StreamSubscription _shareSub;
-  late final ProviderSubscription _parsingSub;
 
   BuildContext get ctx => router.navigatorKey.currentContext!;
 
@@ -37,13 +35,12 @@ class JobPoolAppState extends State<JobPoolApp> {
   void initState() {
     super.initState();
 
-    _parsingSub = globalContainer.listen(parsingProvider, (_, next) {
+    ref.listen(parsingProvider, (_, next) {
       if (next is ParsingSuccess) {
         ctx.router.push(VacancyRoute(vacancyId: next.vacancyId));
       } else if (next is ParsingFailure) {
-        ScaffoldMessenger.of(
-          ctx,
-        ).showSnackBar(SnackBar(content: Text(next.error)));
+        final snack = SnackBar(content: Text(next.error));
+        ScaffoldMessenger.of(ctx).showSnackBar(snack);
       }
     });
 
@@ -56,7 +53,6 @@ class JobPoolAppState extends State<JobPoolApp> {
 
   @override
   void dispose() {
-    _parsingSub.close();
     _shareSub.cancel();
     super.dispose();
   }
@@ -70,7 +66,7 @@ class JobPoolAppState extends State<JobPoolApp> {
         final uri = tryParseHeadHunterVacancyUrl(text);
 
         if (uri != null) {
-          globalContainer.read(parsingProvider.notifier).parse(uri);
+          ref.read(parsingProvider.notifier).parse(uri);
         }
       }
     }

@@ -58,6 +58,10 @@ dependencies:
   maps_launcher: ^3.0.0+1
   html: ^0.15.6
 
+  receive_sharing_intent: # временное решение, в актуальной версии 1.8.1 ошибка
+    git: 
+      url: https://github.com/KasemJaffer/receive_sharing_intent
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

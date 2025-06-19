@@ -37,6 +37,16 @@ class DefaultHtmlDocumentLoader implements HtmlDocumentLoader {
   }
 }
 
+Uri? tryParseHeadHunterVacancyUrl(String? value) {
+    if (value == null || value.isEmpty) {
+      return null;
+    }
+
+    const pattern = r'https:\/\/(?:[a-zA-Z0-9.-]+\.)?hh\.ru\/vacancy\/\d+';
+    final url = RegExp(pattern).firstMatch(value)?.group(0);
+    return url != null ? Uri.tryParse(url) : null;
+  }
+
 Future<HeadHunterParsedVacancy> parseHeadHunterVacancy(
   Uri uri, {
   HtmlDocumentLoader loader = DefaultHtmlDocumentLoader.instance,

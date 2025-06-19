@@ -7,6 +7,8 @@ import 'package:job_pool/domain/repositories/companies_repository.dart';
 import 'package:job_pool/domain/repositories/story_items_repository.dart';
 import 'package:job_pool/domain/repositories/vacancies_repository.dart';
 
+final globalContainer = ProviderContainer();
+
 final dbProvider = Provider<AppDatabase>((ref) {
   return AppDatabase();
 });

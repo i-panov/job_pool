@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:job_pool/core/parse.dart';
 import 'package:job_pool/ui/providers/app_providers.dart';
 import 'package:job_pool/ui/providers/parsing_provider.dart';
 import 'package:job_pool/ui/routing/app_router.gr.dart';
@@ -18,16 +19,6 @@ class CompaniesPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final companiesValue = ref.watch(companiesProvider);
     final parsingState = ref.watch(parsingProvider);
-
-    ref.listen(parsingProvider, (previous, next) {
-      if (next is ParsingSuccess) {
-        context.router.push(VacancyRoute(vacancyId: next.vacancyId));
-      } else if (next is ParsingFailure) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.error)));
-      }
-    });
 
     return Scaffold(
       body: Stack(
@@ -148,7 +139,7 @@ class CompaniesPage extends ConsumerWidget {
                   tooltip: 'Добавить вакансию (по ссылке)',
                   icon: parsingState is ParsingInitial
                       ? Icon(Icons.link, size: 32)
-                      : CircularProgressIndicator(strokeWidth: 32),
+                      : CircularProgressIndicator(strokeWidth: 24),
                 ),
                 IconButton(
                   onPressed: () => context.router.push(CompanyFormRoute()),
@@ -196,7 +187,7 @@ class _LinkDialogState extends State<_LinkDialog> {
               return 'Ссылка не может быть пустой';
             }
 
-            final uri = _tryParseVacancyUrl(value);
+            final uri = tryParseHeadHunterVacancyUrl(value);
 
             if (uri == null) {
               return 'Некорректная ссылка на вакансию HH';
@@ -213,7 +204,7 @@ class _LinkDialogState extends State<_LinkDialog> {
           ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                final uri = _tryParseVacancyUrl(_link);
+                final uri = tryParseHeadHunterVacancyUrl(_link);
 
                 if (uri != null) {
                   Navigator.of(context).pop(uri);
@@ -225,15 +216,5 @@ class _LinkDialogState extends State<_LinkDialog> {
         ],
       ),
     );
-  }
-
-  Uri? _tryParseVacancyUrl(String? value) {
-    if (value == null || value.isEmpty) {
-      return null;
-    }
-
-    const pattern = r'https:\/\/(?:[a-zA-Z0-9.-]+\.)?hh\.ru\/vacancy\/\d+';
-    final url = RegExp(pattern).firstMatch(value)?.group(0);
-    return url != null ? Uri.tryParse(url) : null;
   }
 }

@@ -12,7 +12,7 @@ class ParsingProvider extends Notifier<ParsingState> {
   @override
   ParsingState build() => const ParsingInitial();
 
-  Future<void> parse(String url) async {
+  Future<void> parse(Uri uri) async {
     if (state is! ParsingInitial) {
       return;
     }
@@ -20,7 +20,7 @@ class ParsingProvider extends Notifier<ParsingState> {
     state = const ParsingInProgress();
 
     try {
-      final vacancyId = await _parse(url);
+      final vacancyId = await _parse(uri);
       state = ParsingSuccess(vacancyId);
     } catch (e) {
       state = ParsingFailure(e.toString());

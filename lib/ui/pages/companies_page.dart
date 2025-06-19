@@ -134,13 +134,13 @@ class CompaniesPage extends ConsumerWidget {
                 IconButton(
                   onPressed: parsingState is ParsingInitial
                       ? () async {
-                          final url = await showDialog<String>(
+                          final uri = await showDialog<Uri>(
                             context: context,
                             builder: (context) => _LinkDialog(),
                           );
 
-                          if (url != null && url.isNotEmpty) {
-                            await ref.read(parsingProvider.notifier).parse(url);
+                          if (uri != null) {
+                            await ref.read(parsingProvider.notifier).parse(uri);
                           }
                         }
                       : null,
@@ -186,7 +186,6 @@ class _LinkDialogState extends State<_LinkDialog> {
           children: [Text('Введите ссылку на'), Text('вакансию (только HH)')],
         ),
         content: TextFormField(
-          initialValue: _link,
           autofocus: true,
           decoration: InputDecoration(
             hintText: 'https://hh.ru/vacancy/12345678',
@@ -197,12 +196,9 @@ class _LinkDialogState extends State<_LinkDialog> {
               return 'Ссылка не может быть пустой';
             }
 
-            final uri = Uri.tryParse(value);
+            final uri = _tryParseVacancyUrl(value);
 
-            if (uri == null ||
-                !uri.isAbsolute ||
-                !uri.host.endsWith('hh.ru') ||
-                !uri.path.startsWith('/vacancy/')) {
+            if (uri == null) {
               return 'Некорректная ссылка на вакансию HH';
             }
 
@@ -217,7 +213,11 @@ class _LinkDialogState extends State<_LinkDialog> {
           ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                Navigator.of(context).pop(_link);
+                final uri = _tryParseVacancyUrl(_link);
+
+                if (uri != null) {
+                  Navigator.of(context).pop(uri);
+                }
               }
             },
             child: Text('Добавить'),
@@ -225,5 +225,15 @@ class _LinkDialogState extends State<_LinkDialog> {
         ],
       ),
     );
+  }
+
+  Uri? _tryParseVacancyUrl(String? value) {
+    if (value == null || value.isEmpty) {
+      return null;
+    }
+
+    const pattern = r'https:\/\/(?:[a-zA-Z0-9.-]+\.)?hh\.ru\/vacancy\/\d+';
+    final url = RegExp(pattern).firstMatch(value)?.group(0);
+    return url != null ? Uri.tryParse(url) : null;
   }
 }

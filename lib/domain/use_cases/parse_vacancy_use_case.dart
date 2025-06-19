@@ -14,8 +14,8 @@ class ParseVacancyUseCase {
     required this.vacanciesRepository,
   });
 
-  Future<int> call(String url) async {
-    final parsed = await parseHeadHunterVacancy(url);
+  Future<int> call(Uri uri) async {
+    final parsed = await parseHeadHunterVacancy(uri);
     final company = await companiesRepository.findByName(parsed.companyName);
     final companyId = company?.id ?? await _insertCompany(parsed);
 

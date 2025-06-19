@@ -38,17 +38,9 @@ class DefaultHtmlDocumentLoader implements HtmlDocumentLoader {
 }
 
 Future<HeadHunterParsedVacancy> parseHeadHunterVacancy(
-  String url, {
+  Uri uri, {
   HtmlDocumentLoader loader = DefaultHtmlDocumentLoader.instance,
 }) async {
-  final parsedUri = Uri.parse(url);
-
-  final uri = Uri(
-    scheme: parsedUri.scheme,
-    host: parsedUri.host,
-    path: parsedUri.path,
-  );
-
   final doc = await loader.loadHtmlDocument(uri);
 
   final companyNameTag = doc.querySelector('[data-qa="vacancy-company-name"]');

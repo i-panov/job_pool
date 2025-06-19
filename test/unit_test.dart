@@ -12,7 +12,7 @@ Future<void> main() async {
 
     await loader.setNextLoad('119699691_c#_is_it.html');
 
-    final v1 = await parseHeadHunterVacancy('', loader: loader);
+    final v1 = await parseHeadHunterVacancy(Uri(), loader: loader);
 
     expect(v1.companyName, '2ГИС');
     expect(v1.companyLink, 'https://spb.hh.ru/employer/64174');
@@ -30,7 +30,7 @@ Future<void> main() async {
     expect(v1.isIt, true);
 
     await loader.setNextLoad('121545555_php_not_it.html');
-    final v2 = await parseHeadHunterVacancy('', loader: loader);
+    final v2 = await parseHeadHunterVacancy(Uri(), loader: loader);
 
     expect(v2.companyName, 'ООО СДЕЛКАРФ');
     expect(v2.companyLink, 'https://spb.hh.ru/employer/4258907');

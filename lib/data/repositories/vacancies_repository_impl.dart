@@ -66,21 +66,25 @@ class VacanciesRepositoryImpl implements VacanciesRepository {
         ),
       );
 
-      batch.replaceAll(_db.vacancyDirections, [
+      batch.deleteWhere(_db.vacancyDirections, (f) => f.vacancy.equals(args.id));
+
+      batch.insertAll(_db.vacancyDirections, [
         for (final (index, directionId) in args.directionIds.indexed)
-          VacancyDirectionsCompanion(
-            vacancy: Value(args.id),
-            direction: Value(directionId),
-            order: Value(index),
+          VacancyDirectionsCompanion.insert(
+            vacancy: args.id,
+            direction: directionId,
+            order: index,
           ),
       ]);
 
-      batch.replaceAll(_db.contacts, [
+      batch.deleteWhere(_db.contacts, (f) => f.vacancy.equals(args.id));
+
+      batch.insertAll(_db.contacts, [
         for (final contact in args.contacts)
-          ContactsCompanion(
-            vacancy: Value(args.id),
-            contactType: Value(contact.type),
-            contactValue: Value(contact.value),
+          ContactsCompanion.insert(
+            vacancy: args.id,
+            contactType: contact.type,
+            contactValue: contact.value,
           ),
       ]);
     });

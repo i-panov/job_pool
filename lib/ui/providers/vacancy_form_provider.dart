@@ -296,28 +296,36 @@ class VacancyFormNotifier
         .map((c) => Contact(type: c.type, value: c.value.value))
         .toIList();
 
-    if (arg.vacancyId == null) {
-      await repository.insert(VacancySaveArgs(
-        companyId: arg.companyId,
-        link: current.link.value,
-        comment: current.comment,
-        grades: current.grades,
-        directionIds: current.directionIds.toISet(),
-        contacts: contacts,
-      ));
-    } else {
-      await repository.update(VacancySaveArgs(
-        id: arg.vacancyId!,
-        companyId: arg.companyId,
-        link: current.link.value,
-        comment: current.comment,
-        grades: current.grades,
-        directionIds: current.directionIds.toISet(),
-        contacts: contacts,
-      ));
-    }
+    try {
+      if (arg.vacancyId == null) {
+        await repository.insert(
+          VacancySaveArgs(
+            companyId: arg.companyId,
+            link: current.link.value,
+            comment: current.comment,
+            grades: current.grades,
+            directionIds: current.directionIds.toISet(),
+            contacts: contacts,
+          ),
+        );
+      } else {
+        await repository.update(
+          VacancySaveArgs(
+            id: arg.vacancyId!,
+            companyId: arg.companyId,
+            link: current.link.value,
+            comment: current.comment,
+            grades: current.grades,
+            directionIds: current.directionIds.toISet(),
+            contacts: contacts,
+          ),
+        );
+      }
 
-    state = AsyncValue.data(current.copyWith(isSubmitted: true));
+      state = AsyncValue.data(current.copyWith(isSubmitted: true));
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
   }
 }
 

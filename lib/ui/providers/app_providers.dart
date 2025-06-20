@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:job_pool/data/db/db.dart';
 import 'package:job_pool/data/repositories/companies_repository_impl.dart';
+import 'package:job_pool/data/repositories/job_directions_repository_impl.dart';
 import 'package:job_pool/data/repositories/story_items_repository_impl.dart';
 import 'package:job_pool/data/repositories/vacancies_repository_impl.dart';
 import 'package:job_pool/domain/repositories/companies_repository.dart';
+import 'package:job_pool/domain/repositories/job_directions_repository.dart';
 import 'package:job_pool/domain/repositories/story_items_repository.dart';
 import 'package:job_pool/domain/repositories/vacancies_repository.dart';
 
@@ -21,4 +23,8 @@ final vacanciesRepository = Provider<VacanciesRepository>((ref) {
 
 final storyItemsRepository = Provider<StoryItemsRepository>((ref) {
   return StoryItemsRepositoryImpl(ref.read(dbProvider));
+});
+
+final jobDirectionsRepository = Provider<JobDirectionsRepository>((ref) {
+  return JobDirectionsRepositoryImpl(ref.read(dbProvider));
 });

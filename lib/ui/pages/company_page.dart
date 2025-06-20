@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:job_pool/domain/models/vacancy_short_info.dart';
@@ -9,9 +8,7 @@ import 'package:job_pool/ui/routing/app_router.gr.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 final companyProvider = StreamProvider.autoDispose.family((ref, int companyId) {
-  final db = ref.watch(dbProvider);
-  final query = db.companies.select()..where((c) => c.id.equals(companyId));
-  return query.watchSingle();
+  return ref.read(companiesRepository).select(companyId).watchSingle();
 });
 
 final vacanciesProvider = StreamProvider.autoDispose.family((
@@ -37,10 +34,10 @@ class CompanyPage extends ConsumerWidget {
     final vacanciesState = ref.watch(vacanciesProvider(companyId));
     final removeCompanyUseCase = ref.read(removeCompanyUseCaseProvider);
 
-    return companiesState.when(
-      loading: () => Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(child: Text(error.toString())),
-      data: (company) => Scaffold(
+    return switch (companiesState) {
+      AsyncLoading() => Center(child: CircularProgressIndicator()),
+      AsyncError(:final error) => Center(child: Text(error.toString())),
+      AsyncData(value: final company) when company != null => Scaffold(
         appBar: AppBar(
           title: Text(company.name),
           actions: [
@@ -243,7 +240,8 @@ class CompanyPage extends ConsumerWidget {
           ),
         ),
       ),
-    );
+      _ => Center(child: Text('Компания не найдена')),
+    };
   }
 }
 

@@ -39,9 +39,8 @@ class CompaniesRepositoryImpl implements CompaniesRepository {
   }
 
   @override
-  Future<CompanyDto?> get(int id) {
-    final query = _db.select(_db.companies)..where((f) => f.id.equals(id));
-    return query.getSingleOrNull();
+  Selectable<CompanyDto?> select(int id) {
+    return _db.select(_db.companies)..where((f) => f.id.equals(id));
   }
 
   @override

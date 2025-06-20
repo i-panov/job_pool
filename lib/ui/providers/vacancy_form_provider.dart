@@ -347,6 +347,5 @@ final vacancyFormProvider =
     >(() => VacancyFormNotifier());
 
 final jobDirectionsProvider = AutoDisposeFutureProvider((ref) {
-  final db = ref.watch(dbProvider);
-  return db.select(db.jobDirections).get();
+  return ref.watch(jobDirectionsRepository).getAll();
 });

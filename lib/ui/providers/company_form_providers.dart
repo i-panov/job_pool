@@ -68,7 +68,7 @@ class CompanyFormNotifier
   @override
   FutureOr<CompanyFormState> build(int? companyId) async {
     if (companyId != null) {
-      final company = await _repo.get(companyId);
+      final company = await _repo.select(companyId).getSingleOrNull();
 
       if (company == null) {
         throw Exception('Компания не найдена');

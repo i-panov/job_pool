@@ -3,15 +3,18 @@ import 'package:job_pool/core/parse.dart';
 import 'package:job_pool/data/dto/company_save_args.dart';
 import 'package:job_pool/data/dto/vacancy_save_args.dart';
 import 'package:job_pool/domain/repositories/companies_repository.dart';
+import 'package:job_pool/domain/repositories/job_directions_repository.dart';
 import 'package:job_pool/domain/repositories/vacancies_repository.dart';
 
 class ParseVacancyUseCase {
   final CompaniesRepository companiesRepository;
   final VacanciesRepository vacanciesRepository;
+  final JobDirectionsRepository jobDirectionsRepository;
 
   const ParseVacancyUseCase({
     required this.companiesRepository,
     required this.vacanciesRepository,
+    required this.jobDirectionsRepository,
   });
 
   Future<int> call(Uri uri) async {
@@ -25,15 +28,38 @@ class ParseVacancyUseCase {
     );
 
     if (vacancyId == null) {
+      final presentDirections = await jobDirectionsRepository.filter(
+        parsed.directions.unlock,
+      );
+
+      final presentDirectionsMap = {
+        for (final d in presentDirections) d.name: d.id,
+      };
+
+      final absentDirectionsNames = {
+        for (final d in parsed.directions)
+          if (!presentDirectionsMap.containsKey(d)) d,
+      };
+
+      await jobDirectionsRepository.inertMany(absentDirectionsNames);
+
+      final insertedDirections = await jobDirectionsRepository.filter(
+        absentDirectionsNames,
+      );
+
+      final directionIds = [
+        ...presentDirectionsMap.values,
+        ...insertedDirections.map((d) => d.id),
+      ];
+
       final vacancyId = await vacanciesRepository.insert(
         VacancySaveArgs(
           companyId: companyId,
           link: parsed.vacancyLink,
           grades: parsed.grades,
+          directionIds: directionIds.toISet(),
         ),
       );
-
-      // TODO: save parsed.directions
 
       return vacancyId;
     }

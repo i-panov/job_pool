@@ -1751,8 +1751,21 @@ class $JobDirectionsTable extends JobDirections
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
   );
+  static const VerificationMeta _ignoreMeta = const VerificationMeta('ignore');
   @override
-  List<GeneratedColumn> get $columns => [id, name];
+  late final GeneratedColumn<bool> ignore = GeneratedColumn<bool>(
+    'ignore',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("ignore" IN (0, 1))',
+    ),
+    defaultValue: Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, ignore];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1776,6 +1789,12 @@ class $JobDirectionsTable extends JobDirections
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
+    if (data.containsKey('ignore')) {
+      context.handle(
+        _ignoreMeta,
+        ignore.isAcceptableOrUnknown(data['ignore']!, _ignoreMeta),
+      );
+    }
     return context;
   }
 
@@ -1793,6 +1812,10 @@ class $JobDirectionsTable extends JobDirections
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      ignore: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}ignore'],
+      )!,
     );
   }
 
@@ -1805,17 +1828,30 @@ class $JobDirectionsTable extends JobDirections
 class JobDirectionDto extends DataClass implements Insertable<JobDirectionDto> {
   final int id;
   final String name;
-  const JobDirectionDto({required this.id, required this.name});
+
+  /// При парсинге иногда добавляются лишние направления.
+  /// Планирую сделать возможность их игнора.
+  final bool ignore;
+  const JobDirectionDto({
+    required this.id,
+    required this.name,
+    required this.ignore,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    map['ignore'] = Variable<bool>(ignore);
     return map;
   }
 
   JobDirectionsCompanion toCompanion(bool nullToAbsent) {
-    return JobDirectionsCompanion(id: Value(id), name: Value(name));
+    return JobDirectionsCompanion(
+      id: Value(id),
+      name: Value(name),
+      ignore: Value(ignore),
+    );
   }
 
   factory JobDirectionDto.fromJson(
@@ -1826,6 +1862,7 @@ class JobDirectionDto extends DataClass implements Insertable<JobDirectionDto> {
     return JobDirectionDto(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      ignore: serializer.fromJson<bool>(json['ignore']),
     );
   }
   @override
@@ -1834,15 +1871,21 @@ class JobDirectionDto extends DataClass implements Insertable<JobDirectionDto> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'ignore': serializer.toJson<bool>(ignore),
     };
   }
 
-  JobDirectionDto copyWith({int? id, String? name}) =>
-      JobDirectionDto(id: id ?? this.id, name: name ?? this.name);
+  JobDirectionDto copyWith({int? id, String? name, bool? ignore}) =>
+      JobDirectionDto(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        ignore: ignore ?? this.ignore,
+      );
   JobDirectionDto copyWithCompanion(JobDirectionsCompanion data) {
     return JobDirectionDto(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
+      ignore: data.ignore.present ? data.ignore.value : this.ignore,
     );
   }
 
@@ -1850,44 +1893,59 @@ class JobDirectionDto extends DataClass implements Insertable<JobDirectionDto> {
   String toString() {
     return (StringBuffer('JobDirectionDto(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('ignore: $ignore')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name);
+  int get hashCode => Object.hash(id, name, ignore);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is JobDirectionDto &&
           other.id == this.id &&
-          other.name == this.name);
+          other.name == this.name &&
+          other.ignore == this.ignore);
 }
 
 class JobDirectionsCompanion extends UpdateCompanion<JobDirectionDto> {
   final Value<int> id;
   final Value<String> name;
+  final Value<bool> ignore;
   const JobDirectionsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.ignore = const Value.absent(),
   });
   JobDirectionsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
+    this.ignore = const Value.absent(),
   }) : name = Value(name);
   static Insertable<JobDirectionDto> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<bool>? ignore,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (ignore != null) 'ignore': ignore,
     });
   }
 
-  JobDirectionsCompanion copyWith({Value<int>? id, Value<String>? name}) {
-    return JobDirectionsCompanion(id: id ?? this.id, name: name ?? this.name);
+  JobDirectionsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<bool>? ignore,
+  }) {
+    return JobDirectionsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      ignore: ignore ?? this.ignore,
+    );
   }
 
   @override
@@ -1899,6 +1957,9 @@ class JobDirectionsCompanion extends UpdateCompanion<JobDirectionDto> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (ignore.present) {
+      map['ignore'] = Variable<bool>(ignore.value);
+    }
     return map;
   }
 
@@ -1906,7 +1967,8 @@ class JobDirectionsCompanion extends UpdateCompanion<JobDirectionDto> {
   String toString() {
     return (StringBuffer('JobDirectionsCompanion(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('ignore: $ignore')
           ..write(')'))
         .toString();
   }
@@ -3935,9 +3997,17 @@ typedef $$StoryItemsTableProcessedTableManager =
       PrefetchHooks Function({bool vacancy})
     >;
 typedef $$JobDirectionsTableCreateCompanionBuilder =
-    JobDirectionsCompanion Function({Value<int> id, required String name});
+    JobDirectionsCompanion Function({
+      Value<int> id,
+      required String name,
+      Value<bool> ignore,
+    });
 typedef $$JobDirectionsTableUpdateCompanionBuilder =
-    JobDirectionsCompanion Function({Value<int> id, Value<String> name});
+    JobDirectionsCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<bool> ignore,
+    });
 
 final class $$JobDirectionsTableReferences
     extends
@@ -3992,6 +4062,11 @@ class $$JobDirectionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<bool> get ignore => $composableBuilder(
+    column: $table.ignore,
+    builder: (column) => ColumnFilters(column),
+  );
+
   Expression<bool> vacancyDirectionsRefs(
     Expression<bool> Function($$VacancyDirectionsTableFilterComposer f) f,
   ) {
@@ -4036,6 +4111,11 @@ class $$JobDirectionsTableOrderingComposer
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get ignore => $composableBuilder(
+    column: $table.ignore,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$JobDirectionsTableAnnotationComposer
@@ -4052,6 +4132,9 @@ class $$JobDirectionsTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<bool> get ignore =>
+      $composableBuilder(column: $table.ignore, builder: (column) => column);
 
   Expression<T> vacancyDirectionsRefs<T extends Object>(
     Expression<T> Function($$VacancyDirectionsTableAnnotationComposer a) f,
@@ -4110,10 +4193,18 @@ class $$JobDirectionsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
-              }) => JobDirectionsCompanion(id: id, name: name),
+                Value<bool> ignore = const Value.absent(),
+              }) => JobDirectionsCompanion(id: id, name: name, ignore: ignore),
           createCompanionCallback:
-              ({Value<int> id = const Value.absent(), required String name}) =>
-                  JobDirectionsCompanion.insert(id: id, name: name),
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                Value<bool> ignore = const Value.absent(),
+              }) => JobDirectionsCompanion.insert(
+                id: id,
+                name: name,
+                ignore: ignore,
+              ),
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (

@@ -7,6 +7,7 @@ class ParsingProvider extends Notifier<ParsingState> {
   late final _parse = ParseVacancyUseCase(
     companiesRepository: ref.read(companiesRepository),
     vacanciesRepository: ref.read(vacanciesRepository),
+    jobDirectionsRepository: ref.read(jobDirectionsRepository),
   );
 
   @override

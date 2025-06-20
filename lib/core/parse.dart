@@ -103,7 +103,7 @@ Future<HeadHunterParsedVacancy> parseHeadHunterVacancy(
         ? companyLink
         : Uri(scheme: uri.scheme, host: uri.host, path: companyLink).toString(),
     vacancyLink: uri.toString(),
-    directions: sortedDirections.toIList(),
+    directions: sortedDirections.toISet(),
     grades: grades,
     isIt: isItTag != null,
   );
@@ -111,7 +111,7 @@ Future<HeadHunterParsedVacancy> parseHeadHunterVacancy(
 
 class HeadHunterParsedVacancy extends Equatable {
   final String companyName, companyLink, vacancyLink;
-  final IList<String> directions;
+  final ISet<String> directions;
   final ISet<JobGrade> grades;
   final bool isIt;
 
@@ -119,7 +119,7 @@ class HeadHunterParsedVacancy extends Equatable {
     required this.companyName,
     required this.companyLink,
     required this.vacancyLink,
-    this.directions = const IList.empty(),
+    this.directions = const ISet.empty(),
     this.grades = const ISet.empty(),
     this.isIt = false,
   });

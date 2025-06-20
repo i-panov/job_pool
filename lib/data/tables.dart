@@ -103,6 +103,10 @@ class JobDirections extends Table {
   late final id = integer().autoIncrement()();
   late final name = text().unique()();
 
+  /// При парсинге иногда добавляются лишние направления. 
+  /// Планирую сделать возможность их игнора.
+  late final ignore = boolean().withDefault(Constant(false))();
+
   static const defaults = {
     'Dart',
     'Flutter',
